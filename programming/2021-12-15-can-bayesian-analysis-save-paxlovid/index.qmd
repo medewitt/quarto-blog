@@ -1,0 +1,168 @@
+---
+title: "Can Bayesian Analysis Save Paxlovid?"
+description: |
+  Can Bayesian analysis be used to understand the impact of a treatment even though the frequentist results are not significant?
+date: 2021-12-15
+categories: [Bayes, Covid-19, Clinical Trials, Stan, Causal Inference]
+---
+
+# Paxlovid
+
+Paxlovid is a new antiviral (protease inhibitor) that when paired with ritonavir provides excellent protection against hospitalization for those patients infected with SARS-CoV-2.
+Pfizer, the manufacturer, had two endpoints.
+The first endpoint was for "High Risk" patients and a secondary endpoint for "Standard Risk" patients. 
+I thought it was neat that BioNTech/Pfizer used a Bayesian analysis for their BNT162b2 vaccine and was a little surprised when I saw a frequentist p-value for their second endpoint:
+
+From their [press release](https://www.pfizer.com/news/press-release/press-release-detail/pfizer-announces-additional-phase-23-study-results).
+
+>A follow-on analysis at 80% of enrolled patients was consistent with these findings. In this analysis, 0.7% of those who received PAXLOVID were hospitalized following randomization (3/428 hospitalized with no deaths), compared to 2.4% of patients who received placebo and were hospitalized or died (10/426 hospitalized with no deaths); p=0.051.
+
+Oh no, p < 0.05, let's throw away the drug for standard patients.
+This seems like a perfect time to do a Bayesian analysis and see what our uncertainty could be regarding the effect in this seemingly underpowered arm of the trial (e.g., we would have liked to have seem more people in this cohort because the smallest reasonable effect we would like would be say a 20% reduction in relative risk or even less as our hospitals fill with patients).
+
+## Reanalysis
+
+First we need to recreate the data:
+
+```{r}
+library(cmdstanr)
+library(tidybayes)
+library(posterior)
+library(ggplot2)
+library(dplyr)
+library(ggdist)
+
+dat_trials <- tibble::tribble(
+  ~"hospitalized", ~"arm_n", ~"arm",
+  3, 428, "treatment",
+  10, 426, "control"
+
+) %>%
+  mutate(prop = hospitalized/arm_n)
+
+
+dat_trials %>%
+  ggplot(aes(arm, prop))+
+  geom_point()+
+  scale_y_continuous(labels = scales::percent)+
+  labs(
+    title = "Percent of Arm Hospitalized",
+    y = "Percent",
+    x = NULL
+  )+
+  theme_classic()
+
+```
+
+Seems like there is an effect!
+We can also reproduce the frequentist analysis:
+
+```{r}
+prop.test(x = c(3,10), n = c(428,426),
+          alternative = "less", correct = TRUE)
+```
+
+Ok, so p < 0.05 in this is weird.
+Maybe they did some multiple testing adjustment? 
+Moving on....
+
+### Enter Stan
+
+I am going to use the following Stan code that was posted [on this blog](https://www.robertkubinec.com/post/vaccinepval/) which in turn originated from [this blog](https://rpubs.com/ericnovik/692460).
+
+Nothing too crazy, it this code, it just fits our observed data to binomial distributions and we can look at the relative effect and the absolute effect
+
+```{r comment=''}
+writeLines(readLines("trial.stan"))
+
+```
+
+Additionally, we need to supply a prior.
+I am going to use exactly the same priors that Pfizer/BioNTech for their vaccine as a starting point:
+
+```{r}
+curve(dbeta(x, shape1 = .700102, shape2 = 1), 
+      from = 0, to = 1, 
+      ylab = "Density", xlab = "Relative Risk Reduction",
+      main = "Prior Distribution")
+```
+
+This distribution places more density on the drug not having an effect, so we are being a bit pessimistic.
+
+### Run the Code
+
+```{r}
+mod <- cmdstan_model("trial.stan")
+
+dat <- list(
+  n=sum(dat_trials$arm_n),
+       r_c=dat_trials[2,]$hospitalized,
+       r_t=dat_trials[1,]$hospitalized,
+       n_c=dat_trials[2,]$arm_n,
+       n_t=dat_trials[1,]$arm_n,
+       a=c(.700102,1)
+)
+fit <- mod$sample(dat, refresh = 0)
+
+```
+
+### Analyzing the Results
+
+First we can look at our summaries (note that I did look at the chains for mixing and we have adequate samples in the tails).
+
+```{r}
+fit$summary() %>% 
+  select(variable, median, mean, q5,q95, rhat) %>% 
+  knitr::kable(digits = 2)
+```
+
+So it seems like there is evidence of an effect (a relative risk reduction of 20-89%)!
+
+```{r}
+draws <- fit$draws() %>% as_draws_df()
+
+
+draws %>%
+  #median_qi(VE, .width = c(.5, .89, .995)) %>%
+  ggplot(aes(y = "RR", x = RR)) +
+  stat_halfeye()+
+  scale_color_brewer()+
+  theme_classic()+
+  coord_cartesian(expand = FALSE)+
+  labs(
+    title = "Posterior Distribution of Relative Risk Reduction"
+  )
+```
+
+Ok, so looks again like the bulk of the posterior distribution is a positive effect.
+If I said I were only interested in a drug that had a 30% relative risk reduction, I could do the following:
+
+```{r}
+mean(as.numeric(draws$RR>.3))
+```
+
+Ok so `r round(mean(as.numeric(draws$RR>.3)),2)` isn't bad! In the middle of a pandemic with patients appearing (with standard risk factors) and an oral treatment option, I would take that probability.
+I could also look at what the absolute effect would mean on hospitalizations:
+
+```{r preview=TRUE}
+draws %>%
+  ggplot(aes(y = "", x = effect*1000)) +
+  stat_halfeye()+
+  scale_color_brewer()+
+  theme_classic()+
+  coord_cartesian(expand = FALSE)+
+  labs(
+    title = "Hospitalizations Avoided per 1,000 Patients",
+    y = "Density",
+    x = "Hospitalizations Avoided"
+  )
+
+```
+
+If I could prevent 0-40 hospitalizations with a cheap-ish treatment, I would take it.
+A reminder that if I admit 20 patients and they each stay 4-5 days, I have tied up a ton of "bed days."
+
+## Summary
+
+The important point here is the Bayesian analysis provides a way to do these kinds of analysis and not throw away data when endpoints are not met.
+In this case the "standard risk" patients would likely profit from the drug.
