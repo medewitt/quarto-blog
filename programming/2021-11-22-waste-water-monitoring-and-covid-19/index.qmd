@@ -1,0 +1,99 @@
+---
+title: "Waste Water Monitoring and COVID-19"
+description: |
+  Investigating how well Waste Water predicts COVID-19 cases in North Carolina.
+date: 2022-01-01
+categories: [covid-19, mgcv]
+---
+
+
+NCDHHS has been participating in waste-water surveillance for SARS-CoV-2.
+Unfortunately, there is some delay in the data (posted weekly and what is posted is generally a week old or more).
+
+I just want to explore if there is any predictive power.
+First, I'll pull the data down and plot it for Greensboro, NC.
+
+```{r}
+library(data.table)
+
+dat <- fread("https://raw.githubusercontent.com/conedatascience/covid-data/master/data/timeseries/waste-water.csv")
+
+o <- dat[grepl(pattern = "Greens", wwtp_name)]
+
+o[,date_n:=as.numeric(date_new)]
+o[,log_copies := log10(sars_cov2_normalized)]
+o <- o[!is.na(log_copies)]
+
+plot(log_copies~date_new, o, type = "l", adj = 0, 
+		 xlab = '', main = "SARS-CoV-2 RNA Copies - Greensboro NC")
+
+```
+
+Now I'm going to get into dangerous territory and fit a Bayesian spline to these data and then predict out to look at the trend.
+
+```{r}
+library(mgcv)
+fit <- bam(log_copies ~ s(date_n, k = 7, bs = "cs"), data = o)
+plot(fit)
+
+```
+Ok, now let's do that prediction:
+
+```{r}
+pred_matrix <- data.frame(date = seq.Date(min(o$date_new), 
+																					length.out = 365, by = "day"))
+pred_matrix$date_n <- as.numeric(pred_matrix$date)
+
+pred_matrix$pred <- predict(fit, newdata = pred_matrix)
+
+plot(log_copies~date_new, o, type = "l", 
+		 xlim = c(min(o$date_new), Sys.Date()+14), 
+		 xlab = '', main = "SARS-CoV-2 RNA Copies - Greensboro NC")
+lines(pred_matrix$date, pred_matrix$pred, col = "red")
+```
+So it appears that there will be an increasing amount of RNA in the wastewater in Greensboro.
+
+```{r}
+guilford_cases <- nccovid::get_covid_state(select_county = "Guilford",
+																					 reporting_adj = TRUE)
+setDT(guilford_cases)
+```
+
+For fun (because of the reporting delay) I will plot the rolling average cases on this same plot.
+We can see that the cases did in fact increase, but much more rapidly than our projection would have suggested.
+
+```{r preview=TRUE}
+guilford_cases <- guilford_cases[date>=min(o$date_new)]
+
+plot(log_copies~date_new, o, type = "l", 
+		 xlim = c(min(o$date_new), Sys.Date()+14), 
+		 xlab = '', main = "SARS-CoV-2 RNA Copies - Greensboro NC")
+lines(pred_matrix$date, pred_matrix$pred, col = "red")
+par(new = TRUE)
+plot(cases_daily_roll_sum~date, guilford_cases, xlab = "", ylab = "",
+		 xlim = c(min(o$date_new), Sys.Date()+14),axes = FALSE)
+```
+
+In this next section I was curious if there was a strong cross-correlation with a particular lag.
+In theory it would be nice if we could say that we see RNA copies increasing and that gives us an alert some period before we see cases.
+This way health systems could prepare.
+
+```{r}
+cor_list <- list()
+for(i in 1:30){
+	d <- copy(o)[,lag_cases:=shift(x = cases_new_cens_per10k, 
+																 i, 
+																 type = "lead")][!is.na(lag_cases)]
+	cor_list[[i]] <- with(d, cor(lag_cases,log_copies, 
+															 method = "spearman"))
+}
+
+overall_cor <- do.call(rbind, cor_list)
+plot(1:30, overall_cor, main = "Analysis of Lags Between RNA Copies and Cases",
+		 ylab = "Spearman Correlation", xlab = "Lag Number")
+abline(h = 0, lty ="dashed")
+```
+
+For this analysis it seems that there isn't any large warnings...with the highest correlation being a 1 day lead. 
+However there could be a rough 1-4 day advanced warning.
+Nothing too long term warning as what others have suggested.
