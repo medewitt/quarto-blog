@@ -1,0 +1,162 @@
+---
+title: "MRP using brms"
+description: |
+  This post explores MRP using brms and tidyverse modeling.
+categories:
+  - Bayes
+  - mrp
+  - prediction
+date: 2018-11-07
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Multi-Level Regression with Post-Stratification
+
+This blogpost is a reproduction of [this](https://timmastny.rbind.io/blog/multilevel-mrp-tidybayes-brms-stan/). Multi-level regression with post-stratification (MRP) is one of the more powerful predictive strategies for opinion polling and election forecasting. It combines the power of multi-level modeling which anticipate and predict group and population level effects which have good small N predictive properties with post-stratification which helps to temper the predictions to the demographics or other variables of interest. This method has been put out by Andrew Gelman [et al](http://www.princeton.edu/~jkastell/MRP_primer/mrp_primer.pdf) and there is a good deal of literature on the subject.
+
+This blog post then seeks to reproduce an example made by Tim Mastny using the `brms` package and tidyverse tooling.
+
+## Reproduction
+
+```{r}
+library(tidyverse)
+library(lme4)
+library(brms)
+library(rstan)
+devtools::install_github("hrbrmstr/albersusa")
+library(albersusa)
+library(cowplot)
+
+rstan_options(auto_write=TRUE)
+options(mc.cores=parallel::detectCores())
+```
+
+## Data
+
+All the data required to reproduce this example is located [here](http://www.princeton.edu/~jkastell/mrp_primer.html)
+
+```{r}
+marriage.data <- foreign::read.dta('gay_marriage_megapoll.dta',
+                                   convert.underscore=TRUE)
+Statelevel <- foreign::read.dta("state_level_update.dta",
+                                convert.underscore = TRUE)
+Census <- foreign::read.dta("poststratification 2000.dta",
+                            convert.underscore = TRUE)
+```
+
+## Tidy and Munge
+
+In this section the data are being cleaned
+
+```{r}
+# add state level predictors to marriage.data
+Statelevel <- Statelevel %>% rename(state = sstate)
+
+marriage.data <- Statelevel %>%
+  select(state, p.evang, p.mormon, kerry.04) %>%
+  right_join(marriage.data)
+
+# Combine demographic groups
+marriage.data <- marriage.data %>%
+  mutate(race.female = (female * 3) + race.wbh) %>%
+  mutate(age.edu.cat = 4 * (age.cat - 1) + edu.cat) %>%
+  mutate(p.relig = p.evang + p.mormon) %>%
+  filter(state != "")
+```
+
+## Buildign the Post-stratifications
+
+In this step Tim is 
+
+```{r}
+# change column names for natural join with marriage.data
+Census <- Census %>% 
+  rename(state = cstate,
+         age.cat = cage.cat,
+         edu.cat = cedu.cat,
+         region = cregion)
+
+Census <- Statelevel %>%
+  select(state, p.evang, p.mormon, kerry.04) %>%
+  right_join(Census)
+
+Census <- Census %>%
+  mutate(race.female = (cfemale * 3 ) + crace.WBH) %>%
+  mutate(age.edu.cat = 4 * (age.cat - 1) + edu.cat) %>%
+  mutate(p.relig = p.evang + p.mormon)
+```
+
+Now the fully Bayesian model can be built with the associated group level effects specified.
+
+```{r cache=TRUE, message=FALSE, warning=FALSE}
+bayes.mod <- brm(yes.of.all ~ (1 | race.female) + (1 | age.cat) + (1 | edu.cat)
+  + (1 | age.edu.cat) + (1 | state) + (1 | region)
+  + p.relig + kerry.04,
+data = marriage.data, family = bernoulli(),
+prior = c(
+  set_prior("normal(0,0.2)", class = "b"),
+  set_prior("normal(0,0.2)", class = "sd", group = "race.female"),
+  set_prior("normal(0,0.2)", class = "sd", group = "age.cat"),
+  set_prior("normal(0,0.2)", class = "sd", group = "edu.cat"),
+  set_prior("normal(0,0.2)", class = "sd", group = "age.edu.cat"),
+  set_prior("normal(0,0.2)", class = "sd", group = "state"),
+  set_prior("normal(0,0.2)", class = "sd", group = "region")
+), iter = 1000, chains = 2, cores = 2, silent = TRUE
+)
+```
+
+Examine the model output. If this were for a paper or a real prediction it would be important to run the model through a few more iterations with further diagnostic plots to ensure convergence.
+
+```{r}
+summary(bayes.mod)
+```
+
+Do some visualisations
+
+```{r}
+library(tidybayes)
+
+bayes.mod %>%
+  gather_draws(`sd_.*`, regex=TRUE) %>%
+  ungroup() %>%
+  mutate(group = stringr::str_replace_all(.variable, c("sd_" = "","__Intercept"=""))) %>%
+  ggplot(aes(y=group, x = .value)) + 
+  ggridges::geom_density_ridges(aes(height=..density..),
+                                rel_min_height = 0.01, stat = "density",
+                                scale=1.5)
+```
+
+## Now Bring them Together
+
+The next step then is to combine the predictions from the Bayesian HLM with the postratified values. This can then be used to estimate support.
+
+```{r}
+ps.bayes.mod <- bayes.mod %>%
+  add_predicted_draws(newdata=Census, allow_new_levels=TRUE) %>%
+  rename(support = .prediction) %>%
+  mean_qi() %>%
+  mutate(support = support * cpercent.state) %>%
+  group_by(state) %>%
+  summarise(support = sum(support))
+
+ps.bayes.mod %>% 
+  knitr::kable()
+```
+
+## With uncertainity
+
+Now we can add some additional quantification of uncertainity by adding multiple draws from the posterior distribution.
+
+```{r}
+pred<-bayes.mod %>%
+  add_predicted_draws(newdata=Census, allow_new_levels=TRUE, n = 10) %>%
+  rename(support = .prediction) %>%
+  mutate(support = support * cpercent.state)%>%
+  group_by(state, add = TRUE) %>%
+  mean_qi()
+```
+
+
