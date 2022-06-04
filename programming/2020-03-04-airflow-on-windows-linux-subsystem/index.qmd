@@ -1,0 +1,491 @@
+---
+title: "Airflow on Windows Linux Subsystem"
+description: |
+  In this I detail the process for getting a working instance of Apache Airflow on Windows Linux Subsystem. This is a combination of several different posts spread across the internet. Apache Airflow is an exceptional program for scheduling and running tasks.
+categories:
+  - airflow
+  - wls
+  - git
+  - scheduling
+  - apache airflow
+date: 03-04-2020
+image: airflow-logo.png
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Why Do This?
+
+Like it or not, there are a lot of Windows shops out there.
+However, many super useful tools are Linux native and don't really bridge into the Windows world (for good reason).
+That being said Windows and Microsoft (I think) are acknowledging this gap and have provided the Windows Linux Subsystem as a bridge between these two dominate platforms.
+This allows us little people to take advantage of some of the high powered tools available.
+
+# Special Thanks
+
+This post stands on the back of a lot of really well written articles which I will link to.
+Additionally, the code here is good as of Feb 2020 so things are always subject to change.
+
+# Start with WLS
+
+Assuming you are on a Windows box, you'll need to enable Windows Linux Subsystem.
+This will allow you to run a lightweight virtual machine that also has access to your root machine file system if you so choose.
+The instructions are pretty decent [at this link](https://docs.microsoft.com/en-us/windows/wsl/install-win10), but here are the high points.
+
+## Enable WSL
+You need to enable your features via **Powershell** in administrator mode.
+If you are on a server or VM, you can do this by adding the features using the usual methods by selecting the additional features.
+
+```markdown
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+```
+## Get the Distro
+Now you can download your distribution of choice (I like Ubuntu 18.04). 
+There is some weirdness with some of the versions, so be careful what you choice.
+For instance when I installed Ubuntu 16LTS I could not upgrade to Python3.6, which I needed, so I had to burn it down and install another.
+
+```markdown
+Invoke-WebRequest -Uri https://aka.ms/wsl-ubuntu-1804 -OutFile Ubuntu.appx -UseBasicParsing
+Add-AppxPackage .\Ubuntu.appx
+```
+
+### Burn it Down? Huh?
+
+So this is a little aside. 
+Sometimes you mess up and the instal doesn't go as expected.
+It is surprisingly hard to remove an old distribution and restart (though some tutorials say that it is).
+Here is a trick, again in powershell
+
+```markdown
+wslconfig /l
+```
+Which will allow you to see what is installed.
+If you want to reset your distribution, which I had to do, do the following:
+
+```markdown
+wslconfig /u Ubuntu18-04
+```
+This will unlist the distribution and you can install it afresh, otherwise it will continue to live on in your system.
+
+## Now Start Ubuntu
+
+Assuming your install went ok, now go to the start button (or whatever it is called now) and type "Ubuntu".
+You should see the familiar logo. 
+Select it and it will run.
+You'll also have to name yourself (which can be anything you want).
+
+As always a good practice it to give your new Ubuntu instance an update and upgrade:
+
+```bash
+sudo apt updade && sudo apt upgrade
+```
+Additionally, and this is important, you want to automount your Windows directories.
+You can typically access them via `/mnt/c/Users...`, but a lot of programs don't like this and won't run from a mounted drive.
+because of this you will need to update a configuration file:^[Learned this great tidbit here <https://www.astronomer.io/guides/airflow-wsl/>]
+
+```bash
+sudo nano /etc/wsl.conf
+```
+Then type the following into the configuration file:
+
+```markdown
+[automount]
+root = /
+options = "metadata"
+```
+Now write out the file `CTRL + O`, then exit with `CTRL + X`
+
+Now if you type the following, you should see your C drive listed in the directories:
+
+```markdown
+ls /l
+```
+# Postgres
+
+[Postgres](https://en.wikipedia.org/wiki/PostgreSQL) is an open source database, which works great with Airflow and is relatively easy to use.
+Aiflow will run out of the box on a local sqlite database, but it always seems to get corrupted and have IO errors which are hard to depug.
+
+## Installing Postgres
+In the Ubuntu terminal type the following to get postgres^[Special thanks to this blog post <https://medium.com/@harshityadav95/postgresql-in-windows-subsystem-for-linux-wsl-6dc751ac1ff3>]
+
+```bash
+sudo apt-get install postgresql
+```
+The user account for postgres is `postgres` (easy enough to remember)
+
+You'll need to make a password by the following:
+
+```bash
+sudo passwd postgres
+```
+Then close Ubuntu and open it back up.
+Type the following to see if the server is running:
+
+```bash
+sudo service postgresql start
+```
+
+## Create a Postgres User and Database
+
+First we'll create a user for the postgres database. 
+This is how Airflow will connect:
+
+```bash
+sudo -u postgres createuser airflow
+sudo -u postgres createdb airflowdb
+```
+
+Now you want to jump into the postgres database that you started and provide rights and a password to `airflow`
+
+```bash
+sudo -u postgres psql
+```
+
+Now in the pqsl area (looks like psql=#)
+
+```psql
+alter user airflow with encrypted password 'securepassword';
+grant all privileges on database airflowdb to airflow ; 
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO airflow;
+```
+Now you can hit `CTRL + Z` and exit the postgres prompt. 
+Congrats, you now have an airflowdb postgres database.
+
+To verify that everything went as expected, again in the command line type:
+
+```bash
+psql -d airflow
+```
+
+Then in the airflow prompt type:
+
+```psql
+\conninfo
+```
+
+Note the port that it is serving on (typically 5432, but could be something different for you).
+Exit out back to the bash terminal.
+
+## Config for Postgres
+
+Now, thanks to [this post](https://medium.com/@taufiq_ibrahim/apache-airflow-installation-on-ubuntu-ddc087482c14) we will update some configuration files so that Airflow and postgres can communicate.
+
+First we need to change the pg_hba.conf file.
+**Note** that you may need to change your path depending on what version of postgres you have.
+
+```bash
+sudo nano /etc/postgresql/10/main/pg_hba.conf
+```
+
+Now that you have that file open, chage the IPv4 connections to as follows:
+
+```markdown
+host all all 0.0.0.0/0 trust
+```
+
+Write out those changes and then exit. 
+Now restart the server with:
+
+```bash
+sudo service postgresql restart
+```
+
+Now one more configuration file change, this time at:
+
+```bash
+sudo nano /etc/postgresql/9.5/main/postgresql.conf
+```
+
+Here change the `listen_addresses` field to look like that below:
+
+```markdown
+listen_addresses = ‘*’ # for Airflow connection
+```
+
+Then restart the server once more:
+
+```bash
+sudo service postgresql restart
+```
+
+# Now Airflow
+
+Wow, we went through a good bit just to get here. 
+Worry not though, almost done.
+
+## Change Airflowhome
+
+First we need to make sure that Airflow goes to a real drive on the local machine and not in the WLS.
+To ensure this happens, I like to add the path to my .bashrc file.
+
+```bash
+sudo nano ~/.bashrc
+```
+
+Find an empty line and include the line below, changing the "user_name" for whatever username you have.
+Important here is that you have write access and know that the dags for airflow will be in this case under the AirflowHome directory on your C drive.
+
+```markdown
+export AIRFLOW_HOME=/c/Users/user_name/AirflowHome
+```
+
+Write out this change and then exit with the normal keystrokes.
+Additionally, source your bashrc file or exit Ubuntu and re open it.
+
+## Python?
+
+It is important to make sure that we have a version of Python 3.6 or newer.
+This ships with Ubuntu 18-04, but worth checking with the following:
+
+```bash
+python --version
+```
+If we don't have python then we will need to install it with:
+
+```bash
+sudo apt get python3
+```
+
+If we do have it, we need to verify that we have pip
+
+```bash
+pip3 --version
+```
+
+If not, install it as above.
+
+## Install Airflow (finally)
+
+Now that all the pre-reqs have been accomplished we can install airflow with the following:
+
+```bash
+pip3 install apache-airflow[postgres, mssql, celery, rabbitmq]
+```
+
+This will install Airflow as well as all the packages that support connecting to postgres, MS Sql and running multiple operators.
+Depending what packages you have, this might take a bit.
+
+## Configuring Airflow
+Once everything is installed, we need to update the configuration for airflow to point it to our prefered destinations.
+
+We an do this with:
+
+```bash
+sudo nano ${AIRFLOW_HOME}/airflow.cfg
+```
+
+(This also tests that our path was successful).
+
+Once there we need to alter two fields.
+
+1. Update our database to our fancy postgres instance as shown below:
+
+```markdown
+sql_alchemy_conn = postgresql+psycopg2://airflow:secure_password@localhost:5432/airflowdb
+```
+
+2. Change our executor to:
+
+```markdown
+executor = LocalExecutor
+```
+
+In theory we should be able to use the CeleryExecutor, but I wasn't sucessful with it and didn't want to fight that anymore.
+
+You should scan through this configuration file to see if everything is correct and if you want to make any changes.
+For example you might want to change the timezone as [the author of this post did](https://www.ryanmerlin.com/2019/07/apache-airflow-installation-on-ubuntu-18-04-18-10/)
+
+```markdown
+default_timezone = America/New_York
+```
+
+## Serving it Up
+
+Now you can exit the configuration file by writing out your changes.
+
+Now you can start serving Airflow with the following:
+
+```bash
+airflow initdb
+```
+Now the database has been initialized. 
+Next step is to start the scheduler:
+
+```bash
+airflow scheduler
+```
+
+This will start the scheduler (and it might take up the whole window with logs, so just open another instance of Ubunutu).
+
+Then start the webserver:
+
+```bash
+airflow webserver
+```
+
+Again, this might take another terminal over completely, but don't worry.
+If everything worked, you should be able to navigate to localhost:8080 and see your Airflow instance running in your favourite browser.
+
+This will have the default dags loaded by default, so you should see several dags.
+Turn one of the tutorials one, then manually trigger the DAG to see how it works.
+
+# Running A Dag on the Local Machine
+The whole prupose of Airflow is to schedule tasks.
+Ideally, you can use all of your windows credentials, Active Directory, looking at you and manipulate files on shared drives.
+Here's where it gets tricky; you will call your Windows host machine to run your tasks in your DAG files.
+
+## An Example
+
+I manage my dags through a Git repository.
+This provides me all the power of version control and lets other users submit PRs with new DAGs.
+If need to make changes, I just push to my local repository with my new dag or changed dag.
+Airflow then pulls this repository on a schedule, checks them, and turns any shell scripts into executables.
+
+```python
+# -*- coding: utf-8 -*-
+
+from builtins import range
+from datetime import timedelta
+import airflow
+from airflow.models import DAG
+from airflow.operators.bash_operator import BashOperator
+from airflow.operators.dummy_operator import DummyOperator
+
+args = {
+    'owner': 'michael',
+    'start_date': airflow.utils.dates.days_ago(2),
+}
+
+dag = DAG(
+    dag_id='pull_scheduler_updates',
+    default_args=args,
+    schedule_interval='2 4 * * *',
+    dagrun_timeout=timedelta(minutes=20),
+)
+
+update_repo = BashOperator(
+    task_id='update_repo',
+    bash_command='cd /c/Users/mike/AirflowHome; /c/Program\ Files/Git/cmd/git.exe checkout -f; /c/Program\ Files/Git/cmd/git.exe pull origin master; ',
+    dag=dag,
+)
+
+convert_unix = BashOperator(
+    task_id='convert_to_unix',
+    bash_command='cd /c/Users/mike/AirflowHome/src; find . -type f -print0 | xargs -0 dos2unix; ',
+    dag=dag,
+)
+
+make_exec = BashOperator(
+    task_id='make_exec',
+    bash_command="cd /c/Users/mike/AirflowHome/src; ls -l | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/) *2^(8-i));if(k)printf(\"%0o \",k);print}'; ",
+    dag=dag,
+)
+
+update_repo >>  convert_unix
+convert_unix >> make_exec
+
+if __name__ == "__main__":
+    dag.cli()
+
+```
+
+The important part here to note is that I am changing directory to a place on my C drive, then calling [Windows Git](https://git-scm.com/download/win) explicitly from my host system files.
+This allows my Windows machine to handle this process and not count on Ubuntu WLS to execute these tasks.
+
+Similarly, if I had a shell script that looked like the following:
+
+```bash
+echo "starting"
+echo $(pwd)
+
+# Set Location
+cd /c/Users/mike/cool_project
+/c/Program\ Files/R/R-3.6.1/bin/x64/Rscript.exe really_long_script.R
+
+echo "Done!"
+```
+This would allow me to call R directly on the host machine to run my long script.
+Ideally, I would set common system commands as alias (eg. Rscript = /c/Program\ Files/R/R-3.6.1/bin/x64/Rscript.exe or something like this).
+I might go down that road, but not right now (or I will put it at the top of the bash script and have templates).
+
+```bash
+echo "starting"
+echo $(pwd)
+Rscript = /c/Program\ Files/R/R-3.6.1/bin/x64/Rscript.exe
+# Set Location
+cd /c/Users/mike/cool_project
+$(Rscript) really_long_script.R
+
+echo "Done!"
+```
+
+Creating variables with the path names is what I have done in Makefiles (because I am old school and love GNUmake). 
+In this way I can still navigate to a directory and issue the `make` command in the DAG.
+
+## Rmarkdown
+One thing to consider when dealing with RMarkdown is that you need to explicitly define the path the pandoc when the script is being run by Airflow.
+
+```r
+Sys.setenv(RSTUDIO_PANDOC="C:/Program Files/RStudio/bin/pandoc")
+```
+
+This typically my scripts for R being run by Airflow will look like:
+
+```bash
+echo "starting"
+echo $(pwd)
+Rscript = /c/Program\ Files/R/R-3.6.1/bin/x64/Rscript.exe
+
+# Set Location
+cd /c/Users/mike/cool_project
+$(Rscript) -e 'Sys.setenv(RSTUDIO_PANDOC="C:/Program Files/RStudio/bin/pandoc"); rmarkdown::render("cool_report.Rmd")'
+
+echo "Done!"
+
+```
+
+# Issues...
+
+Sometimes Airflow will die or you will submit a bad DAG and get things messed up.
+Don't worry, there are plenty of tricks:
+
+1. Reset your database
+
+```bash
+airflow resetdb
+```
+
+This will clear out and reset your database.
+For extra reset power, go ahead and use the `airflow initdb`.
+
+You might need to start the server and the scheduler again as well.
+
+2. Kill orphan processes.
+I have found that if something fails while Airflow is running a process, it can get hung up and won't resart correctly.^[See this post <https://stackoverflow.com/questions/59080796/airflow-scheduler-periodically-complains-no-heartbeat> for an example]
+
+When that happens you might need to kill the processes manually, then restart the airflow database, scheulder, and webserver.
+
+```bash
+ps -aux | grep scheduler
+```
+
+Will list the processes.
+Scan them and see if anything needs to be killed as shown below.
+
+```bash
+kill -9 3400
+```
+
+Update DAGs. 
+If you don't automatically update the DAGs as I have done and are waiting for a new DAG to appear, you can try the following on the bash shell:
+
+```bash
+python3 -c "from airflow.models import DagBag; d = DagBag();"
+```
+
+# Conclusion
+
+Airflow is great and I love it.
+You will have to learn how to use it with Windows, but the pain is worth it for the convenience and transparency of your job.

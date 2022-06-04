@@ -1,0 +1,81 @@
+---
+title: "Comparing Mortality Rates is Hard"
+description: |
+  Comparing crude mortality rates across NC during the COVID-19 pandemic shows differences, but fails to capture the nuance of potential sources of bias.
+date: 2021-05-09
+categories: [mortality, demography, rates, delays, time series]
+link-citations: true
+---
+
+
+## A Simple Question
+
+Say you get a simple question like, how does the mortality rate from COVID-19  for our county (if you live in the United States and not Louisiana) compare to other counties in the state?
+Seems like a straightforward question right?
+Well not really.
+The first question is rate compared to what?
+
+* Case fatality rate where we look at reported deaths for COVID-19 divided by reported cases for COVID-19?
+* Deaths per some population measure like reported deaths per 100k residents in the county
+* Do we look at excess all-cause mortality (looking at expected deaths versus actual deaths).
+
+Then of course we have the traditional biases of:
+
+* Testing was limited early on in the pandemic so there is a risk of an undercount of both cases and deaths in the pandemic (so now the numbers of reported deaths and reported cases are likely too low).
+* Deaths and cases suffer from different reporting delays. This is just the nature of official statistics and testing lag in that a case may take several days to be registered, then logged. With death something similar happens from the time the death occurs, to the death certificate, to the death being registered in the state and national statistics.
+* Deaths typically are delayed from cases. With COVID-19, someone might not succumb to the disease for 21 days after hospitalization, so this delay effect may skew official statistics. Similarly, there is a lot of censoring of data where the outcome of those hospitalized for COVID-19 is not yet known.
+* Treatments varied over time, so one county suffering a wave of patients might have treated them differently later in the pandemic as treatment options became available (monoclonal antibody therapy comes to mind).
+* Mismatches between where death certificates are filed versus where a resident lives could also be an issue. If everyone who is really sick is transfered to a higher level care center in another county, it might appear that counties with higher acuity hospitals have the worst rates in the state.
+
+And these are the first things to come to mind.
+
+## Answering the question
+
+The correct answer, is that we don't know.
+For the SARS-CoV-2 pandemic, it will take some time for all of the official statistics to catch up.
+Additionally, there are some things we will never be able to completely quantitfy like those cases and deaths missed early in the pandemic.
+We can estimate them through sero-studies and excess death calculation, but these will be mostly model based and unknown.
+
+So we still have to try to do our best to estimate them.
+
+```{r}
+library(tidyverse)
+library(data.table)
+theme_set(ggdist::theme_ggdist())
+dat <- nccovid::get_county_covid_demographics()
+
+top_10 <- nccovid::nc_population[order(july_2020, decreasing = TRUE)] %>% 
+  .[2:6] %>% 
+  .$county
+
+cases_2020 <- dat[county %in%top_10 & lubridate::year(week_of) < 2021, 
+    .(cases = sum(cases)), by = c("county", "metric")]
+deaths_2020 <- dat[county %in%top_10 & week_of < as.Date("2021-02-01"), 
+    .(deaths = sum(deaths)), by = c("county", "metric")]
+
+combined_top_10 <- merge(cases_2020,
+                         deaths_2020, by = c("county", "metric")) %>% 
+  .[,cfr := deaths/cases] %>% 
+  group_nest(county, metric) %>% 
+  mutate(ci_lo = map_dbl(data,
+                       ~PropCIs::exactci(x = .$deaths, 
+                                         .$cases, .95)$conf.int[1])) %>% 
+   mutate(ci_hi = map_dbl(data,
+                       ~PropCIs::exactci(x = .$deaths, 
+                                         .$cases, .95)$conf.int[2])) %>% 
+  unnest(cols = c(data))
+
+```
+
+```{r}
+combined_top_10 %>% 
+  as.data.table() %>% 
+  .[!metric %in% c("Missing", "Suppressed")] %>% 
+  ggplot(aes(county, cfr))+
+  geom_point()+
+  geom_pointrange(aes(ymin = ci_lo, ymax = ci_hi))+
+  facet_grid(metric~., scales = "free")+
+  coord_flip()+
+  scale_y_continuous(labels = scales::percent_format(2))
+```
+

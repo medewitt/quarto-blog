@@ -1,0 +1,124 @@
+---
+title: "Optimisation with Stan"
+description: |
+  Using Stan for optimization. 
+date: 2020-08-27
+categories:
+  - Stan
+  - Optimisation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this post I just wanted to play around using the ability to optimize functions in Stan.
+I know that there are other solvers available, but I just wanted to try this one to start (and I can't find it now, but I think this was discussed in [*Regression and Other Stories*](https://avehtari.github.io/ROS-Examples/)).
+
+First, I'll load the cmstanr package which has become my favourite way to interface with Stan.
+
+```{r}
+library(cmdstanr)
+```
+
+Now we can compile a simple optimization scenario which could be a pretty classic production function where you get 2 dollars for widget x and four dollars for wiget y:
+
+$$
+\text{optimize } 2*x + 4*y \\
+\text{subject to:} \\ 
+0\le x \le 10 \\
+0\le y \le 20 \\
+$$
+
+There are also contraints on how many units you can make of each.
+
+```{r}
+m <- cmdstan_model("optim.stan")
+```
+
+Now print the code:
+
+```{r}
+m$print()
+```
+
+Run the model:
+
+```{r}
+fit <- m$sample(refresh = 0)
+```
+
+Summarise the outputs:
+
+```{r}
+fit$print()
+out <- fit$draws(inc_warmup = FALSE, variables = c("x", "y"))
+out_x <- rowMeans(as.data.frame(out[,,1]))
+out_y <- rowMeans(as.data.frame(out[,,2]))
+```
+
+Graph the outputs:
+
+```{r}
+op <- par(mfrow = c(1,2))
+op
+hist(out_x, breaks = 30, main = "Posterior Draws of X", col = "blue")
+abline(v = mean(out_x), lwd = 2, col = "red")
+hist(out_y, breaks = 30, main = "Posterior Draws of Y", col = "blue")
+abline(v = mean(out_y), lwd = 2, col = "red")
+```
+
+Pretty neat that it works.
+
+>Alternatively, you could use the optimize function from CmdStan, but this is a bit of a contrite example. More discussion on this is available [at this post](https://discourse.mc-stan.org/t/bounded-and-constrained-optimization-of-non-linear-objective-in-stan/21804). Additionally it is important that the target syntax increments the log-density. In our case it doesn't matter, but in others it might.
+
+## A Second Example
+
+Just to play a bit, I want to add some data.
+Say we have the same function to optimize to maximize revenue, but instead of making any value of x and y, we have some production data with variability.
+Perhaps these can be real output from our operating process (machines breakdown and life happens, so a higher value might not be reasonable.)
+
+
+```{r}
+m2 <- cmdstan_model("optim2.stan")
+```
+
+*Edit 2022-06-02, I realized I didn't show the code in earlier versions.*
+
+```{r}
+m2$print()
+```
+
+
+```{r}
+dat <- list(
+  y_in = rnorm(100, 7, 1.2),
+  x_in = rnorm(100, 23, 5),
+  sd_x = 5L,
+  sd_y = 2L,
+  N = 100L
+)
+
+fit2 <- m2$sample(data = dat, refresh = 0)
+```
+
+Now we can see the results:
+
+```{r}
+fit2$print()
+```
+
+```{r}
+out <- fit2$draws(inc_warmup = FALSE, variables = c("x", "y"))
+out_x <- rowMeans(as.data.frame(out[,,1]))
+out_y <- rowMeans(as.data.frame(out[,,2]))
+op <- par(mfrow = c(1,2))
+op
+hist(out_x, breaks = 30, main = "Posterior Draws of X", col = "blue")
+abline(v = mean(out_x), lwd = 2, col = "red")
+hist(out_y, breaks = 30, main = "Posterior Draws of Y", col = "blue")
+abline(v = mean(out_y), lwd = 2, col = "red")
+```
+
+The results from the second model represent the influence of the data from our actual manufacturing process. 
+This can be valuable when trying to optimize these kinds of problems when the true data generating process is available to us.

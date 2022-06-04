@@ -1,0 +1,48 @@
+---
+title: "Quick Review of Julia"
+description: |
+  Julia - runs like FORTRAN and Write Like Haskell or where I try to build a package in Julia an enjoyed it.
+date: 2021-06-26
+base_url: https://michaeldewittjr.com
+twitter:
+  creator: "@medewittjr"
+categories: [Julia, Scientific Computing, Package Development]
+link-citations: true
+draft: true
+---
+
+
+```{r setup, include=FALSE}
+library(JuliaCall)
+#JuliaCall::julia_setup(JULIA_HOME = "/usr/local/bin/julia/")
+```
+
+## Why Julia?
+
+Julia has been on my radar to learn for a while (since maybe 2017-18).
+I love the idea of writing really fast code once without trying to translate operations into C++ with Rcpp. 
+
+::: {.column-margin}
+This is not to take away from Rcpp. It truly is amazing.
+:::
+
+Additionally, I have been doing a lot more package development at work to facilitate workflows and performant coding in general and packages with compiled code is always harder -- even if I build the binaries.
+
+The other side of 
+
+
+
+<aside>
+```{r}
+library(ggplot2)
+ggplot(mtcars, aes(hp, mpg)) + geom_point() + geom_smooth()
+```
+</aside>
+
+```julia
+
+2+2;
+
+```
+
+

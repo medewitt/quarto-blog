@@ -1,0 +1,124 @@
+---
+title: "On the use of command line tools"
+description: |
+  Using `AWK` to parse court calendars
+date: 2019-06-22
+categories:
+  - CLI
+  - awk
+  - sed
+  - bash
+---
+
+What always amazes me is that years ago when memory was scarce and computational power was expensive, tools were developed to parse and manipulate data that fit these restrictions. 
+Among these tools you find things like `AWK`, `SED`, and the `bourne` shell. 
+I have begun to appreciate these tools for facilitating data work.
+
+## A motivating examples
+
+The Winston-Salem county court house publishes the court calendar roughly once a week. Unfortunately, the file that is made available is a terrible line-printed file. The data are not structured in a nice form, so it requires some parsing if one wants to do any kind of analysis on it. 
+
+This becomes especially challenging if you have a lot of data (which in this case I do), with many files over several years. This is a great opportunity to use our friends from `AWK` to help parse and wrangle these data.
+
+### Data Example
+
+Below is a picture of the data file. As you can see there is some repeatability with line spacing, but basically free form text.
+
+
+```bash
+head -n 40 court.txt
+```
+
+```
+  RUN DATE: 06/19/19                                                        PAGE   1
+                             IN THE GENERAL COURT OF JUSTICE
+  LOCATION: WINSTON-SALEM        DISTRICT COURT DIVISION       COUNTY OF FORSYTH
+
+          COURT DATE: 06/24/19        TIME: 09:00 AM        COURTROOM NUMBER: 003C
+
+                  DOMESTIC COURT
+
+                     JUDGE PRESIDING :
+                     COURTROOM CLERK :
+                     PROSECUTOR      :
+                                     :
+                                     :
+                                     :
+                                     :
+
+  NO.  FILE NUMBER DEFENDANT NAME        COMPLAINANT       ATTORNEY               CONT
+  *************************************************************************************
+
+     1  18CR 060594 AARON,JOHN,AARON      SLOAN,J        SFF ATTY:GREENWOOD,DYLAN   3
+                    BOND:      $2,000 SEC
+        (M)DV PROTECTIVE ORDER VIOL (M)     PLEA:                VER:
+        CLS:A1 P:   L:      DOM VL: Y   JUDGMENT:
+
+
+
+
+     2  19CR 055098 ADAMO,ALICE,MARY      MOLINA,E       SFF
+                   ********  DEFENDANT NEEDS TO BE FINGERPRINTED
+                    BOND:             WPA
+        (M)SIMPLE ASSAULT                   PLEA:                VER:
+        CLS:2  P:   L:      DOM VL: Y   JUDGMENT:
+
+
+
+
+     3  19CR 052889 ANDRADE,TRICIA        NOLAN,CHRISTOP     P.D.:STEWART,LARAQUE   2
+                    BOND:      $1,500 UNS
+        (M)MISDEMEANOR STALKING             PLEA:                VER:
+```
+
+### Parsing the Defendant Names
+
+Here I am going to use `AWK` to use five spaces as the file separator, the pull the first record on each line (here the line with details about the case and the defendant). I then pipe this to another `AWK` line where I pull out the second, third, and fourth words and tab delineate them. Additionally, I remove any blank lines.
+
+```bash
+
+cat court.txt | awk 'BEGIN{ FS = "      "} $1 ~ /,/ {print $1}' | 
+awk '$1 ~ /,/ NF {print $2 $3 "\t" $4}' |
+awk 'NF > 0' > defendants
+
+head defendants
+```
+
+```
+18CR060594	AARON,JOHN,AARON
+19CR055098	ADAMO,ALICE,MARY
+19CR052889	ANDRADE,TRICIA
+19CR055097	BAHLER,MICHELLE,KATHE
+19CR053129	CRAFT,SHEILA,RUTH
+17CR053102	GADSON,DAQUAN,MONTA
+18CR056597	GADSON,DAQUAN,MONTA
+18CR051024	GREEN,ALPHONSO,GWANTA
+19CR052451	HALL,JOHN,SEBASTIAN
+19CR053503	HALL,JOHN,SEBASTIAN
+```
+
+I can then do something similar to parse the complainants. 
+
+```bash
+cat court.txt | awk 'BEGIN{ FS = " "} $5 ~ /,/ {print $5}' > complaints 
+```
+
+See below.
+
+```bash
+head complaints
+```
+```
+SLOAN,J
+MOLINA,E
+NOLAN,CHRISTOP
+MOLINA,E
+AMMONS,D
+WILLIAMS,SHAWK
+WILKES,TYEKA,R
+DOBSON,KEONA,E
+MARSHALL,G
+HAMPTON,KAITLY
+```
+
+Now I can read them in and parse them together

@@ -1,0 +1,326 @@
+---
+title: "julia ABM SIR"
+description: |
+  Use Julia and R to run agent based models in Julia and visualise them in R.
+author:
+  - name: Michael DeWitt
+    url: https://michaeldewittjr.com
+date: 2020-08-09
+categories:
+  - pandemic
+  - scenarios
+  - curve statistics
+  - julia
+  - agent based models
+---
+
+```{r setup, include=FALSE}
+#| eval: false
+library(JuliaCall)
+library(tidyverse)
+library(ggdist)
+theme_set(theme_minimal())
+```
+
+
+In this post I just wanted to play with julia and R together on the topic of agent based models. 
+Agent based models have some particular advantages in that they capture the random effects of individuals in the model (and their shifting states). The downside of agent based models is of course that you have to program all of those transitions in your model.
+Regardless of that, they do show a much wider range of values and allow for very fined tune interactions and effects that you might miss with a deterministic model.
+I'm also using this as a way of exploring julia and the agents package which is built for this purpose.
+
+## Prep
+
+JuliaCall is a great R package that allows you to call Julia from R.
+
+```{julia}
+#| eval: false
+import Pkg; Pkg.add("Distributions")
+import Pkg; Pkg.add("Plots")
+import Pkg; Pkg.add("LsqFit")
+import Pkg; Pkg.add("PyPlot")
+```
+
+To start, we can take the following Agent Based SIR model from <https://raw.githubusercontent.com/epirecipes/sir-julia/master/script/abm/abm.jl> which provides a done of great epimodels in a couple of different languages.
+Regardless, the set-up of this program is very well done.
+We have agents who can take on one of three states, S, I, R. 
+The probability of an infectious encounter is 5% and agents have an average of 10 contacts per period.
+The infectious period is 9 days.
+In theory, if we wanted to add some additional detail we could add a quarantine state and captured the effect of having some portion of agents move to quarantine and no longer transmit. 
+That will be for another day.
+
+```{julia}
+#| eval: false
+using Agents
+using Random
+using DataFrames
+using Distributions
+using DrWatson
+using StatsPlots
+using BenchmarkTools
+
+
+function rate_to_proportion(r::Float64,t::Float64)
+    1-exp(-r*t)
+end;
+
+
+mutable struct Person <: AbstractAgent
+    id::Int64
+    status::Symbol
+end
+
+
+function init_model(β::Float64,c::Float64,γ::Float64,N::Int64,I0::Int64)
+    properties = @dict(β,c,γ)
+    model = ABM(Person; properties=properties)
+    for i in 1:N
+        if i <= I0
+            s = :I
+        else
+            s = :S
+        end
+        p = Person(i,s)
+        p = add_agent!(p,model)
+    end
+    return model
+end;
+
+
+function agent_step!(agent, model)
+    transmit!(agent, model)
+    recover!(agent, model)
+end;
+
+
+function transmit!(agent, model)
+    # If I'm not susceptible, I return
+    agent.status != :S && return
+    ncontacts = rand(Poisson(model.properties[:c]))
+    for i in 1:ncontacts
+        # Choose random individual
+        alter = random_agent(model)
+        if alter.status == :I && (rand() ≤ model.properties[:β])
+            # An infection occurs
+            agent.status = :I
+            break
+        end
+    end
+end;
+
+
+function recover!(agent, model)
+    agent.status != :I && return
+    if rand() ≤ model.properties[:γ]
+            agent.status = :R
+    end
+end;
+
+
+susceptible(x) = count(i == :S for i in x)
+infected(x) = count(i == :I for i in x)
+recovered(x) = count(i == :R for i in x);
+
+
+δt = 0.1
+nsteps = 400
+tf = nsteps*δt
+t = 0:δt:tf;
+
+
+β = 0.05
+c = 10.0*δt
+γ = rate_to_proportion(0.11,δt);
+
+
+N = 1000
+I0 = 10;
+
+abm_model = init_model(β,c,γ,N,I0)
+
+
+to_collect = [(:status, f) for f in (susceptible, infected, recovered)]
+abm_data, _ = run!(abm_model, agent_step!, nsteps; adata = to_collect);
+
+
+abm_data[!,:t] = t;
+```
+
+Looking at a single iteration:
+
+```{r}
+#| eval: false
+out <- JuliaCall::julia_eval("abm_data")
+
+out %>% 
+  ggplot(aes(step, infected_status))+
+  geom_line()+
+  labs(
+    title = "Single Run of Agent Based SIR Model"
+  )
+```
+
+Ok, that's good, but in reality, we want to run the same model many times in order to get a range of possible values.
+I'll do this with a simple function.
+Ideally, we could use glue to make some of the parameters inputs to our function so that we could model the effect of changing the number of contacts from 10 per day to 5 per day which could signify physical distancing.
+
+```{r}
+#| eval: false
+run_simulation <- function(contacts = 10, contacts_after_int = 5){
+  contacts_in <- formatC(contacts, digits = 1)
+  contacts_after_int_in <- formatC(contacts_after_int, digits = 1)
+julia_script <- glue::glue("
+using Agents
+using Random
+using DataFrames
+using Distributions
+using DrWatson
+using StatsPlots
+using BenchmarkTools
+function rate_to_proportion(r::Float64,t::Float64)
+    1-exp(-r*t)
+end;
+
+
+mutable struct Person <: AbstractAgent
+    id::Int64
+    status::Symbol
+end
+
+
+function init_model(β::Float64,c::Float64,γ::Float64,N::Int64,I0::Int64)
+    properties = @dict(β,c,γ)
+    model = ABM(Person; properties=properties)
+    for i in 1:N
+        if i <= I0
+            s = :I
+        else
+            s = :S
+        end
+        p = Person(i,s)
+        p = add_agent!(p,model)
+    end
+    return model
+end;
+
+
+function agent_step!(agent, model)
+    transmit!(agent, model)
+    recover!(agent, model)
+end;
+
+
+function transmit!(agent, model)
+    # If I'm not susceptible, I return
+    agent.status != :S && return
+    ncontacts = rand(Poisson(model.properties[:c]))
+    for i in 1:ncontacts
+        # Choose random individual
+        alter = random_agent(model)
+        if alter.status == :I && (rand() ≤ model.properties[:β])
+            # An infection occurs
+            agent.status = :I
+            break
+        end
+    end
+end;
+
+
+function recover!(agent, model)
+    agent.status != :I && return
+    if rand() ≤ model.properties[:γ]
+            agent.status = :R
+    end
+end;
+
+
+susceptible(x) = count(i == :S for i in x)
+infected(x) = count(i == :I for i in x)
+recovered(x) = count(i == :R for i in x);
+
+
+δt = 0.1
+nsteps = 400
+tf = nsteps*δt
+t = 0:δt:tf;
+
+
+β = 0.03
+co = δt> 14.0 ? {contacts_in} : {contacts_after_int_in}
+c = co*δt
+γ = rate_to_proportion(0.11,δt);
+
+
+N = 1000
+I0 = 10;
+
+abm_model = init_model(β,c,γ,N,I0)
+
+
+to_collect = [(:status, f) for f in (susceptible, infected, recovered)]
+abm_data, _ = run!(abm_model, agent_step!, nsteps; adata = to_collect);
+
+
+abm_data[!,:t] = t;
+")
+tmp <- tempfile(fileext = ".jl")
+cat(julia_script, file = tmp)
+
+julia_source(tmp)
+out <- JuliaCall::julia_eval("abm_data")
+out
+}
+
+
+```
+
+Now we can run it a few times with a few different contact rates.
+Just to make things interesting, I am adding the option to but a before and after contact rate to allow people to simulate different intervention and the effect of waiting.
+
+We have no social distancing, moderate distancing, and severe social distancing.
+
+```{r}
+#| eval: false
+out_fill_none <- map(1:25, ~run_simulation(contacts = 10, 
+                                         contacts_after_int = 10))
+
+out_fill_10 <- map(1:25, ~run_simulation(contacts = 10, 
+                                         contacts_after_int = 7))
+out_fill_05 <- map(1:25, ~run_simulation(contacts = 10, 
+                                         contacts_after_int = 2))
+```
+
+And then we can visualise our outputs (of course using our curve statistics to better capture the range of possibilities).
+
+```{r preview=TRUE}
+#| eval: false
+steps10 <- out_fill_10 %>% 
+  bind_rows(.id = ".draws") %>% 
+  group_by(step) %>% 
+  curve_interval(infected_status, .width = c(.5, .8, .95)) %>% 
+  mutate(contact = 7)
+steps05 <- out_fill_05 %>% 
+  bind_rows(.id = ".draws") %>% 
+  group_by(step) %>% 
+  curve_interval(infected_status, .width = c(.5, .8, .95)) %>% 
+  mutate(contact = 5)
+step_none <- out_fill_none %>% 
+  bind_rows(.id = ".draws") %>% 
+  group_by(step) %>% 
+  curve_interval(infected_status, .width = c(.5, .8, .95)) %>% 
+  mutate(contact = 10)
+
+steps10 %>% 
+  bind_rows(steps05) %>% 
+  bind_rows(step_none) %>% 
+  ggplot(aes(x = step, y = infected_status, group = contact)) +
+  geom_hline(yintercept = 1, color = "gray75", linetype = "dashed") +
+  geom_lineribbon(aes(ymin = .lower, ymax = .upper)) +
+  scale_fill_brewer() +
+  labs(
+    title = "Simulated SIR Curve for Infections",
+    subtitle = "Using an Agent Based Model",
+    y = "Infected Individuals"
+  )
+```
+
+It's amazing but not unsurprising to see the impact of reducing the number of contacts per day on disease transmission.

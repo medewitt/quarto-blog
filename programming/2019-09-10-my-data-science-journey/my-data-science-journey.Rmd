@@ -1,0 +1,62 @@
+---
+title: "My Data Science Journey"
+description: |
+  A short description of the post.
+author:
+  - name: Michael DeWitt
+    url: https://michaeldewittjr.com
+date: 09-10-2019
+draft: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+url <- "https://docs.google.com/spreadsheets/d/1iz4YqOidySUUe-0VfzLUF-rN3evKTC3GQ5GonD8aZe4/edit?usp=sharing"
+library(tidyverse)
+library(googlesheets4)
+library(ggalluvial)
+my_dat <- gs4_find("interview_history")
+
+dat <- googlesheets4::read_sheet(my_dat)
+
+dat2 <- dat %>% 
+  left_join(
+dat %>% 
+  group_by(id) %>% 
+  filter(date == max(date)) %>% 
+  select(id, step) %>% 
+  rename(result = step)
+)
+
+long_dat <- dat %>% 
+  group_by(id) %>% 
+  arrange(date) %>% 
+  mutate(step_no = row_number()) %>% 
+  mutate(step_no = paste0("Step_",step_no)) %>% 
+  select(-date) %>% 
+  spread(step_no, step) %>% 
+  mutate(final_outcome = coalesce(Step_4, Step_5, Step_6, Step_7))
+```
+
+## My History
+
+https://mdneuzerling.com/post/my-data-science-job-hunt/
+
+## Looking
+
+```{r}
+long_dat %>% 
+  to_lodes(key = "position", axes = 4:10) %>% 
+ggplot(aes(x = position, stratum = stratum,
+                  alluvium = alluvium, label = stratum)) + 
+    geom_alluvium(aes(fill = final_outcome), color = "darkgrey", na.rm = TRUE) +
+    geom_stratum(na.rm = TRUE) +
+    geom_text(stat = "stratum", na.rm = TRUE, size = 12 * 0.352778) + # convert pt to mm
+    theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        text = element_text(size = 16)
+    ) +
+    xlab(NULL)
+```
+

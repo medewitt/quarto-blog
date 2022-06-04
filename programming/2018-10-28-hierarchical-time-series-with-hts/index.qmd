@@ -1,0 +1,99 @@
+---
+title: "Hierarchical Time Series with hts"
+description: |
+  This is just a quick reproduction of the items discussed in the 
+  hts package. This allows for hierarchical time series which is 
+  an important feature when looking at data that take a hierarchical
+  format like counties within a state or precincts within counties within states.
+categories: time series
+date: 2018-10-28
+---
+
+
+## Mission
+
+The mission is to reproduce the figures in the following article:
+
+<https://cran.r-project.org/web/packages/hts/vignettes/hts.pdf>
+
+## Load Required Libraries
+
+```{r}
+library(hts)
+```
+
+### Note on Formatting Data
+
+This is important to understand in regard to how to format the data.
+
+```{r}
+# bts is a time series matrix containing the bottom-level series
+# The first three series belong to one group, and the last two
+# series belong to a different group
+# nodes is a list containing the number of child nodes at each level.
+bts <- ts(5 + matrix(sort(rnorm(500)), ncol=5, nrow=100))
+
+y <- hts(bts, nodes=list(2, c(3, 2)))
+```
+
+
+## The Data
+
+```{r}
+infantgts
+```
+
+Use a bottom's up forcasting method. There are several options from which to choose:
+
+- **comb** optimal combination
+- **bu** bottom's up
+- **mo** middle out forecast
+- **tdgsa** Top-down forecasts based on the average historical proportions (Gross-Sohl method A)
+- **tdgsf** same as above but with averages
+- **tdfp** top down forecast using proportions
+
+```{r}
+# Forecast 10-step-ahead using the bottom-up method
+infantforecast <- forecast(infantgts, h=10, method="bu")
+```
+
+
+Now we can plot them:
+
+```{r}
+# plot the forecasts including the last ten historical years
+plot(infantforecast, include=2)
+
+```
+
+
+
+```{r}
+allts_infant <- aggts(infantgts)
+allf <- matrix(nrow=10, ncol=ncol(allts_infant))
+# Users can select their preferred time-series forecasting method
+# for each time series
+for(i in 1:ncol(allts_infant)){
+  allf[,i] <- forecast(auto.arima(allts_infant[,i]), h=10, PI=FALSE)$mean
+}
+
+allf <- ts(allf, start=2004)
+# combine the forecasts with the group matrix to get a gts object
+g <- matrix(c(rep(1, 8), rep(2, 8), rep(1:8, 2)), nrow = 2, byrow = T)
+y.f <- combinef(allf, groups = g)
+```
+
+```{r}
+# set up the training sample and testing sample
+data <- window(infantgts, start=1933, end=1993)
+test <- window(infantgts, start=1994, end=2003)
+forecast <- forecast(data, h=10, method="bu")
+# calculate ME, RMSE, MAE, MAPE, MPE and MASE
+accuracy.gts(forecast, test)
+```
+
+```{r}
+fcasts <- forecast(htseg1, h = 10, method = "comb", fmethod = "arima",
+weights = "sd", keep.fitted = TRUE, parallel = TRUE)
+```
+

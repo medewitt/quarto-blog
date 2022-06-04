@@ -1,0 +1,79 @@
+---
+title: "gghighlight for the win"
+description: |
+  "Exploring the power of gghighlight package to automatically highlight charts"
+categories: [ggplot2, data visualisation, r]
+date: "2018-07-04"
+#image: distill-preview.png
+---
+
+gghighlight is a package that is on cran that allows one to highlight certain features ones finds valuable. Right now I typically do this with some custom color coding, then pass that into the `ggplot2` arguments. This might serve as a good way to more easily automate this task. Additionally, this could be super handy during exploratory analysis where this is much more iterative to find patterns.
+
+Our libraries of course....
+
+```{r echo=TRUE}
+library(ggplot2)
+library(gghighlight)
+```
+
+This code is copied directly from [here](https://yutani.rbind.io/post/2017-10-06-gghighlight/).
+
+
+Build some data which is more some white noise with a random walk.
+
+```{r echo=TRUE}
+set.seed(2)
+d <- purrr::map_dfr(
+  letters,
+  ~ data.frame(idx = 1:400,
+               value = cumsum(runif(400, -1, 1)),
+               type = .,
+               stringsAsFactors = FALSE))
+```
+
+Definitely some messiness and colour overload!
+
+```{r echo=TRUE}
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type))
+```
+
+The way I would do it...
+
+```{r echo=TRUE}
+library(dplyr, warn.conflicts = FALSE)
+
+d_filtered <- d %>%
+  group_by(type) %>% 
+  filter(max(value) > 20) %>%
+  ungroup()
+
+ggplot() +
+  # draw the original data series with grey
+  geom_line(aes(idx, value, group = type), data = d, colour = alpha("grey", 0.7)) +
+  # colourise only the filtered data
+  geom_line(aes(idx, value, colour = type), data = d_filtered)
+```
+
+Now with this handy package we can do the following:
+
+```{r echo=TRUE}
+ggplot(d, aes(idx, value, colour = type))+
+	geom_line()+
+	gghighlight(max(value) > 20, label_key = type) +
+  theme_minimal()
+```
+
+And because it is a `ggplot` object we can add things to it.
+
+```{r echo=TRUE}
+ggplot(d, aes(idx, value, colour = type))+
+	geom_line()+
+	gghighlight(max(value) > 20, label_key = type) +
+  theme_minimal()+
+	facet_wrap(~type)
+```
+
+
+
+The package author does offer a caveat that the package can run slowly with lots of data and filtering and to go back to using `dplyr` in a discrete step. I imagine it is because of all the grouped operations? Dunno, but this is a neat package to use for exploratory work.

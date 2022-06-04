@@ -1,0 +1,234 @@
+---
+title: "State Space Models for Poll Prediction"
+description: |
+  In this section I replicate some state space poll modeling that James Savage and Peter Ellis used in a few different scenarios. State space modeling provides a great way to model times series effects when the data are collected at irregular intervals (e.g. opinion polling).
+categories:
+  - Political
+  - Bayes
+  - State Space
+date: 2019-05-18
+---
+
+
+## Motivating Example
+
+I have always been interested in state space modeling. It is really interesting to see how this modeling strategy works in the realm of opinion polling. Luckily I stumbled across an example that James Savage put together for a workshop series on [Econometrics in Stan](https://github.com/khakieconomics/stanecon_short_course/blob/80263f84ebe95be3247e591515ea1ead84f26e3f/03-fun_time_series_models.Rmd). Additionally, while I was writing this blog post by happenstance Peter Ellis put out a similar [state space Bayesian model](https://github.com/ellisp/ozfedelect) for the most recent Australian elections. His forecasts were by far the most accurate out there and predicted the actual results. I wanted to borrow and extend from his work as well.
+
+## Collect the Data 
+
+This is the original data collection routine from James Savage's work.
+
+```{r statespace-intro, message = F, warning=FALSE}
+library(tidyverse)
+library(rvest)
+library(rstan)
+library(lubridate)
+
+options(mc.cores = parallel::detectCores())
+
+# The polling data
+realclearpolitics_all <- read_html("http://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton-5491.html#polls")
+# Scrape the data
+polls <- realclearpolitics_all %>% 
+  html_node(xpath = '//*[@id="polling-data-full"]/table') %>% 
+  html_table() %>% 
+  filter(Poll != "RCP Average")
+
+```
+
+Develop a helper function.
+
+```{r helper, message = F, warning=FALSE}
+# Function to convert string dates to actual dates
+get_first_date <- function(x){
+  last_year <- cumsum(x=="12/22 - 12/23")>0
+  dates <- str_split(x, " - ")
+  dates <- lapply(1:length(dates), function(x) as.Date(paste0(dates[[x]], 
+                                                              ifelse(last_year[x], "/2015", "/2016")), 
+                                                       format = "%m/%d/%Y"))
+  first_date <- lapply(dates, function(x) x[1]) %>% unlist
+  second_date <- lapply(dates, function(x) x[2])%>% unlist
+  data_frame(first_date = as.Date(first_date, origin = "1970-01-01"), 
+             second_date = as.Date(second_date, origin = "1970-01-01"))
+}
+```
+
+Continue cleaning.
+
+```{r clean, message = F, warning=FALSE}
+# Convert dates to dates, impute MoE for missing polls with average of non-missing, 
+# and convert MoE to standard deviation (assuming MoE is the full 95% one sided interval length??)
+polls <- polls %>% 
+  mutate(start_date = get_first_date(Date)[[1]],
+         end_date = get_first_date(Date)[[2]],
+         N = as.numeric(gsub("[A-Z]*", "", Sample)),
+         MoE = as.numeric(MoE))%>% 
+  select(end_date, `Clinton (D)`, `Trump (R)`, MoE) %>% 
+  mutate(MoE = ifelse(is.na(MoE), mean(MoE, na.rm = T), MoE),
+         sigma = MoE/2) %>% 
+  arrange(end_date) %>% 
+  filter(!is.na(end_date))
+
+# Stretch out to get missing values for days with no polls
+polls3 <- left_join(data_frame(end_date = seq(from = min(polls$end_date), 
+                                              to= as.Date("2016-08-04"), 
+                                              by = "day")), polls) %>% 
+  group_by(end_date) %>%
+  mutate(N = 1:n()) %>%
+  rename(Clinton = `Clinton (D)`,
+         Trump = `Trump (R)`)
+
+```
+
+I wanted to extend the data frame with blank values out until closer to the election. This is that step.
+
+```{r extend-df}
+polls4 <- polls3 %>% 
+  full_join(
+    tibble(end_date = seq.Date(min(polls3$end_date), 
+                               as.Date("2016-11-08"), by = 1)))
+```
+
+
+```{r a-little-more}
+# One row for each day, one column for each poll on that day, -9 for missing values
+Y_clinton <- polls4 %>% reshape2::dcast(end_date ~ N, value.var = "Clinton") %>% 
+  dplyr::select(-end_date) %>% 
+  as.data.frame %>% as.matrix
+Y_clinton[is.na(Y_clinton)] <- -9
+Y_trump <- polls4 %>% reshape2::dcast(end_date ~ N, value.var = "Trump") %>% 
+  dplyr::select(-end_date) %>% 
+  as.data.frame %>% as.matrix
+Y_trump[is.na(Y_trump)] <- -9
+
+# Do the same for margin of errors for those polls
+sigma <- polls4 %>% reshape2::dcast(end_date ~ N, value.var = "sigma")%>% 
+  dplyr::select(-end_date)%>% 
+  as.data.frame %>% as.matrix
+sigma[is.na(sigma)] <- -9
+```
+
+
+## Our Model
+
+I have modified the model slightly to add the polling inflator that Peter Ellis uses in order to account for error outside of traditional polling error. There is a great deal of literature about this point in the Total Survey Error framework. Basically adding this inflator allows for additional uncertainty to be put into the model.
+
+```{r state-space-model, comment=""}
+writeLines(readLines("model.stan"))
+```
+
+## Compile The Model
+
+```{r}
+state_space_model <- stan_model("model.stan")
+```
+
+
+## Prep the Data
+
+```{r clinton-data}
+
+clinton_data <- list(
+  T = nrow(Y_clinton),
+  polls = ncol(Y_clinton),
+  Y = Y_clinton,
+  sigma = sigma,
+  initial_prior = 50,
+  random_walk_sd = 0.2,
+  mu_sigma = 1,
+  inflator =sqrt(2)
+)
+
+trump_data <- list(
+  T = nrow(Y_trump),
+  polls = ncol(Y_trump),
+  Y = Y_trump,
+  sigma = sigma,
+  initial_prior = 40,
+  random_walk_sd = 0.2,
+  mu_sigma = 1,
+  inflator =sqrt(2)
+)
+
+```
+
+## Run the Model
+
+```{r}
+clinton_model <- sampling(state_space_model, 
+                      data = clinton_data, 
+                      iter = 600, 
+                      refresh = 0, chains = 2, 
+                      control = list(adapt_delta = .95,
+                                     max_treedepth = 15))
+
+trump_model <- sampling(state_space_model, 
+                    data = trump_data, 
+                    iter = 600, 
+                    refresh = 0, chains = 2,
+                    control = list(adapt_delta = .95,
+                                     max_treedepth = 15))
+```
+
+## Inferences
+
+```{r}
+# Pull the state vectors
+mu_clinton <- extract(clinton_model, pars = "mu", permuted = T)[[1]] %>% 
+  as.data.frame
+mu_trump <- extract(trump_model, pars = "mu", permuted = T)[[1]] %>% 
+  as.data.frame
+# Rename to get dates
+names(mu_clinton) <- unique(paste0(polls4$end_date))
+names(mu_trump) <- unique(paste0(polls4$end_date))
+```
+
+
+```{r}
+# summarise uncertainty for each date
+mu_ts_clinton <- mu_clinton %>% reshape2::melt() %>% 
+  mutate(date = as.Date(variable)) %>% 
+  group_by(date) %>% 
+  summarise(median = median(value),
+            lower = quantile(value, 0.025),
+            upper = quantile(value, 0.975),
+            candidate = "Clinton")
+
+mu_ts_trump <- mu_trump %>% reshape2::melt() %>% 
+  mutate(date = as.Date(variable)) %>% 
+  group_by(date) %>% 
+  summarise(median = median(value),
+            lower = quantile(value, 0.025),
+            upper = quantile(value, 0.975),
+            candidate = "Trump")
+```
+
+Which gives us the following:
+
+```{r}
+
+actual_voteshare <- tibble(date = as.Date("2016-11-08"),
+                           value = c(48.2, 46.1),
+                           candidate = c("Clinton", "Trump"))
+
+bind_rows(mu_ts_clinton, mu_ts_trump) %>% 
+  ggplot(aes(x = date)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper, fill = candidate),alpha = 0.1) +
+  geom_line(aes(y = median, colour = candidate)) +
+  ylim(20, 70) +
+  scale_colour_manual(values = c("blue", "red"), "Candidate") +
+  scale_fill_manual(values = c("blue", "red"), guide = F) +
+  geom_point(data = polls4, aes(x = end_date, y = `Clinton`), size = 0.2, colour = "blue") +
+  geom_point(data = polls4, aes(x = end_date, y = Trump), size = 0.2, colour = "red") +
+  xlab("Date") +
+  ylab("Implied vote share") +
+  ggtitle("Poll aggregation with state-space smoothing", 
+          subtitle= paste("Prior of 50% initial for Clinton, 40% for Trump on", min(polls4$end_date)))+
+  theme_minimal()+
+  geom_point(data = filter(actual_voteshare, candidate == "Clinton"), 
+             aes(date, value), colour = "blue", size = 2)+
+  geom_point(data = filter(actual_voteshare, candidate == "Trump"), 
+             aes(date, value), colour = "red", size = 2)
+```
+
+So the outcome was not totally out of the bounds of a good predictive model!

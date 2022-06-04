@@ -1,0 +1,66 @@
+---
+title: "make your own api"
+description: |
+  Exploring the concept of developing internal APIs. An API could also be an R package that can be used by people in your organisation to more easily connect to common data sources. This is a good example of some internal tooling that can make data access easier.
+image: mermaid.png
+categories:
+  - r
+  - apis
+  - packages
+date: 2018-07-12
+    
+---
+
+```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo = FALSE)
+```
+
+# What's in an API?
+
+An API is an application programming interface. It is basically a set of instructions for interfacing with a server. When working with web data you don't need to render an entire website for viewing- you just want to get some raw data. You can do this through the API (often a REST) and talk to the server directly. Within this API you send a set of instructions that says what data you want and in what form you want it in. Then it sends you the data.
+
+```{r}
+library(DiagrammeR)
+
+mermaid("
+graph LR
+  Server-->Browser
+Browser -->Server
+  Browser-->Viewer
+  Server-->API
+  API-->Server
+", height = 200)
+
+```
+
+
+# What about internally?
+
+Often times in the business world, we don't necessarily access internal data though a REST API (unless you are Amazon) ^[The story behind this is that Jeff Bezos in his brilliance made Amazon access everyones data internally through APIs. This vision allowed them to speed past the competition with Amazon web services because they had basically been doing it for years. By building this kind of infrastructure early, learning through bumps and bruising along the way they were ready to present an internal architecture to the public and make loads of money on it. More [here](https://apievangelist.com/2012/01/12/the-secret-to-amazons-success-internal-apis/)].
+
+If your company does internal APIs that is wonder. Quite honestly they aren't too hard to set up and with a little help from `plumber` a data scientist could use R to set an API up. Not the best idea but it still stands, it can be done.
+
+# But what about common drives
+
+This is where I have developed some APIs for myself and others. Perhaps data is stored in flatfiles on a common drive. Instead of everyone mapping to the drive at the start of each script, write a package to function like your own API, something like:
+
+```{r eval=FALSE, echo=TRUE}
+get_internal_data <- function(data_set){
+  path <-"path/to/internal/directory"
+  
+  available_files <- list.files(path, pattern = ".csv$") %>% 
+    gsub(pattern = ".csv", replacement = "", .)
+  
+  if(!data_setv %in% available_files){
+    stop("Data set not available")
+  }
+  
+  df <- read_csv(file.path(path, data_set))
+  
+  df
+}
+```
+
+Now anyone can use your function to call a data set. This saves some typing, and if you use the absolute mappings then this makes it easier to share internal code. Additionally, you could wrap this function, perhaps with several other to different data sources into a package. That package can then be shared and everyone will have easy access to the data. If the storage of items changes, then you can update the package details (via a version control system) and have everyone load the new package. This *automatically* changes the internals so their function to access the data is redirected to the new location!
+
+This same kind of method could be used for accessing internal databases. Set you the connection and it provides you the tools to work with internal tools in an API-like fashion.

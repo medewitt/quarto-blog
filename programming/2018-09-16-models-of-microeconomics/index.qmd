@@ -1,0 +1,226 @@
+---
+title: "models of microeconomics"
+description: |
+  Exploring the examples in Kleiber and Zeileis' Applied Economics in R
+image: mermaid.png
+categories:
+  - r
+  - econometrics
+  - modeling
+date: 2018-09-16
+    
+---
+
+```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo = FALSE)
+```
+
+I just wanted to explore a little more some of the topics covered in the fantastic _Applied Econometrics with R_. All of these examples come from their text in Chapter 3.
+
+
+```{r}
+library(AER)
+```
+
+## Binary Depedent Modeling
+
+```{r}
+data("SwissLabor")
+
+head(SwissLabor)
+```
+
+
+```{r}
+swiss_probit <- glm(participation ~ . + I(age^2), data = SwissLabor, family = binomial(link = "probit"))
+```
+
+```{r}
+summary(swiss_probit)
+```
+
+### Visualisation of the Data
+
+```{r}
+par(mfrow=c(1,3))
+plot(participation ~ age, data = SwissLabor, ylevels = 2:1)
+plot(participation ~ education, data = SwissLabor, ylevels = 2:1)
+plot(participation ~ foreign, data = SwissLabor, ylevels = 2:1)
+```
+
+## Retrieving Average Marginal Effects
+
+Average of the sample marginal effects is determined by the following:
+
+```{r}
+fav <- mean(dnorm(predict(swiss_probit, type = "link")))
+fav * coef(swiss_probit)
+```
+
+```{r}
+library(margins)
+```
+
+
+## Goodness of Fit
+
+This can be evauluated with a pseudo R^2 called _McFadden's pseudo-R^2.
+
+$$R^2 = 1- \frac{l(\hat\beta)}{l(\bar y)}$$
+
+```{r}
+swiss_probit0 <- update(swiss_probit, formula = . ~ 1)
+1-as.vector(logLik(swiss_probit)/logLik(swiss_probit0))
+```
+
+```{r}
+table( true = SwissLabor$participation, pred = round(fitted(swiss_probit)))
+```
+
+```{r}
+library(ROCR)
+
+pred <- prediction(predictions = fitted(swiss_probit), labels = SwissLabor$participation)
+
+par(mfrow = c(1,2))
+plot(performance(pred, "acc"))
+plot(performance(pred, "tpr", "fpr"))
+abline(0,1, lty = 2)
+
+```
+
+## Residuals and Diagnostics
+
+```{r}
+coeftest(swiss_probit, vcov. = sandwich)
+```
+
+# Count Data
+
+```{r}
+data("RecreationDemand")
+
+head(RecreationDemand)
+```
+
+```{r}
+rd_poisson <- glm(trips ~ ., data = RecreationDemand, family = poisson())
+coeftest(rd_poisson)
+```
+
+Overdispersion??
+
+```{r}
+dispersiontest(rd_poisson)
+```
+
+Yup
+
+```{r}
+dispersiontest(rd_poisson, trafo = 2)
+```
+
+## Negative Binomial
+
+```{r}
+library(MASS)
+rd_nb <- glm.nb(trips ~ ., data = RecreationDemand)
+coeftest(rd_nb)
+```
+
+```{r}
+(rd_results <- rbind(poisson = logLik(rd_poisson), negative_binomial = logLik(rd_nb)))
+```
+
+Improvement!
+
+```{r}
+rbind(
+  obs = table(RecreationDemand$trips)[1:10], exp = round(sapply(0:9, function(x)sum(dpois(x, fitted(rd_poisson)))))
+)
+```
+
+This model is under-predicting the zero number of trips. Perhaps it is time to use a zero-inflated model that will help to correct this undercounting.
+
+$$f_{zeroinfl}(y) = p_i * I_{0}(y)+(1-p_i)*f_{count}(y;\mu_i)$$
+
+Thus the linear predictor portion uses all of the independent variables and the inflation component to be a function of quality and income.
+
+```{r}
+library(pscl)
+
+rd_zinb <- zeroinfl(trips ~ . | quality + income, data = RecreationDemand, dist = "negbin")
+
+summary(rd_zinb)
+```
+
+Let's check the fit!
+
+```{r}
+rbind(
+  obs = table(RecreationDemand$trips)[1:10], 
+  exp = round(colSums(predict(rd_zinb, type = "prob")[,1:10]))
+)
+```
+
+Looks a great deal better!
+
+# Hurdle Models
+
+Useful for an excessive number of zeros (or a small number of zeros). This is more widely used in economics according to the text. The hurdle consists of two parts
+
+- Binary part given by a count distribution that is right censored at y = 1 (e.g. is the hurdle crossed)
+- A count part given by a left-truncated distribution at y = 1 (e,g, if y > 0, how large is y)
+
+
+```{r}
+rd_hurdle <- hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "negbin")
+
+rbind(
+  obs = table(RecreationDemand$trips)[1:10], 
+  exp = round(colSums(predict(rd_hurdle, type = "prob")[,1:10]))
+)
+```
+
+# Censored Depdent Variables
+
+A Tobit model posits that Gaussian linear predictor exists for a latent variable, $y_0$ exists. IT is reported only if the latent variable is positive.
+
+Thus:
+
+$$y_i^0= x_i^T\beta+\epsilon_i$$
+$$y_i = \begin{cases} y_i, y_i^0 >0\\ 0, y_i^0 \le 0 \end{cases},$$
+
+```{r}
+data("Affairs")
+
+head(Affairs)
+```
+
+```{r}
+plot(affairs ~ gender, data = Affairs)
+```
+
+
+```{r}
+aff_tob <- tobit(affairs ~ age + yearsmarried + religiousness + occupation + rating, data = Affairs)
+
+summary(aff_tob)
+```
+
+```{r}
+linearHypothesis(aff_tob, c("age = 0", "occupation = 0"), vcov = sandwich)
+```
+
+Age and occupation are joinly weakyl significant.
+
+# Ordinal Response Variables
+
+```{r}
+library(MASS)
+data("BankWages")
+
+bank_polr <- polr(job~ education + minority, data = BankWages, subset = gender == "male", Hess = TRUE)
+coeftest(bank_polr)
+```
+

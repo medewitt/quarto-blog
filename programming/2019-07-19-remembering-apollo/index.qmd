@@ -1,0 +1,46 @@
+---
+title: "Remembering Apollo"
+description: |
+  Some ruminations about the legacy of Apollo and doing things when failure isn't an option.
+date: 2019-07-19
+image: fotran-tweet.png
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## In Memory of Apollo
+
+With all of the media coverage, I have grown very nostalgic regarding the Apollo space program.^[I suppose nostalgia in the way of remembering history that I never personally experience. In a very _Midnight in Paris_ [way.](https://www.livescience.com/18478-midnight-paris-oscars-nostalgia.html)] It always amazes me to read the stories about the science and engineering that were sparked off by the space race.^[See the monolithic program that has been made available for the guidance computers at <https://github.com/chrislgarry/Apollo-11>. It is just amazing to read. And imagine you had to submit this bad boy on punch cards. I get a giggle each time SAS throws a `LOST CARD` output, but running 100s of pages of code responsible for guiding three men. Just something else. Now we have neural networks deciding what advertisements to show people. Not totally fair as these same algorithms also power maps and translate, but just imagine....] 
+
+I do not underestimate the courage of the men who strapped themselves on the top of a Saturn V rocket. However, I think that the folks in mission control also deserve their due as well.^[In fairness, they were all white males. This also does not discount the enormous efforts of all of the men and women involved in the program. I think that [_Hidden Figures_](https://en.wikipedia.org/wiki/Hidden_Figures) has helped to shed light on the critical contributions of African Americans in a very unequal world. Additionally, the spotlight on [Margaret Hamilton](https://en.wikipedia.org/wiki/Margaret_Hamilton_(software_engineer)) in recent weeks has shown how a woman was _the_ software engineer for the Apollo program.] At the end of the day, they were responsible for what happened. IF an error came up on the computer, they had to make the call to go ahead or abort the mission. I heard to day on the amazing ["13 Minutes to the Moon"](https://www.bbc.co.uk/programmes/w13xttx2) podcast that the average age of the control room was something like 27 years old. Another comment struct me from one of those interviewed:
+
+>We didn't know failure, because we had never done something like this
+
+I think that sentiment is just amazing. Being smart, fearless, and taking responsibility. It is truly an engineering marvel. And as Jerry Bostic, FDO Flight Controller says^[See <https://en.wikipedia.org/wiki/Gene_Kranz>]:
+
+>One of their questions was "Weren't there times when everybody, or at least a few people, just panicked?" My answer was "No, when bad things happened, we just calmly laid out all the options, and failure was not one of them. We never panicked, and we never gave up on finding a solution."
+
+## Why it Matters
+
+This scene from _Apollo 13_ made me want to study engineering:
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ry55--J4_VQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+The idea of solving a problem, under duress, under a time limit, with people counting on you, just made me say, while I was sitting with my grandmother in the movie theatre, "I want to do that!". 
+
+Each time I watch that scene I am still mesmerized and reinvigorated regarding science and engineering. Really just problem solving. Those moments when there is not option but to "solve the problem." It's just magical. You are required to be a team player, to put all of your training and experience together and channel it in a creative way to solve a new problem. It doesn't get any better than that...at least for an engineer.
+
+
+## How It Relates to Programming
+
+I think that this spirit was also around when people were tackling problems at Bell Labs a little after the space program ended. In a world where memory was expensive and computational power was limited, engineers and scientists at Bell Labs had to get creative. This led to things like UNIX, C, SED, AWK, S, C++, etc.... And still today we use these tools because they are so efficient.^[Ok, so people will certainly argue this point with me for sure. The languages are often terse and have high learning curves. Additionally, as cloud archi and parallelism has become place people argue that some of the tools have lost relevance. However, there is still a place for them. The right tool for the right task. I remember working with machines that were 40 years old and the toolset that you could use was limited (e.g. you were not going to install a Python program on these things). See Nick Strayer's [post](https://livefreeordichotomize.com/2019/06/04/using_awk_and_r_to_parse_25tb/) on using R and AWK to parse 25TB of data.]
+
+Predating the above tools look at the relevance of FORTRAN today:
+
+
+![<https://twitter.com/markvdloo/status/1152172519270604800>"]("fortran-tweet.png")
+
+
+Just fantastic stuff.

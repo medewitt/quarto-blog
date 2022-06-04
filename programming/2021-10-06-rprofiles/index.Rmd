@@ -1,0 +1,138 @@
+---
+title: "RProfiles"
+description: |
+  Functions and settings in your Rprofile can be dangerous for reproducibility, but can afford some nice workflow tools.
+date: 2021-10-06
+categories: [workflow, rprofile]
+---
+
+
+
+```{css}
+.warning {
+    display: inline-flex;
+    margin: 30px;
+    font-weight: 700;
+    font-size: 16px;
+    /* font-size: 1rem; */
+    line-height: 1.25;
+    color: #0b0c0c;
+}
+
+.warning:before {
+    display: inline-block;
+    margin: 10px;
+    content: "!";
+    color: white;
+    background: #d4351c;
+    font-weight: 700;
+    left: 50px;
+    min-width: 35px;
+    max-width: 35px;
+    max-height: 35px;
+    min-height: 35px;
+    margin-top: -7px;
+    border-radius: 50%;
+    font-size: 30px;
+    line-height: 35px;
+    text-align: center;
+}
+
+```
+
+In the R programming environment, you have access to configuration files, typically your `.Rprofile` and your `.Renviron`.
+RStudio has a more thorough write-up [available at this link](https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf).
+On the start of a new R session your Environment file is available through a `Sys.getenv` call. 
+Rprofiles are basically "sourced" in the active R session on start and everything in the Rprofile is available within the session.
+Generally speaking, your environment file is for definitions (like a typical dotfile) which variables given values in the form of:
+
+```
+SECRET="ThisIsAnAPIKeyOrSecret"
+```
+
+You can then access this file with the following function call in R
+
+```
+Sys.getenv("SECRET")
+```
+
+If I had something like:
+
+```r
+options(stringsAsFactors = TRUE)
+
+bleh <- function(){
+print("Bleh!")
+}
+
+```
+
+In *my* R session, strings would be treated as factors and I would have access to the function `bleh`.
+
+<div class="warning">
+This is where the reproducibility piece comes into play: unless you include the .Rprofile in whatever you share, you collaborators will likely not have access to these setting and functions.
+</div>
+
+Using a function that is only available to you is not very being very nice to your collaborators or your future self.
+
+## So Why am I Writing This
+
+Putting helper functions for your convenience in your Rprofile can be handy.
+This includes helpers to create files for you (related to project workflow) or tasks that relate to the workflow and not to the reproducibility of the work.
+They aren't needed to re-create the outputs of the analysis.
+
+There is an argument to be made that these functions should be wrapped in a package for others to be use.
+Putting these functions in a package also allows for better testing, continuous integration, and documentation; not to mention that packages can be more easily shared.
+So why put the function in your Rprofile?
+Sometimes I use R for quick data visualizations and don't want to create project and my typical formal project structure.
+I might read a paper and it elicits a questions that I want to explore further (but then I throw away the script).
+
+A script I have in my R file for exactly this purpose is shown below.
+The gist is it create an R script in the R directory by default that includes some of the packages that I use frequently.
+In this way I get a script with a header I will likely use.
+
+```r
+
+cr <- function(x, dir_use = "R"){
+  loc <- getwd()
+
+  dirloc <- file.path(loc, dir_use)
+  if(!dir.exists(dirloc)){
+    dir.create(dirloc)
+  }
+
+  filnm <- sprintf("%s.R", x)
+
+  if(file.exists(file.path(dirloc,filnm))){
+    cli::cli_alert_warning("File exists.")
+  } else {
+    file.create(file.path(dirloc, filnm))
+
+    cli::cli_alert_success("Created {filnm} in {dir_use}")
+
+    cat("#' Purpose:\nlibrary(tidyverse)\nlibrary(data.table)\n",  
+    file = file.path(dirloc, filnm))
+  }
+  
+  if(interactive()){
+    rstudioapi::navigateToFile(file.path(dirloc, filnm))
+  }
+
+  return(invisible(NULL))
+
+}
+
+
+```
+
+
+In theory I could put this function in a package and then export it with the Rprofile so that it is already available.
+Maybe that represents the best of both worlds.
+
+The key take away is that this function produces something that is indepedent of the main analysis and not needed to reproduce what is in the R script.
+
+As another note, you can edit your Rprofile with:
+
+```r
+usethis::edit_r_profile()
+```

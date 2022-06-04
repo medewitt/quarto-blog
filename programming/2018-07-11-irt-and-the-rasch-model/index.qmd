@@ -1,0 +1,107 @@
+---
+title: "IRT and the Rasch Model"
+description: |
+  Item Response Theory (IRT) is a method by which item difficulty is assessed and used to measure latent factors. Classical test theory has a shortcoming where the test-taker's ability and the difficulty of the item cannot be separated. Thus there is a question of universalisability outside of the instrument. Additionally, the models make some assumptions that mathematically may not be justified. In come IRT which handles some of these issues.
+categories:
+  - r
+  - IRT
+  - Constructs
+  - Survey Analysis
+date: 2018-07-11
+bibliography: bib.bib
+---
+
+
+I am inspired by the blog post completed by the team at stitchfix (see details [here](https://multithreaded.stitchfix.com/blog/2017/12/13/latentsize/)) regarding using item response theory for "latent size." It is a neat approach. I need to say upfront that I am not a trained psychometrician, psychologist, etc. I understand the statistics, but there are nuances of which I know I am ignorant. However, I know that these methods are certainly worthwhile and worth pursuing.
+
+Similarly, I work with a lot of survey data.  Classical test theory has some issues and having a robust  construct validated through item response theory would be a good way to develop a more stable construct. Psychology/ sociological constructs are hard. This kind of research is just difficult with small signals and lots of noise in all of the measures. For this reason complicated methods are needed (generally speaking). This is why Bayesian methods and hierarchical modeling approaches are coming to vogue in the social sciences.
+
+Anyways, back to IRT.
+
+```{r}
+library(ltm)
+library(mirt)
+library(tidyverse)
+```
+
+I am going to load the `mirt` and `ltm` packages for use here [@mirt], [@ltm]. The primary data set with Science. Here a preview of the data in the dataset of `r nrow(Science)` respondents and `r ncol(Science)` items.
+
+```{r}
+head(Science) %>% knitr::kable()
+```
+
+## Classical Methods
+
+In a clasical methodology we could do some factor analysis and see how many latent variables we have in the items. I'll use the `n_factors` function from the `psycho` package. This function  applies ten different factor methods and then shows how many of the methods support a given number of factors.
+
+```{r}
+library(psycho)
+
+efa <-Science %>% 
+  mutate_if(is.factor, as.numeric) %>% 
+   qgraph::cor_auto(., forcePD = FALSE) %>% 
+  nFactors::nScree(eigen(.)$values)
+
+efa$Analysis
+```
+
+Here the plurality of the methods shows that there is one factor in the items with the plurality of the votes (supported by 8/10 methods).
+
+We could also look at Cronbach's $\alpha$ or tau equivalence reliability. This metric is subject to the number of items and the average item intercorrelation so it can be "cheated" but it is useful to perform.
+
+```{r}
+a<-Science %>% 
+  mutate_if(is.factor, as.numeric) %>% 
+  psych::alpha()
+a$total %>% knitr::kable()
+```
+
+So alpha isn't great. Ideally this value is > 0.7.
+
+## IRT
+
+Now let's go to IRT! For this instance there isn't a **correct** answer per say like on the SAT. That being said a correct answer is viewed as the most difficult item in regard to the latent trait, typically one end of the scale (strong agree or disagree or frequent).
+
+So now using a graded response model:
+
+```{r echo=TRUE}
+lmod <- ltm::grm(Science, IRT.param = FALSE)
+
+summary(lmod)
+```
+
+Equivalently, you can do this in mirt.
+
+```{r}
+
+(mmod <- mirt(Science, 1, verbose=FALSE))
+```
+
+Now we can just look at the items and get a feel for the difficulty.
+
+```{r}
+coef(mmod, simplify=TRUE)$items
+```
+
+Now the really cool thing is to look at the item characteristic curves.
+
+```{r}
+plot(mmod)
+```
+
+And the individual ICCs...
+
+```{r preview=TRUE}
+plot(mmod, type = "trace")
+```
+
+I hope to go into detail soon, but what these plots allow us to see if the individual item difficulty and the items ability to discrinimate a latent trait. This means how well can it separate out the latent factor from each item. And all this to say, once the items have been validated you can easily score the participants for the presence of the latent factor (yahoo!).
+
+```{r echo=TRUE}
+fscores(mmod) %>% 
+  as_data_frame() %>% 
+  rownames_to_column(var = "subject") %>%
+  head() %>% 
+  knitr::kable()
+```
+

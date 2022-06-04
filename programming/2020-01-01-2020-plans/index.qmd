@@ -1,0 +1,47 @@
+---
+title: "2020 Plans"
+description: |
+  A preview of some of the items that I will try to write about in 2020.
+date: 2020-01-01
+categories:
+  - Resolutions
+  - Stan
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+I'm not one for New Year's resolutions, but this post is more about those things that I wish to accomplish in this coming year.
+Someone once told me that you should do a little of whatever you want to do in the coming year on New Year's day (e.g. if you want to read more, read a bit; if you want to draw, sketch a little something). I would like to blog more, so this should start the year off right.
+
+## Blog Posts in the Pipeline
+
+I have a few projects that started in 2019 that I need to complete in 2019. As this blog is dedicated mostly to methods (while [this site]() is dedicated to community based projects), I want to re-start by "Stan a Day" program. Last year I tried to implement some kind of algorithm in [Stan](https://mc-stan.org/), or at least work in Stan directly everyday. I had some success (e.g. [here](https://michaeldewittjr.com/resources/stan_mult_linear_regression.html)), but I would like to pursue this in 2020.
+
+
+### On this site...
+
+I bought a few books that I would like to implement in Stan with some toy data (e.g. [Bayesian Cost-Effectiveness Analysis](http://www.statistica.it/gianluca/book/bcea/) and [The Oxford Handbook of Bayesian Econometrics](https://www.amazon.com/Oxford-Handbook-Bayesian-Econometrics-Handbooks/dp/0199681333/ref=pd_sim_14_3/139-4296261-7243065?_encoding=UTF8&pd_rd_i=0199681333&pd_rd_r=64da1613-ecec-45ef-b822-a9ba15cf5b7a&pd_rd_w=kSrih&pd_rd_wg=Cs0Bz&pf_rd_p=04d27813-a1f2-4e7b-a32b-b5ab374ce3f9&pf_rd_r=H896WMR960QCCQ46MJAZ&psc=1&refRID=H896WMR960QCCQ46MJAZ)). If I can at least generate a few implementations of some of the models in these books, I'll be happy.
+
+Another blog post that has yet to be written is a simulation study on method employed on a paper I read. In this paper they used Lasso regression to select for predictors and then fed them into another model and then repeated this process many times. I have already done some simulation studies on this, but I want to write up the results before I give additional details.
+
+### On NC Triad Research
+
+I started a [community-focused site](https://www.nctriadresearch.com/) in 2019. 
+The idea was to do more community salient analysis on one site, leaving this site as somewhat rambly.
+I think that community focused research and analysis is incredibly powerful, and it would be fun to look at local news and policy with the most advanced analytical tools. 
+Perhaps the analysis can be presented to city council to make local changes, or in the least serve as a resource for others.
+
+I have a few fun blog posts in mind for the site regardless:
+
+* An investigation of the money left on the table from not maximizing Medicaid enrollments. This requires a good bit of data scraping, time series analysis with spatial effects. Regardless of one's opinion of Medicaid^[I'm all for it and I wish North Carolina would expand it.], it is "free" money from the government.
+
+* A post on differences in assessed taxes across the different wards in Winston-Salem. There might be nothing there, but on the other hand, then could be something.
+
+* I've been gathering data for two years on another topic, so until it's posted, I'll keep the last series of blog posts to myself.
+
+Happy 2020 and more to come!

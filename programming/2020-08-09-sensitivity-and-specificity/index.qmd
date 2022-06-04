@@ -1,0 +1,202 @@
+---
+title: "Sensitivity and Specificity"
+description: |
+  Here I explore the implications of different levels of sensitivity and specificity in a Bayesian framework. All of this work is based on Gelman and Carpenter.
+date: 2020-08-09
+categories:
+  - pandemic
+  - bayes
+  - sensitivity
+bibliography: mybib.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+One important concept that is discuss often is the role of sensitivity and specificity in testing.
+Here we are looking at the ability of a given diagnostic test to correctly identify true positives and correctly identify false positives. 
+If you always forget which one is sensitivity and which one is specifity, no worries, I feel like everyone googles it.
+
+There has been a lot written already about this topic, and I certainly won't add anymore than has already been written.
+Regardless, I would like to just do some 
+
+```{r}
+library(rstan)
+library(cmdstanr)
+library(ggplot2)
+theme_set(theme_minimal())
+```
+
+First, I'll start with the model from [Gelman and Carpenter](http://www.stat.columbia.edu/~gelman/research/published/specificity.pdf) and make a few tweaks, and then explore the results.
+
+```{r comment=""}
+writeLines(readLines("seroprevalence.stan"))
+```
+
+I made a slight tweak in that the sensitivity and specificity mean and variance are set by the user rather than estimating them from data.
+Most of the time we don't have data like these in the hospital where we swab someone multiple times and know the ground "truth." This would be the equivalent of reading these testing stats off of the proverbial box.
+
+```{r echo=FALSE}
+set_cmdstan_path("/Users/michael/.cmdstanr/cmdstan-2.24.0-rc1")
+```
+
+We can go ahead and compile our model using `cmdstan_model`. You'll note that I am using the [cmdstanr](https://mc-stan.org/cmdstanr/) package rather than [rstan](https://mc-stan.org/rstan/) for compiling and sampling from Stan.
+This decision is intentional...mainly because I chronically have issues with upgrading rstan on every platform.
+cmstand seeks to ameliorate this by being a thin wrapper to the command line version of stan. It's an easy switch, but there are a few differences.
+
+```{r}
+mod <- cmdstan_model("seroprevalence.stan")
+```
+
+Wake Forest University Baptist Medical Center is doing [a large study for seroprevalence in North Carolina](https://www.wakehealth.edu/Coronavirus/COVID-19-Community-Research-Partnership/Updates-and-Data) so that is a good place to start.
+
+They list 19,057 study participants, but this is a multi-part study where not all the persons receive a test kit to test for antibodies.
+The participants receive a daily questionaire for symptoms and SARS-CoV-2 positive contacts (it doesn't use that language, just Covid-19 but recall that's the disease and not the virus). 
+Let's just assume 25% of the participants receive a test kit. 
+Based on their numbers 9% on average (8-10%) have tested positive.
+This is somewhat inline with existing seroprevalence studies [@stringhini_repeated_2020; @pollan_prevalence_2020; @havers_seroprevalence_2020].
+
+## Running Through Scenarios
+
+So I looked up the [sensitivity and specificity for the antibody test being used in this study (Scanwell)](https://www.centerforhealthsecurity.org/resources/COVID-19/serology/Serology-based-tests-for-COVID-19.html) and plugged in those initial values.^[Note that there was another study that found in a clinical setting the results were worse, but that's why we have simulations.]
+
+```{r}
+postitives <- 19057*.09*.25
+n <- as.integer(19057*.25)
+
+dat_medium_sensi <- list(
+	y_sample = as.integer(postitives),
+	n_sample = n,
+	sensitivity = .863,
+	specificity = .999,
+	sensitivity_sd = .01,
+	specificity_sd= .01
+)
+
+fit_medium_sensi <- mod$sample(data = dat_medium_sensi,chains = 2,
+                  iter_warmup = 500, refresh = 0,
+                  iter_sampling = 1000, 
+                  adapt_delta = .95)
+
+
+```
+
+So let's see where this gives us:
+
+```{r}
+knitr::kable(fit_medium_sensi$summary("p")[,c("mean", "q5", "q95")], digits = 3)
+```
+
+```{r}
+bayesplot::mcmc_hist(fit_medium_sensi$draws("p"))+
+  labs(
+    title = "Posterior Draws for P",
+    subtitle = "Seroprevalence"
+  )+
+  geom_vline(xintercept = .09, lty = "dashed", colour = "red")
+```
+
+Which puts us right in the error range that Wake reported. That's good.
+
+Now let's test to see what happens if we losen the test.
+Let's say that the sensivity is lower...closer to 65% which some reason (could be that many people have below antibody titers below the lower detection threshold. This means that there would be false negative).
+
+```{r}
+dat_low_sensi <- list(
+	y_sample = as.integer(postitives),
+	n_sample = n,
+	sensitivity = .65,
+	specificity = .999,
+	sensitivity_sd = .05,
+	specificity_sd= .01
+)
+
+fit_low_sensi <- mod$sample(data = dat_low_sensi,chains = 2,
+                  iter_warmup = 500, refresh = 0,
+                  iter_sampling = 1000, 
+                  adapt_delta = .95)
+```
+
+Now we can look at the results:
+
+```{r}
+knitr::kable(fit_low_sensi$summary("p")[,c("mean", "q5", "q95")], digits = 3)
+```
+
+
+
+
+Yikes! Here we see that we could be under-estimating prevalence.
+
+```{r}
+bayesplot::mcmc_hist(fit_low_sensi$draws("p"))+
+  labs(
+    title = "Posterior Draws for P",
+    subtitle = "Seroprevalence"
+  )+
+  geom_vline(xintercept = .09, lty = "dashed", colour = "red")
+```
+
+Now maybe another scenario, is that the sensitivity is the same as the "box" value, but there is some additional noise from testing error.
+
+```{r}
+dat_medi_low_sensi <- list(
+	y_sample = as.integer(postitives),
+	n_sample = n,
+	sensitivity = .85,
+	specificity = .999,
+	sensitivity_sd = .05,
+	specificity_sd= .01
+)
+
+fit_medi_low_sensi <- mod$sample(data = dat_medi_low_sensi,
+                            chains = 2,
+                  iter_warmup = 500, refresh = 0,
+                  iter_sampling = 1000, 
+                  adapt_delta = .95)
+```
+
+```{r}
+bayesplot::mcmc_hist(fit_medi_low_sensi$draws("p"))+
+  labs(
+    title = "Posterior Draws for P",
+    subtitle = "Seroprevalence"
+  )+
+  geom_vline(xintercept = .09, lty = "dashed", colour = "red")
+```
+
+We could still be missing some folks. 
+
+## Specificity?
+
+Just for completeness, it is worth looking at what happens if specificity degrades.
+This is generally unlikely in many of these tests (especially the case in PCR tests where if there is viral RNA present, it will grow..e.g. if you have a positive tests you are positive).
+
+```{r}
+dat_low_spec <- list(
+	y_sample = as.integer(postitives),
+	n_sample = n,
+	sensitivity = .85,
+	specificity = .90,
+	sensitivity_sd = .05,
+	specificity_sd= .01
+)
+
+fit_low_spec <- mod$sample(data = dat_low_spec,
+                            chains = 2,
+                  iter_warmup = 500, refresh = 0,
+                  iter_sampling = 1000, 
+                  adapt_delta = .95)
+```
+
+```{r}
+bayesplot::mcmc_hist(fit_low_spec$draws("p"))+
+  labs(
+    title = "Posterior Draws for P",
+    subtitle = "Seroprevalence"
+  )+
+  geom_vline(xintercept = .09, lty = "dashed", colour = "red")
+```
+
+Yikes! This shows the importance of having high specificity!!! 

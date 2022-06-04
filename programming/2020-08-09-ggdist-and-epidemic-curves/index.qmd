@@ -1,0 +1,100 @@
+---
+title: "ggdist and Epidemic Curves"
+description: |
+  This post explores using tools to summarise curves rather than fixed time summary methods. This includes using odin and ggdist to explore the risk of underestimating epidemic curves.
+date: 2020-08-09
+bibliography: mybib.bib
+categories:
+  - pandemic
+  - scenarios
+  - curve statistics
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(ggdist)
+library(odin)
+theme_set(theme_minimal())
+```
+
+This little post is based on a recent paper by @juul_fixed_time_2020.
+For infectious disease modelling we are often running many scenarios through the models. 
+Why? Because there are many parameters to estimate, but very few things that we actually observe (cases by day or _incidence_) so in some sense our models all suffer from identifiability issues.
+Additionally, many of the parameters that we do measure have some uncertainty around them. 
+For this reason it is very common to run models with different parameters estimates or distributions in order to understand a range of possible values. 
+A simple way to summarise these models is through point-wise quantiles through time.
+The genius of Juul's paper is that this can underestimate many outcomes because it might pick up the beginning of one epidemic curve and miss the peak.
+
+Enter curve estimates. These measures actually look at the curves proper through the trajectory rather than at discrete time points. Here we can rank the entire curve and capture the contribution of the curve rather than the point-wise estimate.
+
+To see this let's run a simple example from the odin package [@odin]. Additionally, the amazing ggdist [@ggdist] provides an easy way to summarise curves.
+
+```{r comment=""}
+sir_model <- system.file("examples/discrete_stochastic_sir_arrays.R", package = "odin")
+
+writeLines(readLines(sir_model))
+
+```
+
+```{r}
+x <- odin(sir_model)
+
+fit <- x()
+
+sampz <- as.data.frame(fit$run(step = 100))
+```
+
+Now that we have values, a simple analysis would look like the following:
+
+```{r}
+val_long <- sampz %>% 
+  select(step, contains("I")) %>% 
+  tidyr::gather(key, value, -step) %>% 
+  mutate(.draw = readr::parse_number(stringr::str_extract(key,"\\d+")))
+
+sumz_point <- val_long %>% 
+  group_by(step) %>% 
+  summarise(q05 = quantile(value, probs = .05),
+            q95 = quantile(value, probs = .95))
+
+val_long %>% 
+  ggplot(aes(step, y = value, group = .draw))+
+  geom_line(alpha = .2)+
+  geom_ribbon(data = sumz_point, 
+              aes(x = step, ymin = q05, ymax = q95), 
+              inherit.aes = FALSE, fill = "orange", alpha =.2)+
+  labs(
+    title = "Simulated SIR Curve for Infections"
+  )
+```
+
+If we take the curve distribution approach we can see the following
+
+```{r}
+p <- val_long %>% 
+  group_by(step) %>%
+  curve_interval(value, .width = c(.5, .8, .95)) %>%
+  ggplot(aes(x = step, y = value)) +
+  geom_hline(yintercept = 1, color = "gray75", linetype = "dashed") +
+  geom_lineribbon(aes(ymin = .lower, ymax = .upper)) +
+  scale_fill_brewer() +
+  labs(
+    title = "Simulated SIR Curve for Infections"
+  )
+
+p
+```
+
+Now when we lay these ontop of one another, we see the issue with using the time interval method:
+
+```{r}
+p+
+  geom_ribbon(data = sumz_point, 
+              aes(x = step, ymin = q05, ymax = q95), 
+              inherit.aes = FALSE, fill = "orange", alpha =.5)
+```
+
+We see that using the fixed time method we underestimate the peak much of the time! This is very dangerous and important when setting policy and establishing needs.
+

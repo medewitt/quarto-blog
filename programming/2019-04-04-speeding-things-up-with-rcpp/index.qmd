@@ -1,0 +1,204 @@
+---
+title: "Speeding Things Up with Rcpp"
+description: |
+  Metropolis Hasting samplers are typically slow in R because of inability to parallelise or vectorise operations. The Rcpp package allows a way to use C++ to conduct these MCMC operations at a much greater speed. This post explores how one would do this, achieving a >20x speed up.
+categories:
+  - Rcpp
+  - Bayes
+date: 2019-04-04
+---
+
+
+## Introduction
+
+I worked on something that started in R and then I wanted to speed it up. MCMC is generally a slow process in base R because it can't be parallelised easily as each state depends on the previous state. `Rcpp` is a wonderful avenue to speed things up.
+
+## The problem
+
+The purpose of this exercise is to build a Metropolis-Hastings sampler in R. The goal is to return the posterior mean of $\theta$ given a vector of values, a likelihood function, and a prior distribution.
+
+## Data Generating Process
+
+As always we hypothesise a likelihood function and then a prior. 
+
+### Likelihood
+
+$$f(x_i,...,x_n|\theta)=\frac{1}{\pi^n(1+\Pi_{i=1}^n(x_i-\theta)^2)} \ for \  -\infty<x<\infty$$
+
+### Prior Distribution
+
+$$p(\theta)=\frac{1}{\sqrt{2\pi}}exp(-\theta^2/2)$$
+
+
+## Input Values
+
+We have been provided the following draws from the distribution:
+
+```{r data, echo=TRUE}
+x <- c(1.0, -3.4, 2.8, -0.5, 4.7, -1.9, 0.8, 3.2, -5.2, -0.9)
+```
+
+
+### M-H Sampler
+
+Now to build the Metropolis Hastings sampler we build the corresponding R functions.
+
+```{r prior-function, echo=TRUE}
+prior <- function(theta){
+  1/sqrt(2*pi)*exp(-theta^2/2)
+}
+```
+
+And an associated check to make sure it is providing logical values:
+
+```{r prior-test, echo=TRUE}
+(test_prior <- prior(theta = .1))
+```
+
+Then we build the likelihood function. In order to prevent integer underflow I have converted the function to log-likelihood. I then exponentiate the final value. The log-likelihood is then describved as 
+
+$$l(x_i,...x_n|\theta) = log(1) - (n\log(pi)+\Sigma_{i=1}^nlog(1+(x_i-\theta)^2))$$
+
+The value from the log-likelihood can then be exponentiated in order to arrive at the likelihood.
+
+```{r likelihood-function, echo=TRUE}
+likelihood <- function(x, theta){
+  if(!is.vector(x)){
+    stop("Please supply a vector to this function")
+  }
+  # Log-likelihood
+  a <- log(1)-(length(x)*log(pi) + sum(log(1+(x-theta)^2)))
+  
+  # Convert to likelihood
+  exp(a)
+
+}
+```
+
+And finally we build the sampler.
+
+```{r sampler, echo=TRUE}
+
+theta_sampler <- function(x, niter, theta_start_val, theta_proposal_sd){
+  
+  theta <- rep(0, niter)
+  theta[1] <- theta_start_val
+  
+  for(i in 2:niter){
+    current_theta <- theta[i-1]
+    
+    # Random Step
+    new_theta <- current_theta + rnorm(1,0, theta_proposal_sd)
+    
+    # MH Ratio
+    r <- prior(theta = new_theta) * likelihood(theta = new_theta, x = x)/
+      (prior(theta = current_theta)* likelihood(theta = current_theta, x = x))
+    
+    # Decide to keep proposed theta or take a step
+    if(runif(1)<r){
+      theta[i] <- new_theta
+    } else{
+      theta[i] <- current_theta
+    }
+  }
+  return(theta)
+}
+
+```
+
+
+We can then sample from the posterior distribution given the initial values and our data.
+
+```{r, echo=TRUE}
+set.seed(336)
+out <- theta_sampler(x = x, niter = 5000, theta_start_val = 0, theta_proposal_sd = .5)
+```
+
+We can then graph our associated draws.
+
+```{r, echo=TRUE}
+hist(out[1000:5000], 
+     main = "Histogram of Posterior Draws of theta", 
+     xlab = expression(Posterior~Value~of~theta),
+     breaks = 30)
+abline(v = mean(out[1000:5000]), col = "red", lwd = 2)
+```
+
+The posterior mean of $\theta$ is:
+
+```{r echo=TRUE}
+mean(out)
+```
+
+
+## C++ Version
+
+This is just an experiment to see if I can make the program a little faster using Rcpp.
+
+### C++ Code
+
+This code is nearly identical to the R code, just utilising C++. Astute readers will see that I really could drop some of the constants in the prior and the likelihood function because they will fall out when calculating the MH ratio, _r_. Additionally, it is worth noting that I have converted the equations to a log scale to avoid computations on very small numbers. 
+
+```{r cpp, comment=""}
+writeLines(readLines("mh_sampler.cpp"))
+```
+
+### Compilation and Testing
+
+Now we need to compile the functions.
+
+```{r compile, echo=TRUE}
+library(Rcpp)
+Rcpp::sourceCpp("mh_sampler.cpp")
+```
+
+First we meed to test that the prior and likelihood functions return equivalent values between base R and C++.
+
+```{r, echo=TRUE}
+all.equal(
+prior(theta = .1),
+Priorcpp(theta = .1)
+)
+```
+
+So Priors are returning the same values.
+
+```{r, echo=TRUE}
+all.equal(
+likelihood(x = x, .1),
+Likelihoodcpp(x = x, theta = .1)
+)
+```
+
+The likelihoods are returning the samples values. Now we have confidence that our C++ function is returning the same values.
+
+### Inference using C++
+
+Now we can go ahead and draw from the posterior distribution using our sampler.
+
+```{r, echo=TRUE}
+set.seed(336)
+out2 <- make_posterior(x = x, niter = 5000, theta_start_val = 0, 
+                       theta_proposal_sd = .5)
+
+hist(out2[1000:5000],
+     main = "Histogram of Posterior Draws of theta", 
+     xlab = expression(Posterior~Value~of~theta),
+     breaks = 30)
+abline(v = mean(out2[1000:5000]), col = "red", lwd =2)
+
+```
+
+The mean value, `r round(mean(out2[1000:5000]),3)` is very similar to the base R version (some differences could be some differences in the random number generators used). However, we we compare the benchmark times we see that the C++ version of the sampler is roughly 20x faster. 
+
+## Benchmarking Performance
+
+
+```{r, echo=TRUE}
+microbenchmark::microbenchmark(
+  Rcpp = make_posterior(x = x, niter = 5000, 
+                        theta_start_val = 0, theta_proposal_sd = .5),
+  base= theta_sampler(x = x, niter = 5000, 
+                      theta_start_val = 0, theta_proposal_sd = .5))
+```
+

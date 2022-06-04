@@ -1,0 +1,152 @@
+---
+title: "Defining a Project Workflow"
+description: |
+  Having a defined project workflow is important for many reasons. Consistency of design allows for easier sharing (you or other collaborators  don't have to look for things) and reduces some cognitive load by allowing you to focus on content and less on form. This is my lightly opinionated project structure. Of course these fews are ever evolving.
+categories:
+  - Tooling
+  - GPP
+  - Workflow
+date: 2019-06-10
+---
+
+
+```{r tree}
+library(data.tree)
+acme <- Node$new(name = "data analysis project")
+  data <- acme$AddChild("data")
+  data_raw <- acme$AddChild("data-raw")
+  libs <- acme$AddChild("libs")
+  munge <- acme$AddChild("munge")
+  src <- acme$AddChild("src")
+  output <- acme$AddChild("outputs")
+  reports <- acme$AddChild("reports")
+  readme <- acme$AddChild("README.Rmd")
+  makefile <- acme$AddChild("makefile")
+  rproject <- acme$AddChild("project.Rproj")
+  
+```
+
+## A motivating example
+
+A consistent workflow is very powerful for several key reasons:^[I have detailed these further in my [slides](https://github.com/medewitt/introduction_to_r//blob/master/gpp/gpp.pdf) on Good Programming Practices, but it cannot be understated how powerful having a consistent project template or approach is.]
+
+- Removes the mental burden of structuring a project  
+- Makes sharing easier by establishing a common understanding of what does what and definitions (e.g. certain files and certain directories always do certain things)  
+- Makes project hand-offs easier (e.g. no one stays in the same job forever, so it is nice when things can transition between owners easier) 
+
+## The Set Up
+
+I typically try to create a basic structure for each project. The basic structure takes the form of the following directory tree:
+
+```{r basic-tree, comment=""}
+print(acme)
+```
+
+The next logical questions is what is going on in each of these different directories.
+
+### data/ data-raw
+
+All analysis projects start with data. Well technically they start with a research question, but the data really are what allow any kind of analysis to continue. In these two folders I will put the raw data (e.g. the data received from someone, or from a data source, scraped from the web, etc). These primary sources will typically go into the the `data-raw` folder. Any data where manipulations have been done will go into the `data` folder. These are typically the outputs from the `munge` operations which will be discussed earlier. I used to be more tyrannical and would only put raw data in the `data` folder, but I have come to realise that it is nice to have a folder for pure raw data and a folder for the munged data.
+
+### libs
+
+This is a folder for the project specific helper functions that you find yourself developing for a project. Perhaps you need a little helper function to clean up information from a website or something for some weird regular expression challenge--here's where they go.
+
+### munge
+
+Munging is as it sounds, where the code you write to ingest and digest the data lies. I typically will number the the files for each step of the operation such that it looks like:
+
+```
+|-munge
+|--01-import.R
+|--02-clean.R
+|--03-matching.R
+```
+Or something to this effect. Regardless files `01` and `02` are nearly always present and named as above. Breaking the munging operation into steps also helps with the debugging processes.
+
+### src
+
+Our source files are really the analysis files that we run. I try to name these as descriptive as possible with the first section indicating what my output is, the second a number for the order of operations I want it processed, and then something descriptive. For example if I were generating some summary crosstabs, a few figures,and some regressions it might look like the following:
+
+```
+|-src
+|--figs-1-summary_choices.R
+|--reg-1-salary_vs_voting.R
+|--reg-2-education_vs_income.R
+|--xtabs-1-overall_participation.R
+|--xtabs-2-part_by_demogs.R
+```
+
+Of course this changes by the need, but at least this is my general naming convention.
+
+### outputs
+
+This is the folder where outputted figures, fitted models, and summary tables generated during the analysis goes. Ideally anything in this folder could be deleted and could be reproduced from the code found in the above folders.
+
+### reports
+
+This one is relatively self explanatory--the final report or series of summary reports goes in this folder. Ideally everything is an `Rmd`. Here you will also often find a `my_bib.bib` file which contains the `bibtex` citations for the bibliography. Also of note that for single summary documents I prefer the `bookdown::pdf_document2` engine rather than the standard `rmarkdown::pdf_document` because the former supports all of the great features available in `bookdown` including chunk references a la `\@ref(tab:my-tab-name)`.
+
+### readme's
+
+Readme files are incredibly important. They provide the ability to provide long-form comments about the project, about the data sets, about the context of the analysis etc. Anything too long to belong in a comment should be in a readme. Additionally, this is a note to orient others new to the project to your work. Decisions you made about your approach or analysis can be included in here. At a minimum, include one file in the root directory that describes what the origin of the request was, where the data came from, the primary research question, and the overall approach of the project. As needed add readmes to the `data-raw` folder and others where needed.
+
+### makefile
+
+This is one of the most important files in a project and I honestly have not been using it for long. Makefiles have been around a long time, and as all good things do, it came out of Bell Labs.^[See <https://www.gnu.org/software/make/> for more details about the program and the associated wikipedia page at <https://en.wikipedia.org/wiki/Makefile> for details about its origin] With the makefile you can set a series of targets that allows you to build your entire project with a single command `make`. Similarly as things change `make` will look for target items ("targets") or items that depend on earlier items. If an upstream item changes, all downstream dependencies will be run on the `make` command. Make can do a ton more, such as clean up all outputs files and allow you to re-run the entire project. It also can run shell commands as specified. Just a generally powerful language. My standard makefile looks like that below:^[Inspired by Rob Hyndman at <https://robjhyndman.com/hyndsight/makefiles/>]
+
+```
+# Usually, only these lines need changing
+RDIR= .
+MUNGEDIR= ./munge
+SRCDIR= ./src
+REPORTDIR= ./report
+
+# List files for dependencies
+MUNGE_RFILES := $(wildcard $(MUNGEDIR)/*.R)
+SRC_RFILES := $(wildcard $(SRCDIR)/*.R)
+REPORT_RFILES := $(wildcard $(REPORTDIR)/*.Rmd)
+
+# Indicator files to show R file has run
+MUNGE_OUT_FILES:= $(MUNGE_RFILES:.R=.Rout)
+SRC_OUT_FILES:= $(SRC_RFILES:.R=.Rout)
+REPORT_OUT_FILES:= $(REPORT_RFILES:.R=.pdf)
+
+# Run everything
+all: $(SRC_OUT_FILES) $(MUNGE_OUT_FILES)
+
+# Run Munging Operation
+$(MUNGEDIR)/%.Rout: $(MUNGEDIR)/%.R
+	@echo starting muninging
+	 R CMD BATCH --vanilla $<
+	 @echo finished munging
+
+# Run Analysis Operation
+$(SRCDIR)/%.Rout: $(SRCDIR)/%.R
+	@echo starting analysis
+	 R CMD BATCH --vanilla $<
+
+# Compile Report
+$(REPORTDIR)/%.pdf: $(REPORTDIR)/%.Rmd
+	@echo compiling report
+	 Rscript -e "rmarkdown::render('$<')"
+
+# Clean up
+clean:
+	rm -fv $(MUNGE_OUT_FILES)
+	rm -fv $(SRC_OUT_FILES)
+	rm -fv $(REPORT_OUT_FILES)
+
+.PHONY: all clean
+
+```
+
+Of course, this is a general approach, but this is my every evolving attempt to document my approach.
+
+## Alternative Approachs
+
+Just to mention a few alternative approachs:
+
+* [ProjectTemplate](http://projecttemplate.net/) which in many ways inspired my own view on templating projects  
+
+* [rrtools](https://github.com/benmarwick/rrtools) which structures analysis projects in the form of an R project. It offers some nice components regarding use of continuous integration and allows the default components of R to ensure dependencies are loaded. I might try to integrate this into my own work at some point for these features.

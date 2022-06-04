@@ -1,0 +1,303 @@
+---
+title: "Time to Vaccinate"
+description: |
+  Using Bayesian Structural Times Series to estimate when some North Carolina counties will be vaccinated to a sufficient number.
+image: notbad.gif
+date: 2021-05-07
+categories: [bayes, time series, public health, Covid-19]
+---
+
+
+This post is completely inspired by [@mjskay](https://twitter.com/mjskay) 's very interesting [analysis/ critique](https://github.com/mjskay/vax) of a [New York Times linear extrapolation](https://www.nytimes.com/interactive/2020/us/covid-19-vaccine-doses.html) of when the United States would reach the critical proportion for vaccination.
+The New York Times has made some amazing graphics during the pandemic, but their analyses have been pretty spotty.
+Between this linear extrapolation of vaccination rates and their SIRs for third and fourth waves, they really need to put some additional thought into the more math heavy type work.
+
+::: {.column-margin}
+I try to avoid the whole "herd immunity" lingo. In Anderson and May, the refer to the "critical proportion" at which herd immunity protection effects kick in. I like this formulation a bit better.
+:::
+
+Matt uses Bayesian Structural Time Series implemented in the `bsts` package(which I really like) in order to make a more nuanced analysis.
+Additionally, because we know that the percent vaccinated is monotonically increasing and bounded between 0 and 1, we can make some transforms to our data.
+
+## North Carolina
+
+I along with some work colleauges have been maintaining a package called `nccovid` (available at `remotes::install_github("conedatascience/nccovid)`) which allows for ready access to North Carolina COVID-19 related data.
+**This does not represent the views of my employer.**
+
+## Data Prep
+
+First I am going to pull in the needed packages:
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(ggdist)
+library(tidybayes)
+library(bsts)
+library(patchwork)
+library(tidyverse)
+library(posterior)
+theme_set(theme_ggdist())
+```
+
+And now we can pull in the North Carolina data:
+
+```{r}
+dat <- nccovid::get_vaccinations()
+
+nc_oa <- dat[,.(people_partial_vax = sum(people_partial_vax, na.rm = TRUE),
+                                         population = sum(population, na.rm = TRUE)), by = "date"] %>% 
+  .[,vax:=people_partial_vax/population] %>% 
+  .[order(date)]
+```
+
+It's good to plot these data just to make sure they "feel" right.
+
+```{r fig.cap='Running Percentage Vaccinated'}
+nc_oa %>% 
+  ggplot(aes(date, vax))+
+  geom_line()+
+  labs(
+    title = "Cumulative Percent of North Carolinians Vaccinated",
+    caption = "Data: North Carolina Department of Health and Human Services\nAnalysis: @medewittjr",
+    y = "Percent Vaccinated"
+  )+
+  scale_y_continuous(labels = scales::percent)+
+  geom_smooth(method = "lm", color = "red",alpha = .1, lty = "dashed")
+```
+
+So we can see that linear fit for North Carolina likely isn't valid, at least not in the last few weeks.
+Regardless, we have out data for the next steps of the analysis.
+
+## Data Transformation
+
+As I mentioned earlier and a critical point of this analysis is that we know a few things about vaccinations.
+Firstly, vaccinations are non-reversible and are thus monotonically increasing (e.g., they can only increase).
+Additionally, depending on the definition you take, the percentage of the population vaccinated with a first dose is bound between 0 and 1.
+
+::: {.column-margin}
+It's a bit of a joke. I suppose someone could have multiple first doses if you change the definition to the manufacturer of the vaccine.
+:::
+
+With these features in mind, we can use a logit transform on our vaccinations and then fit that on our data.
+
+```{r}
+nc_log_diff <- nc_oa %>%
+  group_by(people_partial_vax) %>% 
+  mutate(id = row_number()) %>% 
+  filter(id == min(id)) %>% 
+  dplyr::select(-id) %>% 
+  ungroup() %>% 
+  mutate(log_diff_vax = c(NA, log(diff(qlogis(vax))))) %>%
+  slice(-1)
+```
+
+
+Now we can fit the model using the priors that Matt used.
+
+```{r}
+fit = with(nc_log_diff, bsts(log_diff_vax, 
+  state.specification = list() %>%
+    AddSemilocalLinearTrend(log_diff_vax,
+      level.sigma.prior = SdPrior(0.5, 1),
+      slope.mean.prior = NormalPrior(0,0.5),
+      initial.level.prior = NormalPrior(0,0.5),
+      initial.slope.prior = NormalPrior(0,0.5),
+      slope.sigma.prior = SdPrior(0.5, 1),
+      slope.ar1.prior = Ar1CoefficientPrior(0, 0.5)
+    ) %>%
+    AddSeasonal(log_diff_vax, 7, 
+      sigma.prior = SdPrior(0.5, 1)
+    ),
+  prior = SdPrior(0.5, 1),
+  niter = 40000,
+  seed = 336 
+))
+```
+
+Diagnostics (that I did not know could be leveraged from posterior. just a really great package).
+
+```{r}
+draws <- as_draws(do.call(cbind, fit[startsWith(names(fit), "trend") | startsWith(names(fit), "sigma")]))
+summary(draws, median, mad, quantile2, default_convergence_measures()) %>% 
+  knitr::kable(digits = 3)
+```
+
+All of the Gelman-Rubin statistics look good as well as the effective sample sizes, so I'm happy with what I see.
+However, it is always good to visualize the outputs as well:
+
+
+```{r}
+bayesplot::mcmc_trace(draws)
+```
+
+Trace plots look pretty good as well.
+
+## Predictions
+
+Now we can predict out with our model for 180 days.
+
+```{r}
+forecast_days <- 180
+
+fits <- nc_log_diff %>%
+  add_draws(colSums(aperm(fit$state.contributions, c(2, 1, 3))))
+
+predictions <- nc_log_diff %$%
+  tibble(date = max(date) + days(1:forecast_days)) %>%
+  add_draws(predict(fit, horizon = forecast_days)$distribution, value = "log_diff_vax")
+```
+
+Now we need to convert our predictions back into percentages:
+
+```{r}
+pred_vax = predictions %>%
+  group_by(.draw) %>%
+  mutate(
+    vax = plogis(cumsum(c(
+      qlogis(tail(nc_log_diff$vax, 1)) + exp(log_diff_vax[[1]]),
+      exp(log_diff_vax[-1])
+    )))
+  )
+```
+
+## Results
+
+Now we can visualize the outputs.
+We see that there is a high degree of uncertainty regarding what proportion of the population will likely be vaccinated in the coming 180 days.
+
+```{r}
+widths = c(.5, .8, .95)
+pred_vax %>%
+  ggplot(aes(date, vax)) +
+  stat_lineribbon(.width = widths, color = "#08519c") +
+  scale_fill_brewer()+
+  geom_line(data = nc_oa, size = 1)+
+  labs(
+    title = "Percent vaccinated (at least partially vaccinated)",
+    subtitle = "For the State of North Carolina",
+    y = NULL,
+    x = NULL
+  )+
+  scale_y_continuous(limits = c(0,1), labels = scales::percent_format())
+
+```
+
+The next big question is what will be our likely vaccine coverage.
+If we want to target 80% of the population vaccinated, which is aggressive, but needed if $R0$ of SARS-CoV-2 is close to 4-4.5 and the vaccine effectiveness is between 90-95%. 
+
+```{r}
+prob <- pred_vax %>%
+  group_by(date) %>%
+  summarise(prob_vax_gt_x = mean(vax > .80)) %>%
+  ggplot(aes(date, prob_vax_gt_x)) +
+  geom_line(color = "#08519c", size = 1) +
+  theme_ggdist() +
+  geom_hline(yintercept = 0.5, alpha = 0.25) +
+  scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
+  labs(
+    subtitle = "Pr(Percent vaccinated > 80%)",
+    y = NULL,
+    x = NULL
+  )
+
+prob
+```
+
+Sadly, it looks like that is a low probability outcome.
+
+## What about a county?
+
+Just for fun I want to run through a single North Carolina County and see if there is any difference.
+
+```{r}
+# Oddly one day showed a decrease...government records....
+forsyth_log_diff <- dat[county=="Forsyth",c("county", 
+                                            "people_partial_vax",
+                                            "population",
+                                            "date")] %>%
+  .[,vax:=people_partial_vax/population] %>% 
+  group_by(people_partial_vax) %>% 
+  mutate(id = row_number()) %>% 
+  filter(id == min(id)) %>% 
+  dplyr::select(-id) %>% 
+  ungroup() %>% 
+  mutate(log_diff_vax = c(NA, log(diff(qlogis(vax))))) %>%
+  filter(!is.na(log_diff_vax)) %>% 
+  slice(-1)
+
+fit = with(forsyth_log_diff, bsts(log_diff_vax, 
+  state.specification = list() %>%
+    AddSemilocalLinearTrend(log_diff_vax,
+      level.sigma.prior = SdPrior(0.5, 1),
+      slope.mean.prior = NormalPrior(0,0.5),
+      initial.level.prior = NormalPrior(0,0.5),
+      initial.slope.prior = NormalPrior(0,0.5),
+      slope.sigma.prior = SdPrior(0.5, 1),
+      slope.ar1.prior = Ar1CoefficientPrior(0, 0.5)
+    ) %>%
+    AddSeasonal(log_diff_vax, 7, 
+      sigma.prior = SdPrior(0.5, 1)
+    ),
+  prior = SdPrior(0.5, 1),
+  niter = 40000,
+  seed = 336 
+))
+
+fits <- forsyth_log_diff %>%
+  add_draws(colSums(aperm(fit$state.contributions, c(2, 1, 3))))
+
+predictions <- forsyth_log_diff %$%
+  tibble(date = max(date) + days(1:forecast_days)) %>%
+  add_draws(predict(fit, horizon = forecast_days)$distribution, value = "log_diff_vax")
+
+pred_vax = predictions %>%
+  group_by(.draw) %>%
+  mutate(
+    vax = plogis(cumsum(c(
+      qlogis(tail(forsyth_log_diff$vax, 1)) + exp(log_diff_vax[[1]]),
+      exp(log_diff_vax[-1])
+    )))
+  )
+```
+
+```{r}
+pred_vax %>%
+  ggplot(aes(date, vax)) +
+  stat_lineribbon(.width = widths, color = "#08519c") +
+  scale_fill_brewer()+
+  geom_line(data = forsyth_log_diff, size = 1)+
+  labs(
+    title = "Percent vaccinated (at least partially vaccinated)",
+    subtitle = "For the Forsth County, North Carolina",
+    y = NULL,
+    x = NULL
+  )+
+  scale_y_continuous(limits = c(0,1), labels = scales::percent_format())
+```
+
+```{r}
+pred_vax %>%
+  group_by(date) %>%
+  summarise(prob_vax_gt_x = mean(vax > .80)) %>%
+  ggplot(aes(date, prob_vax_gt_x)) +
+  geom_line(color = "#08519c", size = 1) +
+  theme_ggdist() +
+  geom_hline(yintercept = 0.5, alpha = 0.25) +
+  scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
+  labs(
+    title = "Pr(Percent vaccinated > 80%)",
+    subtitle = "For Forsyth County, North Carolina",
+    y = NULL,
+    x = NULL
+  )
+```
+
+Hmm, not too much better
+
+```{r}
+
+knitr::include_graphics("notbad.gif")
+
+```
+

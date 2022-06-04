@@ -1,0 +1,36 @@
+---
+title: "Latex in ggplot2"
+description: |
+  This is a quick overview of a trick to add LaTex in ggplot2.
+categories:
+  - ggplot2
+  - data visualisation
+  - r
+date: 2019-04-03
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# ggplot2 latex trick
+
+This is a useful package to use latex notation in {`ggplot2`}. I saw this on twitter and wish I had written down the originator for proper citation but I forgot at the time. 
+
+```{r}
+library(tidyverse)
+library(latex2exp)
+
+example_data <-tibble(ability = seq(-3,3, .1)) %>% 
+  mutate(result = plogis(ability*2))
+
+example_data %>% 
+  ggplot(aes(ability, result))+
+  geom_line()+
+  labs(
+    x = TeX("$ability(\\theta)$")
+  )+
+  theme_bw()
+plogis(3)
+exp(3)/(1+exp(3))
+```

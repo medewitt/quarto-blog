@@ -1,0 +1,58 @@
+---
+title: "Analysis of Short Time Series"
+description: |
+  Using Fourier Transform as coefficients in short time series data helps with prediction.
+author:
+  - name: Michael DeWitt
+    url: https://michaeldewittjr.com
+categories:
+  - time series
+  - r
+  - forecasting
+date: 2018-07-19
+---
+
+
+I enjoy reading Rob Hyndman's blog. The other day he did some analysis of a short times series. More about that is available at his blog [here](https://robjhyndman.com/hyndsight/tslm-decomposition/). The neat thing that he shows is that you don't need a tremendous amount of data to decompose seasonality. Using fourier transforms^[Read more about Fourier series and transforms on [wikipedia](https://en.wikipedia.org/wiki/Fourier_transform). They are in my opinion a modern marvel of mathematics].
+
+He sets up a small data set:
+
+```{r}
+df <- ts(c(2735.869,2857.105,2725.971,2734.809,2761.314,2828.224,2830.284,
+  2758.149,2774.943,2782.801,2861.970,2878.688,3049.229,3029.340,3099.041,
+  3071.151,3075.576,3146.372,3005.671,3149.381), start=c(2016,8), frequency=12)
+```
+
+Which only has 20 months of data in it. He then applies a time series linear model with 2 sine/ cosine pair terms.
+
+```{r}
+library(forecast)
+library(ggplot2)
+decompose_df <- tslm(df ~ trend + fourier(df, 2))
+```
+
+We can see the coefficients of the model here:
+
+```{r}
+summary(decompose_df)
+```
+
+From there tou can see the trends for each of the components.
+
+```{r}
+trend <- coef(decompose_df)[1] + coef(decompose_df)['trend']*seq_along(df)
+components <- cbind(
+  data = df,
+  trend = trend,
+  season = df - trend - residuals(decompose_df),
+  remainder = residuals(decompose_df)
+)
+autoplot(components, facet=TRUE)
+```
+
+
+```{r}
+out <-forecast(decompose_df, newdata = df)
+autoplot(out)
+```
+

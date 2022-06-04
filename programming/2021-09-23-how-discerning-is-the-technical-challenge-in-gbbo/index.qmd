@@ -1,0 +1,265 @@
+---
+title: "How Discerning is the Technical Challenge in GBBO?"
+description: |
+  Are the technical challenges which are judged blindly good indcators of if a baker will win overall?
+date: 2021-09-23
+categories: [IRT, baking]
+---
+
+
+My wife and I love to watch the Great British Bake Off on Netflix. 
+The competition is for the most part collegial in general and all around feel good television, especially at night.
+After watching several seasons of the show, a lingering question came to mind: how good are the judges at estimating talent?
+
+The format of the show is composed of three rounds; the first and third rounds have themes/genre of baked good that the contestants knew about in advance and could decide (and practice) what they wanted to make. 
+The second/middle round is composed of a "technical" challenge where the bakers have all given the same ingrediants and instructions and asked to make something of which they had no prior knowledge.
+Unlike the other rounds, the judges judge each bake blindly in the technical (and of course the contestants make the same dish).
+
+## Enter the Pyschometrics
+
+This set-up is perfect for understanding how well the judges can estimate "ability" to use a psychometric term.
+Because we have contestants facing the same exact challenge and being judged blindly, we can use pyschometric tools to judge the "ability" of the baker and the "difficulty" of the challenge.
+There is a lot of noise on these measures due to the fact that contestants are eliminated after each show meaning that they do not get a chance at each challenge, but it will give a little bit of insight the ability of the bakers.
+We can then compare the outcomes of each round with the judged "technical" ability.
+
+## IRT and CRM
+
+High stakes tests like the GRE and GMAT use something called Item Response Theory (IRT) to measure "ability."
+The tests work by matching item difficulty (or how hard a question is) to the test-taker's latent ability (tendency to get the right answer).
+Test takers should get the correct answer for those items where their ability is greater than the item difficulty, should get those items wrong where the difficulty is greater than their ability, and some distribution due to the measurement error in both ability and difficulty.
+
+:::{.column-margin}
+Not mentioned here, but a random component for guessing can be added. The literature for IRT is immense and there are many different models (2PL,3PL, Rasch, among others).
+:::
+
+The key contribution of IRT over classical test theory (in my opinion) is that there is some latent noise in the test question/item.
+
+IRT typically required a single "correct" answer. 
+When we are looking at the rating of Bakers from 1 to N bakers, we need to observe the continuous data of the data.
+Enter the Continuous Response Models which allow us to use the principles of IRT for continuous data.
+In particular we will use Samejima's continuous response model for the ranking of contestants.
+
+## Analysis Plan
+
+So now we can lay out our analysis plan:
+
+* Get the baking results
+* Run the CRM to understand and rank baker ability
+* Compare the modelled ability to the actual results
+
+
+## Getting the Data
+
+The first part in this analysis is getting the data.
+Luckily, Wikipedia, the grandest resource on the interweb, provides these data in a regular pattern.
+
+First, we will load the usual suite of packages for webscraping and analysis.
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(data.table)
+library(cmdstanr)
+```
+
+To run an initial test, I am just going to pull Season 3.
+
+```{r}
+url <- "https://en.m.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_3)"
+content <- read_html(url)
+tables <- content %>% html_table(fill = TRUE)
+```
+
+We can see that there are `r length(tables)` available.
+The second table gives us the biographies of the contestants:
+
+```{r}
+knitr::kable(tables[[2]])
+```
+
+With a little bit of work, we can turn the third table into a nice representation of the results.
+
+```{r}
+tables[[3]] %>%
+  as.data.table() %>%
+  .[-1,1:11] %>%
+  setNames(c("baker", sprintf("%s",1:10))) %>%
+  melt(id.vars = "baker") %>%
+  .[,round_num:=as.numeric(variable)] %>%
+  filter(!value %in% c("", "SB")) %>%
+  mutate(perf = sprintf("%s %s", value, round_num))->performance
+
+knitr::kable(performance)
+```
+
+Now the more challenging part is to parse all of the results.
+I am going to use some loops and index variables because I can't think of a more expediant way to do it.
+
+Importantly, each baker will appear for as many challenges in which they participated.
+This means someone who was eliminated after the first show will only have one record (enter measurement error) and those who participated in later rounds will appear multiple times.
+
+```{r}
+technicals <- list()
+z <- 1
+for(i in seq_along(tables)){
+  x <- tables[[i]]
+
+  interesting <- grepl(pattern = "Baker|Technical", names(x))
+
+  if(sum(interesting)<2){
+    next()
+  }
+
+  y <- x[,interesting]
+
+  names(y) <- c("baker", "technical")
+
+  y$technical_no <- z
+
+  technicals[[i]] <- y
+  z <- 1+z
+
+}
+
+out_long<- do.call(rbind, technicals)
+
+setDT(out_long)
+
+knitr::kable(head(out_long,10))
+```
+Now with a little nore parsing we can extract the result and associated rank of the bakers.
+
+```{r}
+out_long[,rank := as.numeric(stringr::str_extract(technical, "\\d+"))]
+
+out_long[,rank_ordered:=12 - rank]
+
+out_long[,baker_id := as.integer(as.factor(baker))]
+
+knitr::kable(head(out_long,10))
+```
+## Modelling the Data
+
+In completely transparency, I utilized code from <https://cengiz.me/posts/crm-stan/> which provided an excellent starting point for the analysis.
+
+The code is lightly modified (just to tighten some priors) because of the 
+
+```{r comment=""}
+writeLines(readLines("irt.stan"))
+```
+
+Now we just compile the model and format our data:
+
+```{r}
+mod <- cmdstan_model("irt.stan")
+
+dat_stan <- list(
+  J = length(unique(out_long$technical_no)),
+  I = length(unique(out_long$baker_id)),
+  N = nrow(out_long),
+  item = out_long$technical_no,
+  id = out_long$baker_id,
+  Y = out_long$rank_ordered
+)
+
+baker_list <- out_long %>%
+  select(baker_id,baker) %>%
+  unique()
+```
+We can then fit the model with our data.
+
+```{r}
+fit <- mod$sample(dat_stan,
+                  parallel_chains = 4,
+                  max_treedepth = 15, adapt_delta = .99, refresh = 0)
+
+
+```
+
+We're interested here in `theta` which represents the ability of the bakers.
+
+```{r}
+combined_out <- fit$summary(variables = "theta") %>%
+  mutate(baker_id = as.numeric(stringr::str_extract(variable, "\\d+"))) %>%
+  left_join(baker_list)
+
+out_come_with_rank  <- combined_out %>%
+  arrange(desc(median)) %>%
+  mutate(outcome_modelled = row_number()) %>%
+  select(outcome_modelled, baker) %>%
+  left_join(performance) %>%
+  mutate(outcome_realized = case_when(
+    value == "Runner-up"~2,
+    value == "WINNER"~1,
+    TRUE~13-round_num
+  ))
+
+knitr::kable(out_come_with_rank)
+```
+
+Now we can see what the correlation of ability performance is:
+
+```{r}
+(correlation_analysis <-out_come_with_rank %>%
+  select(
+    outcome_modelled,outcome_realized
+  ) %>%
+  as.matrix() %>%
+  cor() %>%
+  .[1,2] %>%
+  round(.,2))
+```
+
+Not too bad! 
+It would seem that there is evidence that the performance in the technical is correlated with the final result (thank goodness).
+
+```{r}
+combined_out %>%
+  ggplot(aes(reorder(baker,median), median))+
+  geom_pointrange(aes(ymin = q5, ymax =q95))+
+  geom_point()+
+  coord_flip()+
+  theme_classic() +
+  geom_text(data = performance,
+             aes(x = baker, y = 0,
+                 label = perf), inherit.aes = FALSE,
+            hjust = 0,nudge_x = .2 , size = 2)+
+  labs(
+    title = "Who Was the Most Skilled Baker in Season 3?",
+    subtitle = glue::glue("Using Samejima’s Continuous Response Model (CRM)\nBased on Technical Round Performance\nTechnical Performance Correlation to Final Results {correlation_analysis}"),
+    caption = glue::glue("Data: Wikipedia\n See {url}"),
+    x = NULL,
+    y = "Skill"
+  ) ->p
+p
+```
+
+```{r}
+out_come_with_rank %>%
+  select(baker,outcome_modelled,outcome_realized) %>%
+  mutate(color_use= ifelse(outcome_modelled >outcome_realized,
+                           "Better than Skill", "Worse than Skill")) %>%
+  ggplot(aes(y = reorder(baker, outcome_modelled)))+
+  geom_point(aes(x = outcome_modelled), color = "orange")+
+  geom_point(aes(x = outcome_realized), color = "blue")+
+  geom_segment(aes(x = outcome_modelled,
+                   xend = outcome_realized, yend = baker,
+                   color = color_use))+
+  theme_classic()+
+  labs(
+    title = "Comparison Between Outcome and Modelled Skill",
+    color = "Outcome",
+    y = NULL,
+    x = "Rank"
+  )+
+  scale_color_manual(values = c("green", "red"))+
+  scale_x_continuous(breaks = seq(1,12,1))->p2
+
+p2
+```
+
+## Next Steps
+
+This analysis only covers one season.
+It would be neat to come back and do all of the seasons to get a feel for the level of difficulty of the different rounds (i.e., was the technical in round 3 of similar difficulty in each season).
+Additionally it would be neat to see if this relationship between the technical score and final outcome held up in each season.

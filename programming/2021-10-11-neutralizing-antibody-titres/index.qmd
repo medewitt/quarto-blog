@@ -1,0 +1,295 @@
+---
+title: "Neutralizing Antibody Titres"
+description: |
+  How long someone has detectable neutralizing antibodies after vaccination is important in understanding the impact of vaccination on disease transmission. In this post I step through several different models and re-examine data from a prior paper.
+date: 2021-11-11
+categories: [R, antibodies, nAbs, Covid-19, Immunology, Bayes, Stan]
+bibliography: library.bib
+---
+
+
+```{r setup, include=FALSE}
+rw <- function(x){
+	writeLines(readLines(x))
+}
+```
+
+## Reading the Pre-Prints
+
+A [prominant scientist ](https://twitter.com/EricTopol) has been posting his highlights of pre-prints on twitter during the course of the pandemic and occasionally, I come across one that makes me scratch my head.
+I think that the move to open and rapid science through pre-prints has been good, but not without issues.
+Review (and open review especially) makes work better and is an important part of science and progress.
+
+One paper that stood out to me was by @sutharDurabilityImmuneResponses2021 in which the authors look at the neutralizing antibody tires (nAbs) amongst T-cell response in those persons who were vaccinated with the Pfizer SARS-CoV-2 Vaccines (BNT162b2 vaccine).
+The authors found: "substantial waning of antibody response and T-cell Immunity" in those who were vaccinated.
+Naturally, this *could* be concerning because antibodies and T-cells are important in fighting infection and could help us understand the endgame of this first epidemic of SARS-CoV-2 (e.g., vaccine induced reduction of transmission, symptomatic disease, severe outcomes, and associated periodicity given time since last vaccine).
+However, there is the open question of what is the best correlate of protection (e.g., we know that antibodies wane with time, but the ability to produce antibodies in the face of a new infection from memory B-cells is also very important) [@Corbett]
+
+## So Look at the Data
+
+As mentioned, along with the bad things about pre-prints (media jumping on sensationalist findings, people seeking acclaim by making bold statements that are not rigorously founded in fact, general review help, etc) is that much of the data are available for secondary analysis.
+With the article in question, I could find some of the original data analyzed by the authors from a prior publication.
+We can start to look at these data ourselves:
+
+```{r}
+library(data.table)
+library(tidyverse)
+theme_set(ggdist::theme_ggdist())
+dat <- readxl::read_excel("nAbs.xlsx")
+
+dat %>%
+  gather(day, value, -PID, -Gender) %>%
+  mutate(day = as.numeric(str_extract(string = day, "\\d+")))->dat_long
+
+knitr::kable(dat, digits = 1)
+
+```
+
+
+So it appears that there are `r nrow(dat)` unique participants. 
+Some participants were lost to follow-up and the final date range is kind of wide (90-120 days).
+
+One of the most important steps in any analysis is to graph the data to gain a general understanding of the trends and shape of the data.
+
+```{r fig.cap="Antibody Titres Over Time by Participant", fig.height=8}
+dat_long %>%
+  ggplot(aes(day, value, group = PID))+
+  geom_line()+
+  facet_wrap(~PID)+
+  labs(
+    title = "Antibody Titres by Participate"
+  )
+```
+
+
+One things that stands out to me is participant 2015. 
+This individual has nAbs that are much higher than the other participants.
+
+```{r}
+dat_long %>% 
+  mutate(tst = ifelse(PID==2015,"PID: 2015","All Others")) %>% 
+  group_by(tst, day) %>% 
+  summarise(mu = mean(value, na.rm=TRUE)) %>% 
+  spread(day,mu) %>% 
+  knitr::kable(digits = 1, caption = "Mean Value of nAbs by Group")
+```
+If this were me, I would go back and check those data just in case someone got a little too happy when titrating (been there). 
+Regardless, accepting this level of variability in the individual, these kind of data lend themselves well to hierarchical modeling.
+
+## So What's the Half Life?
+
+We can model the half life of the nAbs in the participants using the multilevel model framework with lme4.
+I will subset the data to include only the levels after the peak antibody level and include a random effect for the participant (since we know that there is within-person variability and serial dependence).
+
+```{r}
+library(lme4)
+
+fit_lme <- lmer(log(value) ~ day + (1|PID), data = subset(dat_long, day >21))
+
+(half_life <- -log(2)/confint(fit_lme)[4,])
+
+```
+
+So based on this model, the half-life for nAbs is between `r sprintf("%s and %s", round(half_life[1],1), round(half_life[2],1))` days.
+
+
+```{r preview=TRUE}
+
+nab_out <- function(t,hl){
+  2^(-t/hl)
+}
+
+sim_dat <- tibble(day = 1:365) %>% 
+  mutate(lower_bound = nab_out(day, half_life[1]),
+         upper_bound = nab_out(day, half_life[2]))
+sim_dat %>%   
+  ggplot(aes(x = day))+
+  geom_ribbon(aes(ymin = lower_bound,
+                  ymax = upper_bound), 
+              fill = "orange", alpha = .5)+
+  geom_hline(yintercept = .25, col = "red", lty = "dashed")+
+  labs(
+    title = "Simulated Decay of nAbs",
+    y  = "Percent of Maximum nAbs",
+    x = "Day After Peak nAbs"
+  )
+
+```
+
+So it appears that in roughly 3-6 months after maximum antibody levels a given vaccinated person would have 1/4 of nAb titres.
+
+```{r}
+days_until_perc <- function(target, hl){
+  -log(target)*hl/log(2)
+}
+
+round(days_until_perc(.25, half_life)/30,1)
+```
+
+The big question of course is first, does this matter and in what context (protection vs infection where high levels of nAbs make sense vs symptomatic disease where a trained immune system is all that is required (thinking memory B and T cells)) and what concentration is enough at each level.
+
+Is 5% of peak is enough then we have between 6 months and a year, perhaps in time for a teaser from infection to boost nAbs.
+
+```{r}
+round(days_until_perc(.05, half_life)/30,1)
+```
+
+## What about compartmental models?
+
+This is not my forte, but it would seem that compartmental models would be a good way to approach this problem.
+We would have to fix some parameters due to the data available but one could imagine that a decent data generating process could look like (at least as far as I understand how mRNA vaccines work):
+
+1. Inoculum is added to the blood stream via vaccination
+1. A latent phase for vaccinated individual's cells to produce the spike protein which would be a function of the volume of inoculum and the number of cells encountered. The inoculum also has some decay function.
+1. A phase where the encoded protein is in the bloodstream and recognized by the immune system as a foreign body which ramps up the innate and humoral immune response.
+1. Eventually the spike proteins would be cleared at some rate as the immune response increases
+
+I started down this path and then realized that I would need to make some assumptions for some of the parameters (transition rates between compartments).
+Being that I do not have reasonable priors for these rates, I decided not to code up this mdoel.
+
+## Other Method
+
+I read another paper on waning immunity on coronaviruses that had much more longitudinal data [@Townsend_Hassler_Wang_Miura_Singh_Kumar_Ruddle_Galvani_Dornburg_2021].
+The key model in the paper was locked away in a proprietary Mathematica Notebook that couldn't open without buying the software.
+I coded the below model based on their methods, but we will find is that we do not have enough data to fit a very good model.
+
+```{r comment=""}
+rw("decay.stan")
+```
+
+
+```{r}
+library(cmdstanr)
+
+mod_ex <- cmdstan_model("decay.stan")
+
+dat_stan_base <- dat_long %>% 
+  filter(!is.na(value)) %>% 
+  filter(day>21)
+
+stan_dat <- list(
+  N = nrow(dat_stan_base),
+  J = length(unique(dat_stan_base$PID)),
+  nAbs = dat_stan_base$value,
+  time = dat_stan_base$day
+)
+
+fit_ex <- mod_ex$sample(stan_dat, 
+                        refresh = 0, iter_sampling = 500,
+												iter_warmup = 200,
+                        adapt_delta = .98,
+                        max_treedepth = 15)
+
+```
+Not a great fit as we are trying to draw a complicated curve through basically two points and there are (infinitely) many ways to do this.
+
+```{r}
+fit_ex$summary(variables = c("omega", "hl", "sigma"))
+
+```
+
+## Viral Titre?
+
+A model that is somewhat of a compromise between the compartmental model which captures more of the underlying biological process and the hierarchical model which fit the within-host variability is to model the viral decay with a direct functional form.
+This is similar to the approach performed by @Singanayagam_2021 who use this functional form for estimated RNA copies from Cycle Threshold values.
+The issues, as before, is that we only have a few observations per person and I don't have strong priors, but this model is closer to what we see in the graphs where the titre increases to some point and then decay afterwards. Ideally we would have some additional measures for the participants.
+
+This can be modeled by the following equations:
+
+$$
+v(\tau) = v_{max} \frac{(a+b)}{be^{-a(\tau-\tau_{max})}+ae^{b(\tau-\tau_{max})}}
+$$
+
+The a and b parameters can be fit and influence the rate of increase and decrease of nAb tire (or virus titre for that matter).
+
+```{r}
+nab_kinetics <- function(v_max, a,b,t,tmax){
+  v_max * (a+b)/(b*exp(-a*(t-tmax))+a*exp(b*(t-tmax)))
+}
+
+plot(nab_kinetics(50, a = .8, b= .1, t = 1:70, tmax = 20), type = "l",
+     ylab = "nAb Titre", main = "Simulated Results")
+```
+We need to comport our data to provide the ability to identify the individual maximums and times for each participant.
+
+```{r}
+long_model_dat <- dat_long %>% 
+	filter(!is.na(value)) %>% 
+	group_by(PID) %>% 
+	mutate(v_max = max(value)) %>% 
+	mutate(t_max =  max((v_max == value)*day))%>% 
+	ungroup() %>% 
+	mutate(id = as.integer(as.factor(PID)))
+```
+
+And our model:
+
+```{r}
+rw("rise.stan")
+```
+
+We can fit the model in the usual ways:
+
+```{r}
+mod_titre <- cmdstan_model("rise.stan")
+
+titre_dat <- list(
+	N = nrow(long_model_dat),
+	id = long_model_dat$id,
+	nAbs_max = long_model_dat$v_max,
+nAbs = long_model_dat$value,
+	time= long_model_dat$day,
+	t_max = long_model_dat$t_max,
+	prior_a_mu = .8,
+	prior_b_mu = .1,
+	prior_a_sd = .05,
+	prior_b_sd = .05,
+pred_window = 180
+)
+
+set.seed(336)
+
+fit_titre <- mod_titre$sample(data = titre_dat, 
+															refresh = 0, adapt_delta = .99,
+															max_treedepth = 15)
+
+fit_titre$summary(variables = c("a", "b", "sigma"))
+```
+
+
+Note that there is a fair bit of variance in our model represented by zero.
+Additionally, we have some values of the predicted titre below zero. 
+We could resolve this by changing the distribution to use a distribution that is always positive like a lognormal distribution.
+This would require some careful transformation of our data and associated parameters.
+We'll stick with this formulation for now.
+
+We can now visualize our results from this model.
+
+```{r}
+library(posterior)
+library(ggdist)
+ pred_nab <- tidybayes::gather_draws(fit_titre$draws(variables = "yhat"),yhat[i] ) %>%
+ 	dplyr::ungroup() %>%
+ 	dplyr::group_by(i) %>% 
+ 	ggdist::median_qi(.value, .width = c(.5, .8, .95)) 
+ 
+ 
+pred_nab %>% 
+	ggplot(aes(i, .value))+
+	geom_lineribbon(aes(ymin = .lower, ymax = .upper))+
+	scale_fill_brewer()+
+	labs(
+		title = "Estimated Quantity of nAbs with Viral Evolution Model",
+		y = "Quantity",
+		x = "Days",
+		fill = "Proportion of Scenarios"
+	)+
+	geom_hline(yintercept = 0, col = "orange", lty = "dashed")+
+	theme(legend.position = "top")
+```
+Again, we see evidence of detectable tire above 180 days, but there is a decent bit of variability.
+
+## Conclusions
+
+If we had additional measurements per person and some additional information on the kinetics, 
+In the time it took me to write this post several other papers have come out with much more information that would be fun to analyze that find that immunity is likely long lasting [@Mateus_Dan_Zha; @Grifoni_Sidney_Vita_Peters_Crotty_Weiskopf_Sette_2021].

@@ -1,0 +1,38 @@
+---
+title: Speed it up!
+description: |
+  This post explores how to see opportunities to make your code run faster.
+categories:
+  - programming
+  - r
+date: 2018-07-06
+---
+
+
+This will be a short post tonight. The topic is speeding up existing code. Typically the rule is make it work (e.g. do what you want it to do) before optimizing it. The trick then is that with some experience you can write your code so that you don't box yourself into slow methods. That I won't cover in this post.
+
+The hard part is then to know what is slowing you down. Perhaps you have optimised everything that you know how to do, use purrr and apply statements, move some code to cpp. Now what next?
+
+Enter profvis
+
+```{r echo=TRUE}
+library("profvis")
+```
+
+Profvis provides a way to visualise the memory allocation and speed of each of your code. This includes simple things:
+
+```r
+profvis({
+  fit <- lm(mpg ~ wt + disp , data = mtcars)
+  Sys.sleep(10)
+  preds <- predict(fit)
+})
+```
+
+Now we can see that the plotting function takes the majority of the time.
+
+This is a super trivial example, but knowledge of tools like this help for streamlining code, especially when pushing it to users. Sometimes you don't know where the hang-up in your code is and this can help you understand what is happening.
+
+Then you can pull in other tools like `microbenchmark` or `bench` to time the different methods of improvement.
+
+

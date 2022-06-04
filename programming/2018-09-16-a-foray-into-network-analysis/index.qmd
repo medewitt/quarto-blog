@@ -1,0 +1,95 @@
+---
+title: "a foray into network analysis"
+description: |
+  Network analysis provides an way to analyse the interconnectedness of different networks.
+  This can provide insight into social networks, interconnected groups of text, tweets, etc.
+  Visualisations help to show these relationships but also some numeric values to quantify them.
+categories:
+  - network analysis
+  - r
+date: 2018-09-17
+---
+
+```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(igraph)
+library(qss)
+data("florentine")
+```
+
+## Marriage Networks of Florence
+
+This post takes the example provided in Kosuke Imai's [Quantitative Social Science: An Introduction](https://press.princeton.edu/titles/11025.html). It provides some exploration of network analysis through looking at the _florentine_ dataset which counts the marraige relationships between several Florentine families in the 15th century. My historical side knows that our analysis should show that the [Medici Family] should appear at the center of all of the political intrigue. Let's see if the analysis plays out.
+
+## Formatting the Data
+
+The florentine data set comes as a dataframe. In order to work with `igraph` it will need to be converted to a matrix with named columns and rows. That conversion can be done here:
+
+### Starting Table
+
+```{r echo=FALSE}
+florentine[,1:5] %>% 
+  kable()
+```
+
+
+Now we need to manipulate the dataframe to turn it into a matrix object so that we can pass it to the `igraph` package.
+
+```{r}
+florentine_g <- florentine %>% 
+  filter(FAMILY != "PUCCI") %>% 
+  select(-PUCCI) %>% 
+  select(-FAMILY) %>% 
+  as.matrix()
+
+row.names(florentine_g) <- florentine[-12,1] %>% as.vector()
+```
+
+Now we need to pass this object to `igraph`. The path is `undirected` because there is no ordinality to this data. It does not encode if one family proposed the marriage to the other group. If this were the case then there could be some directedness to the graph. In this case there isn't so that is the parameter we will pass.
+
+```{r}
+florentine_g <- graph.adjacency(florentine_g, mode = "undirected", diag = FALSE)
+```
+
+Now we can plot based on several features:
+
+- degree
+
+- closeness
+
+- betweeness
+
+- PageRank
+
+## Visualising the Network
+
+
+```{r out.height="600px", out.width="600px"}
+plot(florentine_g, vertex.size = betweenness(florentine_g), main = "Betweeness")
+plot(florentine_g, vertex.size = closeness(florentine_g)*1000, main = "Closeness")
+plot(florentine_g, vertex.size = degree(florentine_g)*10, main = "Degree")
+
+```
+
+## The Numeric Outputs
+
+```{r}
+floretine_networks <- data_frame(
+  family = names(closeness(florentine_g)),
+  closeness = closeness(florentine_g),
+  degree = degree(florentine_g),
+  betweeness = betweenness(florentine_g)
+) %>% 
+  arrange(-closeness)
+
+kable(floretine_networks)
+```
+
+Additionally, the "pagerank" algorithm can be used.
+
+```{r}
+plot(florentine_g, vertex.size = page.rank(graph = florentine_g, directed = FALSE)$vector*100)
+```
+

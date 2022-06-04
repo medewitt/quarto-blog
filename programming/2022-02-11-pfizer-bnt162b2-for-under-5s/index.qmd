@@ -1,0 +1,205 @@
+---
+title: "Pfizer BNT162b2 for Under 5s"
+description: |
+  A Bayesian reanalysis of estimates for the Pfizer Vaccine candidate for children under five years old. Frequentist statistics say it fails while Bayes would indicate that it should be approved. 
+date: 2022-02-11
+categories:  [Bayes, Covid-19, Clinical Trials, Stan, Causal Inference]
+---
+
+
+As the parent to a child under the age of five, I have been anxiously awaiting news regarding the availability of a vaccine against COVID-19 for some time.
+The news recently was that the [FDA was encouraging Pfizer/BioNTech to submit the data](https://www.pfizer.com/news/press-release/press-release-detail/pfizer-and-biontech-initiate-rolling-submission-emergency) for their clinical trials for their vaccine candidate for the 6 month to five year old group.
+Early reporting was that the vaccine wasn't meeting it's endpoints with two doses (which were reduced in concentration from the older groups for fear of vaccine induced myocarditis) and would need to [pursue a third dose](https://www.pfizer.com/news/press-release/press-release-detail/pfizer-and-biontech-provide-update-ongoing-studies-covid-19).
+
+It would appear that once the independent review board looked at the initial data they balked and are now holding off until the results of the April submission.
+
+## Only a Bayesian Can Save Us Now
+
+This post really was stirred by Lucy D'Agostino McGowan's twitter post as shown below.
+Bayesian analysis allows us to include prior information.
+It would seem that a clinical trial in the midst of:
+
+* Massive vaccinations across the world 
+* Continuous evaluation of vaccine efficiency (a la the United Kingdom amongst others)
+* New variants which are antigenically different that the lineages on which the vaccines were based
+
+...should take advantage of Bayesian data analysis.
+
+
+![](lucy-twitter-pfizer.png)
+
+
+## Reviving a Prior Analysis
+
+I am going to take code [from a prior blogpost](https://michaeldewittjr.com/programming/2021-12-15-can-bayesian-analysis-save-paxlovid/) where Bayesian analysis was used to look at Paxlovid, another Pfizer product.
+
+First we visualize our data using the approximations that Dr McGowan gave us:
+
+```{r}
+library(cmdstanr)
+library(tidybayes)
+library(posterior)
+library(ggplot2)
+library(dplyr)
+library(ggdist)
+theme_set(theme_bw())
+dat_trials <- tibble::tribble(
+  ~"cases", ~"arm_n", ~"arm",
+  23, 1552, "treatment",
+  27, 776, "control"
+
+) %>%
+  mutate(prop = cases/arm_n)
+
+
+dat_trials %>%
+  ggplot(aes(arm, prop))+
+  geom_point()+
+  scale_y_continuous(labels = scales::percent)+
+  labs(
+    title = "Percent of Arm Cases",
+    y = "Percent",
+    x = NULL
+  )
+```
+We can also calculate the frequentist confidence intervals:^[See <https://apps.who.int/iris/bitstream/handle/10665/264550/PMC2491112.pdf> for details]
+
+```{r}
+ARV <- 23/1552; ARU <- 27/776
+
+RR <- ARV/ARU
+
+(VE <- 1 - RR)
+
+bounds <- data.frame(upper = exp(log(RR) + 1.96 * sqrt((1-ARV)/23 +(1-ARU)/27)),
+lower = exp(log(RR) - 1.96 * sqrt((1-ARV)/23 +(1-ARU)/27)),
+VE = VE) %>% 
+	select(VE, lower, upper)
+
+bounds %>% 
+	knitr::kable(digits = 2)
+```
+
+Yikes, so based on these frequentist statistics, the Pfizer vaccine fails.
+
+## Enter Bayes
+
+Pfizer initially used Bayesian data analysis on their original submission for the 18 and older vaccine.
+I think it would be worthwhile to re-examine these data under similar priors and see what our results indicate.
+First we can recycle our previous trial code which considers our prior on the relative risk as well as calculates the net effect.
+
+```{r comment=''}
+writeLines(readLines("trial.stan"))
+
+```
+
+
+## Exploring Priors
+
+Pfizer initially used some pretty weak, pessimistic priors.
+The bulk of the distribution is < 0.2, which would indicate that the vaccine is not effective.
+We can start with these and see what happens.
+
+```{r}
+curve(dbeta(x, shape1 = .700102, shape2 = 1), 
+      from = 0, to = 1, 
+      ylab = "Density", xlab = "Relative Risk Reduction",
+      main = "Prior Distribution", adj = 0)
+```
+
+It is also interesting to look numerically where the bulk of the distribution lies (which in this case is very wide):
+
+```{r}
+qbeta(p = c(.05,.95), .700102, 1)
+```
+
+
+Let's fit the model:
+
+```{r}
+mod <- cmdstan_model("trial.stan")
+
+dat <- list(
+  n=sum(dat_trials$arm_n),
+       r_c=dat_trials[2,]$cases,
+       r_t=dat_trials[1,]$cases,
+       n_c=dat_trials[2,]$arm_n,
+       n_t=dat_trials[1,]$arm_n,
+       a=c(.700102,1)
+)
+fit <- mod$sample(dat, refresh = 0)
+```
+
+I'm going to write a quick helper function for summarising results from the fitted model.
+
+```{r}
+pull_cis <- function(x){
+	x$draws(variables = "RR") %>%
+	as_draws_df() %>% 
+	summarise(mean = mean(RR),
+						median = median(RR),
+						q025 = quantile(RR, 0.025),
+						q975 = quantile(RR, 0.975)) %>% 
+	mutate(variable = "RR") %>% 
+	select(variable, mean, median, contains("q")) %>% 
+	knitr::kable(digits = 2)
+}
+```
+
+
+Using these initial priors we get the following results:
+
+```{r}
+pull_cis(fit)
+```
+
+These don't look too bad!
+The 95% credible intervals are similar, though a nudge higher, than the frequentist confidence intervals
+
+::: {.column-margin}
+Thanks to [@statstaci5](https://twitter.com/statstaci5) who pointed out initially I had used a 90% credible interval. Moral of the story is don't work on statistics after 10pm and certainly don't trust the defaults.
+:::
+
+Let's see if we hit the lower endpoint of 30% risk reductions (and really what fraction of the draws are greater than 30%).
+
+```{r}
+draws <- fit$draws(variables = "RR") %>% 
+	as_draws_df()
+mean(as.numeric(draws$RR>.3))
+```
+
+So that's a bit interesting in that there is a `r round(mean(as.numeric(draws$RR>.3))*100,1)`% posterior probability that the vaccine efficiency is greater than 30% (which is the lower limit of approval).
+Additionally, there is a  `r round(mean(as.numeric(draws$RR>.5))*100,1)`% posterior probability given these data that the vaccine efficiency (relative risk reduction) is greater than 50%
+
+We can graph these results to display the same information visually.
+
+```{r preview = TRUE}
+draws %>%
+  #median_qi(VE, .width = c(.5, .89, .995)) %>%
+  ggplot(aes(y = "RR", x = RR)) +
+  stat_halfeye()+
+  scale_color_brewer()+
+  coord_cartesian(expand = FALSE)+
+  labs(
+    title = "Posterior Distribution of Relative Risk Reduction",
+    subtitle = "Pfizer BNT162B2 for Under 5 Years Old"
+  )
+```
+
+## So What?
+
+One key point is that these raw data are inferred from the reporting that there were around 50 cases so these are crude approximations.
+Regardless this analysis shows that we shouldn't throw the proverbial baby out with the bathwater.
+This looks like a vaccine that would meet the endpoints and is showing expected effectiveness given the changing terrain of the pandemic.
+Of course there are other competing concerns out there--like if a booster is needed would this EUA interrupt that process? 
+Would an EUA cause people to doubt the process (honestly the FDA messed this one up going back and forth with Pfizer on this)?
+Are there data that have yet to be made public (e.g., faster nAbs waning)?
+Regardless, this analysis shows that being a Bayesian in these contexts is likely warranted.
+
+>Note: Edited 2022-02-12 for typos (per paragraph 1)...
+
+>Note2: Moved Bayesian credible intervals to 95% to be consistent with frequentist 95% CIs- Thanks [@statstaci5](https://twitter.com/statstaci5).
+
+>Note3: Correct hospitalizations to cases. I have hospitalizations on the brain most of the time. Thanks [@LucyStats](https://twitter.com/LucyStats)!
+
+I really need to open up this github repo for this reason but alas....

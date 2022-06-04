@@ -1,0 +1,127 @@
+---
+title: "Finding the Needle in the Haystack"
+description: |
+  Sometimes instead of accuracy we need to look at different metrics. One such metric is sensitivity, which is a measure of those who are actually targets how many does the model correctly identify. This can be the metric of choice over accuracy when you are dealing with a raw event such as a terrorist attack or even student retention. It is always important to understand what metrics you are optimising your models on.
+categories:
+  - Sensitivity
+  - Cost Benefit Analysis
+date: 2019-06-09
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+One of the challenges in any kind of prediction problem is understand the impact of a) _not_ identifying the target and b) the impact of _falsely indentifying_ the target. To put it into context, if you are trying to use an algorithm to indentify those with ebola, whats the risk of missing someone (they could infect others with the disease) vs identifying someone who does not have the disease as having the disease (they get quarantined and have their life disrupted). Which is worse? That isn't a statistical question, it is a context, and even an ethical question (ok, yes, you could also apply a loss function here and use that to find a global minimum value should it exist, but then again that is a choice).
+
+Typically we use two terms to talk about this problem, sensitivity (of all "targets" how many did the model correctly identify) and specificity (of those who were not targets, what proportion were correctly identified as not a target).
+
+## Data Generating Process
+
+As always, I want to build some simulated data to understand this problem. Let's assume that we are trying to identify methanol levels in moonshine. [Moonshine](https://en.wikipedia.org/wiki/Moonshine) is typically homemade, illicit, high alcohol spirits. The alcohol level is increase through distillation. Ethanol, the desired alcohol boils at something like 78 deg C while methanol boils at 65 deg C. Methanol has some toxic side effects so you really don't want any in your cocktail. So let's make some fake data with some measurements.
+
+```{r fake-data, echo=TRUE}
+n <- 500
+
+pot_temp <- rnorm(n, 78, 10)
+mash_wt <- rnorm(n, 50, 2)
+ambient_temp <- rnorm(n, 30, 7)
+ambient_humidity <- rnorm(n, 82, 12)
+
+methanol_content <- ifelse(pot_temp <65, .5 * mash_wt - ambient_humidity*(ambient_humidity)/1000, 
+                           .2* mash_wt - ambient_humidity*(ambient_humidity)/1000)
+
+moonshine_data <- tibble(pot_temp,
+                         mash_wt,
+                         ambient_temp,
+                         ambient_humidity,
+                         methanol_content)
+```
+
+Let's also assume that methanol content greater than 17 is toxic (these numbers are completely made up).
+
+```{r}
+moonshine_data <- moonshine_data %>% 
+  mutate(toxicity = ifelse(methanol_content > 17, 1,0))
+
+```
+
+So Let's see what we have in our data:
+
+```{r}
+moonshine_data %>% 
+  count(toxicity) %>% 
+  mutate(perc = n/sum(n) )%>%
+  mutate(perc = scales::percent(perc)) %>% 
+  knitr::kable(booktab = TRUE, col.names = c("Toxicity", "Count", "Percent"),
+               caption = "Incidence of Toxicity in Total Data Set")
+```
+
+Yikes! We have a raw case problem. Given our data, what we are targetting doesn't happen very often. So let's see what happens when we try to model this:
+
+```{r echo=TRUE}
+dat_training <- sample_frac(moonshine_data, .7)
+dat_testing <- setdiff(moonshine_data, dat_training)
+```
+
+We could build a very simple binomial regression, but it could guess that every sample will pass and be correct >90% of the time!
+
+```{r}
+dat_training %>% 
+  count(toxicity) %>% 
+  mutate(perc = n/sum(n) )%>%
+  mutate(perc = scales::percent(perc)) %>% 
+  knitr::kable(booktab = TRUE, col.names = c("Toxicity", "Count", "Percent"),
+               caption = "Incidence of Toxicity in Training Data")
+```
+
+```{r echo=FALSE}
+library(glmnet)
+fit_1 <- cv.glmnet(x = as.matrix(select(dat_training, 
+                                     ambient_humidity:pot_temp)),
+                y = dat_training$toxicity,
+                family = "binomial")
+
+fit_1$lambda.min
+```
+
+Let's see what our model extracted:
+
+```{r}
+coef(fit_1, s = "lambda.min")
+```
+
+
+```{r}
+library(yardstick)
+
+preds_1 <- predict(fit_1, newx = as.matrix(select(dat_testing,
+                                     ambient_humidity:pot_temp)), type = "class")
+
+preds_2 <- predict(fit_1, newx = as.matrix(select(dat_testing,
+                                     ambient_humidity:pot_temp)), type = "response")
+
+new_dat <- tibble(truth = dat_testing[["toxicity"]], pred = preds_1) %>% 
+  mutate_all(factor, label = c("Positive", "Negative"), levels = c(1,0)) %>% 
+  bind_cols(num_pred = preds_2[,1])
+
+
+table(new_dat$pred, new_dat$truth)
+metrics(new_dat, truth, pred) %>% 
+  bind_rows(sens(new_dat, truth, pred)) %>% 
+  bind_rows(spec(new_dat, truth, pred)) %>% 
+  knitr::kable(digits = 2, caption = "Estimates from Elastic Net Fit")
+```
+
+So the estimates looks good for sensitivity meaning that the model only correctly identified a little over half of the toxic batches. Is this good enough? Well for a consumer with no knowledge about the potential risk, I don't think so. The next steps then would be to tune the model to improve the _sensitivity_ in order to reach an acceptable level. This could be as easy as accepting a higher false positive rating. We can look at this with the ROC curve.
+
+
+```{r fig.cap="ROC Curve for Fitted Model"}
+roc_curve(new_dat, truth = truth, num_pred) %>% 
+  ggplot(aes(1-sensitivity, specificity))+
+  geom_line()+
+  theme_minimal()
+```
+
+Still not great. So then what do we do? Accept a higher false positive rate? Or now to we build a better model with different data? What if we could inform the brewer about the process parameters that matter. Then we could fix the problem at the source. Perhaps that's the best bet....

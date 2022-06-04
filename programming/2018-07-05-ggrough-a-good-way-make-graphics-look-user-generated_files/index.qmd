@@ -1,0 +1,43 @@
+---
+title: ggrough
+description: |
+  ggrough is a great package that can be used to make graphs that look hand-drawn. This can be a   great aesthetic choice when giving presentations and making handouts.
+categories:
+  - ggplot2
+  - data visualisation
+  - r
+date: 2018-07-05
+---
+
+So I came across another `ggplot2` package which I like. It bootstraps off of a javascript library called `roughjs`. I like that you can make graphs and charts that look handdrawn. This is a great feature when doing data communication. It makes the look less clinical which might be a good tactic when doing a data visualisation clinic where the focus is on the chart type and how it communicates.
+
+Warm and friendly is a good approach when doing these types of trainings with graphical neophytes.
+
+The package information is [here](https://xvrdm.github.io/ggrough/)
+
+
+Some examples of their code are below:
+
+```{r echo=TRUE}
+library(tidyverse)
+library(ggrough)
+```
+
+```{r echo=TRUE}
+count(mtcars, carb) %>%
+  ggplot(aes(carb, n)) +
+  geom_col() + 
+  labs(title="Number of cars by carburator count") + 
+  theme_grey(base_size = 16) -> p 
+p
+```
+
+```{r echo=TRUE, preview=TRUE}
+options <- list(
+  Background=list(roughness=8),
+  GeomCol=list(fill_style="zigzag", angle_noise=0.5, fill_weight=2))
+p2<-get_rough_chart(p, options)
+p2
+```
+
+

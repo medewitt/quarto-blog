@@ -1,0 +1,152 @@
+---
+title: "the power of fake data simulations"
+description: |
+  Looking at a blog post that Andrew Gelman posted on fake data simulations and HLM.
+  The power of fake data simulations is that it really makes you think twice about what kind
+  of effect for which you are looking as well as the power of your research design to detect it.
+  This illustrates a really good practice for anyone looking to do this kind of analysis.
+date: 2018-09-24
+categories:
+  - Bayes
+  - r
+  - Hierarchical Modeling
+  - Fake Data
+  - Causal Inference
+---
+
+```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo = TRUE)
+```
+
+This post is basically a self exercise of what Andrew Gelman has already posted [here](https://andrewgelman.com/2018/09/22/38708/). Fake data simulations are incredible tools to understand your study. It forces you to think about what is the size of the effect you wish to see, what kind of variance is in your model, if you can really detect it, will your design work, and the list goes on. Similar to any practice, when you have to think critically and put things to paper you tend to see the weaknesses of your arguments. It also helos you to anticipate issues. All of these things are priceless.
+
+So taking his work and looking at a between person and within person design let's copy his code and build the fake data.
+
+```{r message=FALSE, warning=FALSE}
+library("dplyr")
+library("rstan")
+library("rstanarm")
+library("arm")
+options(mc.cores = parallel::detectCores())
+
+## 2.  Simulate a data structure with N_per_person measurements on each of J people
+
+J <- 50  # number of people in the experiment
+N_per_person <- 10 # number of measurements per person
+person_id <- rep(1:J, rep(N_per_person, J))
+index <- rep(1:N_per_person, J) 
+time <- index - 1  # time of measurements, from 0 to 9
+N <- length(person_id)
+a <- rnorm(J, 0, 1)
+b <- rnorm(J, 1, 1)
+theta <- 1
+sigma_y <- 1
+
+## 3.  Simulate data from a between-person experiment
+
+z <- sample(rep(c(0,1), J/2), J)
+y_pred <- a[person_id] + b[person_id]*time + theta*z[person_id]*time
+y <- rnorm(N, y_pred, sigma_y)
+z_full <- z[person_id]
+exposure <- z_full*time
+data_1 <- data.frame(time, person_id, exposure, y)
+
+## 4.  Simulate data from a within-person experiment:  for each person, do one treatment for the first half of the experiment and the other treatment for the second half.
+
+z_first_half <- z
+T_switch <- floor(0.5*max(time))
+z_full <- ifelse(time <= T_switch, z_first_half[person_id], 1 - z_first_half[person_id])
+for (j in 1:J){
+  exposure[person_id==j] <- cumsum(z_full[person_id==j])
+}
+y_pred <- a[person_id] + b[person_id]*time + theta*exposure
+y <- rnorm(N, y_pred, sigma_y)
+data_2 <- data.frame(time, person_id, exposure, y)
+```
+
+Just for clarity I am going to show a few records of the two different data sets:
+
+```{r echo=FALSE}
+data_1 %>% 
+  head() %>% 
+  knitr::kable(caption = "Sample of Between Persons Data")
+```
+
+```{r}
+data_2 %>% 
+  head() %>% 
+  knitr::kable(caption = "Sample of Within Persons Data")
+```
+
+Now we can plot the data:
+
+```{r}
+par(mfrow=c(2, 2))
+par(mar=c(3,3,3,1), mgp=c(1.5, .5, 0), tck=-.01)
+
+plot(range(time), range(data_1$y, data_2$y), xlab="time", ylab="y", type="n", bty="l", main="Between-person design:\nControl group")
+for (j in 1:J){
+  ok <- data_1$person_id==j
+  if (z[j] == 0){
+    points(time[ok], data_1$y[ok], pch=20, cex=.5)
+    lines(time[ok], data_1$y[ok], lwd=.5, col="blue")
+  }
+}
+plot(range(time), range(data_1$y, data_2$y), xlab="time", ylab="y", type="n", bty="l", main="Between-person design:\nTreatment group")
+for (j in 1:J){
+  ok <- data_1$person_id==j
+  if (z[j] == 1){
+    points(time[ok], data_1$y[ok], pch=20, cex=.5)
+    lines(time[ok], data_1$y[ok], lwd=.5, col="red")
+  }
+}
+plot(range(time), range(data_1$y, data_2$y), xlab="time", ylab="y", type="n", bty="l", main="Within-person design:\nControl, then treatment")
+for (j in 1:J){
+  ok <- person_id==j
+  if (z[j] == 0) {
+    points(time[ok], data_2$y[ok], pch=20, cex=.5)
+    lines(time[ok&time<=T_switch], data_2$y[ok&time<=T_switch], lwd=.5, col="blue")
+    lines(time[ok&time>=T_switch], data_2$y[ok&time>=T_switch], lwd=.5, col="red")
+  }
+}
+plot(range(time), range(data_1$y, data_2$y), xlab="time", ylab="y", type="n", bty="l", main="Within-person design:\nTreatment, then control")
+for (j in 1:J){
+  ok <- person_id==j
+  if (z[j] == 1) {
+    points(time[ok], data_2$y[ok], pch=20, cex=.5)
+    lines(time[ok&time<=T_switch], data_2$y[ok&time<=T_switch], lwd=.5, col="red")
+    lines(time[ok&time>=T_switch], data_2$y[ok&time>=T_switch], lwd=.5, col="blue")
+    for (i in 1:N_per_person) {
+      ok2 <- ok & index==i
+    }
+  }
+}
+```
+
+And then start the analysis using our HLM:
+
+```{r message = FALSE, cache=TRUE}
+fit_1 <- stan_glmer(y ~ (1 + time | person_id) + time + exposure, data=data_1)
+fit_2 <- stan_glmer(y ~ (1 + time | person_id) + time + exposure, data=data_2)
+
+```
+
+# Between Persons Design Summary
+
+```{r}
+print(fit_1)
+```
+
+# Within Persons Design Summary
+
+```{r}
+print(fit_2)
+```
+
+The big take away for both is that the standard error for the within person experiment is less than that of the between person. This is great. The other interesting thing is that if theta ($\theta$) changes, then this standard error will be the same. Yikes! So smaller effect with the same standard error means a weakened confidence in the effect. You can only go so far with modeling and design and must move into understanding the causal pathway.
+
+In Andrew's words
+
+>Except in the simplest settings, setting up a fake-data simulation requires you to decide on a bunch of parameters. Graphing the fake data is in practice a necessity in order to understand the model you're simulating and to see where to improve it. For example, if you're not happy with the above graphs---they don't look like what your data really could look like---then, fine, change the parameters.
+
+>In very simple settings you can simply suppose that the effect size is 0.1 standard deviations and go from there. But once you get to nonlinearity, interactions, repeated measurements, multilevel structures, varying treatment effects, etc., you'll have to throw away that power calculator and dive right in with the simulations.

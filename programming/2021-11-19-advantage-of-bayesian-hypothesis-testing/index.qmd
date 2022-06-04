@@ -1,0 +1,106 @@
+---
+title: "Advantage of Bayesian Hypothesis Testing"
+description: |
+  Here looking at the differences in traditional linear contrasts versus Bayesian Hypothesis testing.
+date: 2021-11-19
+categories: [Bayes, brms, hypothesis, contrasts, Covid-19]
+---
+
+
+A colleague sent me the following table from a report from the UK REACT Survey:
+
+![REACT Supplemental Table of Reported Symptoms by Variant](table.png)
+
+The argument being made was that those persons who were infected with the AY4.2 variant were less likely to present with traditional COVID-19-like symptoms.
+This is problematic for a variety of reasons, mainly that we have been told for months what to look for as far as symptomology.
+Additionally, we have protocols in clinics and hospitals to triage patients, especially when testing resources are scarce.
+There is also a time component -- if people don't exhibit symptoms (that they think are COVID-19) or soon, they may unwittingly transmit the infection.
+
+## So Let's Recreate the Analysis
+
+Just for fun, I think it would be nice to re-analyze these data. 
+I'll make them here:
+
+```{r message=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(tidyverse))
+library(brms)
+
+sx <- tribble(
+  ~"variant", ~"sx", ~"n",
+  "AY.4", 224, 484,
+  "AY4.2", 33, 99,
+  "AY.43", 34, 40,
+  "AY.44", 7, 13,
+  "AY.5", 13, 21,
+  "AY.6", 7, 13,
+  "B1.617.2", 50, 108
+  ) %>% 
+  mutate(variant_use = gsub(pattern = "\\.", "_", variant)) %>% 
+  group_by(variant_use) %>% 
+  nest() %>% 
+  mutate(ci = map(data, ~broom::tidy(
+    PropCIs::exactci(.x$sx, .x$n, conf.level = .95)))) %>% 
+  unnest(cols = c(data, ci))
+```
+
+As always, it is a good practice to graph the data.
+I have added some exact confidence intervals as well given the large differences in sample size amongst the variants.
+
+```{r}
+sx$prop <- with(sx, sx/n)
+
+sx %>% 
+  ggplot(aes(reorder(variant,prop)))+
+  geom_pointrange(aes(y = prop, ymin = conf.low, ymax = conf.high))+
+  theme_classic()+
+  coord_flip()+
+  labs(
+    title = "Proportion of Patients with COVID-19 Sx by Variant",
+    subtitle = "95% Confidence Intervals Shown"
+  )
+```
+
+## Frequentist Approach
+
+Now we can model this using the MLE frequentist approach.
+Note the fancy binomial syntax given that we are looking at successes, here defined as having COVID-19 like symptoms, out of those testing positive.
+
+We can then use the `emmeans` package to look at the contrasts.
+
+```{r}
+fit <- glm(cbind(sx, n) ~ variant, data = sx, family = binomial())
+
+
+library(emmeans)
+
+o <- emmeans(fit, "variant", type = "response")
+pwpm(o, diffs = TRUE)
+```
+We can see from these contrasts that nothing really stands out.
+One important line in the printout is the "adjust = tukey".
+One issue with multiple hypothesis tests in the frequentist framework is the need to adjust your alpha, or Type 1 error threshold when you do multiple significance tests.
+The classical adjustment is Bonferroni adjustments, but these are much more conservative than Tukey adjustments.
+Regardless, the more tests you do in this framework, the higher your threshold is.
+
+## Bayesian Hypothesis Testing
+
+One of the many advantages of Bayesian hypothesis testing is that you don't have to worry about multiple comparisons (there is even a Gelman paper titled something like that).
+There are spurious findings that can occur (enter Type M and Type S errors rather than Type 1 and Type 2 errors), but by comparing samples from the posterior distribution you can analyze exactly what your research question is.
+
+So we can do this by building a similar model as before:
+
+```{r message=FALSE}
+fit_bayes <- brm(sx | trials(n) ~ variant, data = sx, refresh =0,
+								 family = binomial(), backend = "cmdstanr", file = "local.rds")
+
+summary(fit_bayes)
+```
+
+And now run our hypothesis test. 
+Theoretically, we could have made this a random effects model, but for ease, I won't.
+
+```{r}
+hypothesis(fit_bayes, "variantAY4.2 < variantB1.617.2")
+```
+
+Now we can see in this framework that there does appear to be evidence of a difference in the fraction of those patients presenting with traditional COVID-19 symptoms!

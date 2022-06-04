@@ -1,0 +1,87 @@
+---
+title: "ShinyProxy Serving Websites"
+description: |
+  This post discuses using the ShinyProxy framework to serve static html sites. These products could be generated from single R Markdown documents to entire websites. Serving these items in containers gives you all the benefits of containerising your work along with the ability to authenticate through ShinyProxy if desired.
+categories:
+  - r
+  - shiny
+  - deploy
+  - shinyproxy
+image: shiny.png
+date: 2020-10-03
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+>Preview Image from shinyproxy.io
+
+One of the neat things about [ShinyProxy](https://www.shinyproxy.io/) is that it allows you to package your Shiny applications into Docker containers and then serve them up via centralised "App Store" like front-end with all the goodies you might want (authentication, logging, etc).
+You get the bonus of building these containers in a container (so some dependency management) and scaling of containers with whatever backend you need.
+
+The deployment with a Shiny package or even a Flask application is very straightforward and well documented on their website, but what about simple html webpages generated from R Markdown or even entire websites.
+In my experience, there is a middle ground for html reports for single topic issues and larger website frameworks for larger packages. 
+In an enterprise setting you still want to be able to serve all of these products to customers with authentication.
+So how can we do it?
+
+## Generate a Consistent Output Location
+
+No matter what your output, send it to a consistent directory (my favourite is a "docs" directory that contains all my outputs).
+This can be the output from a single file or an entire website (thinking here something generated from R Markdown, Blogdown, Bookdown, etc).
+
+## Tell the Container to Host the Website
+
+Initially, I had tried to write a container as a full Apache webserver, then write out the docs files to the webserver.
+That was until I realised the power of the [{servr}](https://cran.r-project.org/web/packages/servr/index.html) package to abstract that functionality away and keep me in the R domain.
+The real clue was [in this question](https://support.openanalytics.eu/t/bookdown-on-shinyproxy/943) and it dawned on me to let R do the work for us.
+We only need to be consistent in our output location and file format and make sure that ShinyProxy knows where to serve the site (and R inside the container).
+
+### For Static Htmls Packages
+
+Below can work for generally every kind of output.
+
+```
+FROM openanalytics/r-base
+
+# install required R packages
+RUN install.r servr
+
+# install pandoc
+RUN wget https://github.com/jgm/pandoc/releases/download/2.6/pandoc-2.6-1-amd64.deb
+RUN dpkg -i pandoc-2.6-1-amd64.deb
+
+COPY docs /root/docs/
+
+# use default port for shinyproxy apps, so you don't have to add port in application.yml
+EXPOSE 3838  
+
+CMD ["R", "-e", "servr::httd('/root/docs', port = 3838, host = '0.0.0.0')"]
+
+```
+
+### For Bookdown
+
+If you wanted to rebuild and serve a bookdown generated book you could do the following:
+
+```
+FROM openanalytics/r-base
+
+# install required R packages
+RUN install.r bookdown servr
+
+# install pandoc
+RUN wget https://github.com/jgm/pandoc/releases/download/2.6/pandoc-2.6-1-amd64.deb
+RUN dpkg -i pandoc-2.6-1-amd64.deb
+
+COPY docs /root/docs/
+
+# use default port for shinyproxy apps, so you don't have to add port in application.yml
+EXPOSE 3838  
+
+CMD ["R", "-e", "bookdown::serve_book('/root/docs', port = 3838, host = '0.0.0.0')"]
+
+```
+## Conclusion
+
+You can see from the above Dockerfile, the solution is pretty easy and allows you to quickly containerise your reporting in addition to application.

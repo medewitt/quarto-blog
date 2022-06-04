@@ -1,3 +1,6 @@
+*
+!/**/
+!*.*
 .Rproj.user
 /.quarto/
 .Rhistory
@@ -16,7 +19,16 @@
 .tsv
 .txt
 .rdb
+.dta
+**.dta
+**/.rdb
+**/.dta
+*.rds
+*.rdb
+**/.DS_Store
+**/.rds
 */index_cache/*
+**/index_cache/*
 /_freeze/
 programming/2019-04-08-re-districting-in-winston-salem/data/ncvhis34.txt
 ncvhis34.txt
