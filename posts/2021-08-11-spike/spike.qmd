@@ -1,0 +1,42 @@
+---
+title: "Spike"
+description: |
+  Or how the UK could fail during the SARS-CoV-2 Pandemic.
+author:
+  - name: Michael DeWitt
+    url: https://michaeldewittjr.com
+    orcid: 0000-0001-8940-1967
+date: 2021-08-11
+base_url: https://michaeldewittjr.com
+twitter:
+  creator: "@medewittjr"
+categories: [musings, Covid-19, SARS-CoV-2, Government]
+link-citations: true
+draft: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, layout="l-body-outset")
+```
+
+I read Jeremy Farrar's [Spike](https://blackwells.co.uk/bookshop/product/Spike-by-Jeremy-Farrar-author-Anjana-Ahuja-author/9781788169226) over the weekend.
+I don't have anything insightful to say about it. 
+On this side of the pond, the United Kingdom seemed like it had the best shot of handling this pandemic.
+The way that scientists and scientific advisors are brought to consult and model in a (from the outside) organized fashion as part of the decision-making process plus the venerable National Public Health Service, they had all the pieces to take informed decisions.
+In the States, sure we have several regulatory bodies and public health agencies, and a group of rag-tag academic that seem to just publish and post on twitter.
+Nothing coordinated.
+Additionally, our health systems are disparate, some state-run, some private, some for profit, others not--so, so I was interested to read an insider's take into how the UK could fail so miserably.
+
+While there were some fantastic quotes and inside insights that people working in health would appreciate, the key point is that everything hinges on a capable government. 
+It rests on a government that wishes to act in good faith to preserve life.
+Once that is lost, then the whole response, no matter how well positioned to be successful, will fail. 
+That's what happened in the UK and that's what happened in the US. 
+There is also something to be said about the intersection of science and politics and how they merge into policy.
+I struggle personally, not with the science, but when science meets politics to become policy.
+Most of the time the science is clear.
+Even when the science isn't clear, the uncertainty, in some way, is clear.
+But pushing that messaging into policy is always a rough road, when leadership wants certainty ("ranges are for cattle, give me a number" as is attributed to LBJ).
+
+If I remember to add the quotes, I'll do so. 
+

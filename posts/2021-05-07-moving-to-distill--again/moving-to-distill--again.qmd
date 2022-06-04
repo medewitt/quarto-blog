@@ -1,0 +1,34 @@
+---
+title: "Moving to Distill- Again"
+description: |
+  A long time ago, there was a new package called Radix. I used it to create my first R generated blog. Now I am rebooting to use its next generation version, Distill. 
+author:
+  - name: Michael DeWitt
+    url: https://michaeldewittjr.com
+    orcid: 0000-0001-8940-1967
+date: 2021-05-07
+base_url: https://michaeldewittjr.com
+twitter:
+  creator: "@medewittjr"
+categories: [musings, distill]
+link-citations: true
+draft: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, layout="l-body-outset")
+```
+
+This is just a short note to re-launch my blog.
+I want to try and write more for leisure and to process my thoughts.
+I always struggled with technical topics separated from general musings, so now I separated them.
+
+A long time ago, there was a package called Radix. 
+I saw it on JJ Allaire's github, thought it was a pretty sleek blogging platform, so I made a radix based website.
+It worked great and I even made a few github issues.
+Then the project changed names from Radix to Distill, which was cool, but I didn't migrate quickly enough and continued to blog using Radix.
+For a long time this didn't matter, but all of a sudden, Distill got a lot more feature rich, so the marginal cost of the move got less and less, until finally it was time to migrate.
+
+So here we are for as long as this format lasts.
+I will say, migrating the old posts over was super easy, so that shouldn't worry anyone.

@@ -1,0 +1,93 @@
+---
+title: "An Engineering Mindset to Public Health"
+description: |
+  Thinking about the differences between research and engineering and this difference in Public Health. Specifically the idea of a PE stamp.
+author:
+  - name: Michael DeWitt
+    url: https://michaeldewittjr.com
+    orcid: 0000-0001-8940-1967
+date: 2022-01-01
+base_url: https://michaeldewittjr.com
+twitter:
+  creator: "@medewittjr"
+categories: [musings, covid-19, public health, CDC]
+link-citations: true
+draft: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, layout="l-body-outset")
+```
+
+# Engineering and Public Health
+
+The Centers for Disease Control and Prevention updated their COVID-19 guidelines for isolation and quarantine^[Remember, isolate if you are positive, quarantine if you are a contact.] on December 27, 2021 and received some strong backlash.
+The updates were certainly needed as the prior guidelines were last updated in December 2020 or so when a vaccine was not available and there were many additional unknowns.
+In the meantime the United States is in the midst of a Delta wave of infections and growing presence of the Omicron variant, the latter appearing to be more fit and better at escaping vaccine or infection derived immunity.
+This means that many people are in quarantine and isolation at all levels which is causing issues to basic services (e.g., hospitals down critical staff, flights canceled due to crews in quarantine/isolation, day care centers, schools, other commerce activities, end even college football bowl games).
+While generally there is agreement that the guidelines needed to be updated based on availability of vaccines and boosters, there is some disagreement on the language and the lack of a testing component.
+
+The key phrase that is causing consternation is below:
+
+>The change is motivated by science demonstrating that the majority of SARS-CoV-2 transmission occurs early in the course of illness, generally in the 1-2 days prior to onset of symptoms and the 2-3 days after. Therefore, people who test positive should isolate for 5 days and, if asymptomatic at that time, they may leave isolation if they can continue to mask for 5 days to minimize the risk of infecting others. --[full text available here](https://www.cdc.gov/media/releases/2021/s1227-isolation-quarantine-guidance.html)
+
+What you might notice in that sentence is that there are no links to the "science."
+The United Kingdom Health Security Agency (UKHSA) puts out 40+ pages of [technical reports](https://www.gov.uk/government/publications/investigation-of-sars-cov-2-variants-technical-briefings) and easy to read threat matrices each week.
+This is in addition to a beautiful website with a clean and well functioning and documented API to pull the data.
+While the structure is different in the United States (e.g., no national health service), a few sources linked to the "science" would have been helpful.
+Just mentioning "the facts and the science" is not super helpful and this appeal to the unknown "research" is often an approach that misinformation trolls use.
+
+Dr [Tony Fauci](https://www.niaid.nih.gov/about/anthony-s-fauci-md-bio), President Biden's Chief Medical Officer, clarified a little further on one of the morning talk shows:
+
+>The reason is that with the sheer volume of new cases that we are having and that we expect to continue with omicron, one of the things we want to be careful of is that we don’t have so many people out, [Fauci told CNN's Jim, Acosta](https://www.cnbc.com/2021/12/28/dr-fauci-cdcs-reduced-isolation-time-will-get-people-back-to-jobs.html)
+
+This strikes a more nuanced tone than the statement in the CDC media release.
+There needs to be a balance between the risks of onward transmission and the harms of having basic services fail or operate in a degraded mode.
+This is a health *policy* decision.
+
+>On Wednesday, Walensky acknowledged that the CDC’s decision to alter the recommended isolation period “really had a lot to do with what we thought people would be able to tolerate.”[Dr Walensky on CNN](https://www.politico.com/news/2021/12/29/cdc-defends-new-covid-guidelines-526234)
+
+And on NPR
+
+>Yeah, I really am glad you asked that question. So of course, we can't take science into a vacuum. We have to put science in the context of how it can be implemented in a functional society, so we always do that. Your question, though, is really important. And that is, you know, the vast majority of transmission happens in that first five days. And there's probably a little bit that might happen after those five days, which is why we've really put in the strong recommendation to mask those last five days. [Dr Walenksy on NPR](https://www.npr.org/2021/12/28/1068587852/cdc-director-on-new-isolation-rules?s=03)
+
+And on the question of testing:
+
+>The antigen test is another question that has arrived, and interestingly, we actually do not know the predictive value of the antigen test later in the course of disease with regard to transmissibility.
+
+It's a bit unfortunate that they didn't do the research or commission the research on viral cultures, antigen tests, PCR tests, etc over time in even a small number of partcipants.
+I know that this will vary amongst different populations due to different levels of immunity and immune systems, but directionaly this could have been informative.
+It seems like this kind of basic epidemiology research fits the bill for something sponsored by the NIH and importantly was going to be a natural question in response to the policy shift.
+
+## Where Engineering Thinking Comes in
+
+My training in engineering has come to shape the way that I view the world in unexpected ways.
+One component of my engineering education that seems salient to today is the idea of balancing risks and being clear about assumptions.
+For example, in chemical engineering one of the common acts is to design a chemical reactor (or some kind of chemical driven process).
+You are given a budget and an end goal and you design away.
+You could make all of the pipes out of titanium which could be very safe, but very expensive and you won't have the budget to build the process.
+Because of this you design the process, maybe make a few sensitivity analysis on materials or design changes.
+Eventually, you present the design and make clear the operating parameters and sensitivities (and in some aspects you stamp it with your Professional Engineer stamp if you have earned this designation (as a result of testing and years of apprenticing)).
+
+I think this last moment is what is critical--that you make a design choice and make that choice (and repercussion) known.
+You do the math, but then make a decision and make it clear that is was decision under constraints.
+I think that's where the CDC is learning (as news evolves) that they have to make these decisions very clear.
+
+
+The risk of not making all of the assumptions and decision points clear is that the CDC is accused of being arbitrary in guidance.
+That is not good.
+We do not want to think of our public health agencies as making guidance that is politically expediant, but what that takes is putting the facts out there and the trade offs. 
+
+For instance in the paper below we can see what the risk of positive contacts leaving isolation early could be (or quarantine depending).
+Then the CDC can say that given these probabilities we recommend this policy (nicely sourced).
+
+https://www.medrxiv.org/content/10.1101/2021.06.11.21258735v1
+
+To put it into engineering design terms, in order to have the public health at the maximal level, we recommend this guidance.
+Then for those for whom a risk tolerance is lower or there is higher risk, they can adjust with the CDC guidance functioning as the floor.
+
+## It's All About Trade-Offs
+
+The hard part about policy is that everything is about trade-offs.
+We just have to be clear where the science ends (e.g. what is known, what is unknown, and what our confidence is in these data) and where policy and trade-offs are being made.
