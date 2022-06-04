@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2019-04-04">
+<meta name="description" content="Metropolis Hasting samplers are typically slow in R because of inability to parallelise or vectorise operations. The Rcpp package allows a way to use C++ to conduct these MCMC operations at a much greater speed. This post explores how one would do this, achieving a >20x speed up.">
+
+<title>Insufficient Statistics - Speeding Things Up with Rcpp</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - Speeding Things Up with Rcpp">
+<meta property="og:description" content="Metropolis Hasting samplers are typically slow in R because of inability to parallelise or vectorise operations. The Rcpp package allows a way to use C++ to conduct these MCMC operations at a much greater speed. This post explores how one would do this, achieving a >20x speed up.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - Speeding Things Up with Rcpp">
+<meta name="twitter:description" content="Metropolis Hasting samplers are typically slow in R because of inability to parallelise or vectorise operations. The Rcpp package allows a way to use C++ to conduct these MCMC operations at a much greater speed. This post explores how one would do this, achieving a >20x speed up.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Speeding Things Up with Rcpp</h1>
+                  <div>
+        <div class="description">
+          <p>Metropolis Hasting samplers are typically slow in R because of inability to parallelise or vectorise operations. The Rcpp package allows a way to use C++ to conduct these MCMC operations at a much greater speed. This post explores how one would do this, achieving a &gt;20x speed up.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Rcpp</div>
+                <div class="quarto-category">Bayes</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 4, 2019</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#the-problem" id="toc-the-problem" class="nav-link" data-scroll-target="#the-problem">The problem</a></li>
+  <li><a href="#data-generating-process" id="toc-data-generating-process" class="nav-link" data-scroll-target="#data-generating-process">Data Generating Process</a>
+  <ul class="collapse">
+  <li><a href="#likelihood" id="toc-likelihood" class="nav-link" data-scroll-target="#likelihood">Likelihood</a></li>
+  <li><a href="#prior-distribution" id="toc-prior-distribution" class="nav-link" data-scroll-target="#prior-distribution">Prior Distribution</a></li>
+  </ul></li>
+  <li><a href="#input-values" id="toc-input-values" class="nav-link" data-scroll-target="#input-values">Input Values</a>
+  <ul class="collapse">
+  <li><a href="#m-h-sampler" id="toc-m-h-sampler" class="nav-link" data-scroll-target="#m-h-sampler">M-H Sampler</a></li>
+  </ul></li>
+  <li><a href="#c-version" id="toc-c-version" class="nav-link" data-scroll-target="#c-version">C++ Version</a>
+  <ul class="collapse">
+  <li><a href="#c-code" id="toc-c-code" class="nav-link" data-scroll-target="#c-code">C++ Code</a></li>
+  <li><a href="#compilation-and-testing" id="toc-compilation-and-testing" class="nav-link" data-scroll-target="#compilation-and-testing">Compilation and Testing</a></li>
+  <li><a href="#inference-using-c" id="toc-inference-using-c" class="nav-link" data-scroll-target="#inference-using-c">Inference using C++</a></li>
+  </ul></li>
+  <li><a href="#benchmarking-performance" id="toc-benchmarking-performance" class="nav-link" data-scroll-target="#benchmarking-performance">Benchmarking Performance</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>I worked on something that started in R and then I wanted to speed it up. MCMC is generally a slow process in base R because it can’t be parallelised easily as each state depends on the previous state. <code>Rcpp</code> is a wonderful avenue to speed things up.</p>
+</section>
+<section id="the-problem" class="level2">
+<h2 class="anchored" data-anchor-id="the-problem">The problem</h2>
+<p>The purpose of this exercise is to build a Metropolis-Hastings sampler in R. The goal is to return the posterior mean of <span class="math inline">\(\theta\)</span> given a vector of values, a likelihood function, and a prior distribution.</p>
+</section>
+<section id="data-generating-process" class="level2">
+<h2 class="anchored" data-anchor-id="data-generating-process">Data Generating Process</h2>
+<p>As always we hypothesise a likelihood function and then a prior.</p>
+<section id="likelihood" class="level3">
+<h3 class="anchored" data-anchor-id="likelihood">Likelihood</h3>
+<p><span class="math display">\[f(x_i,...,x_n|\theta)=\frac{1}{\pi^n(1+\Pi_{i=1}^n(x_i-\theta)^2)} \ for \  -\infty&lt;x&lt;\infty\]</span></p>
+</section>
+<section id="prior-distribution" class="level3">
+<h3 class="anchored" data-anchor-id="prior-distribution">Prior Distribution</h3>
+<p><span class="math display">\[p(\theta)=\frac{1}{\sqrt{2\pi}}exp(-\theta^2/2)\]</span></p>
+</section>
+</section>
+<section id="input-values" class="level2">
+<h2 class="anchored" data-anchor-id="input-values">Input Values</h2>
+<p>We have been provided the following draws from the distribution:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="sc">-</span><span class="fl">3.4</span>, <span class="fl">2.8</span>, <span class="sc">-</span><span class="fl">0.5</span>, <span class="fl">4.7</span>, <span class="sc">-</span><span class="fl">1.9</span>, <span class="fl">0.8</span>, <span class="fl">3.2</span>, <span class="sc">-</span><span class="fl">5.2</span>, <span class="sc">-</span><span class="fl">0.9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="m-h-sampler" class="level3">
+<h3 class="anchored" data-anchor-id="m-h-sampler">M-H Sampler</h3>
+<p>Now to build the Metropolis Hastings sampler we build the corresponding R functions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="cf">function</span>(theta){</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">2</span><span class="sc">*</span>pi)<span class="sc">*</span><span class="fu">exp</span>(<span class="sc">-</span>theta<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And an associated check to make sure it is providing logical values:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(test_prior <span class="ot">&lt;-</span> <span class="fu">prior</span>(<span class="at">theta =</span> .<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3969525</code></pre>
+</div>
+</div>
+<p>Then we build the likelihood function. In order to prevent integer underflow I have converted the function to log-likelihood. I then exponentiate the final value. The log-likelihood is then describved as</p>
+<p><span class="math display">\[l(x_i,...x_n|\theta) = log(1) - (n\log(pi)+\Sigma_{i=1}^nlog(1+(x_i-\theta)^2))\]</span></p>
+<p>The value from the log-likelihood can then be exponentiated in order to arrive at the likelihood.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">&lt;-</span> <span class="cf">function</span>(x, theta){</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.vector</span>(x)){</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"Please supply a vector to this function"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Log-likelihood</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="dv">1</span>)<span class="sc">-</span>(<span class="fu">length</span>(x)<span class="sc">*</span><span class="fu">log</span>(pi) <span class="sc">+</span> <span class="fu">sum</span>(<span class="fu">log</span>(<span class="dv">1</span><span class="sc">+</span>(x<span class="sc">-</span>theta)<span class="sc">^</span><span class="dv">2</span>)))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert to likelihood</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">exp</span>(a)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And finally we build the sampler.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>theta_sampler <span class="ot">&lt;-</span> <span class="cf">function</span>(x, niter, theta_start_val, theta_proposal_sd){</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, niter)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  theta[<span class="dv">1</span>] <span class="ot">&lt;-</span> theta_start_val</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>niter){</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    current_theta <span class="ot">&lt;-</span> theta[i<span class="dv">-1</span>]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Random Step</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    new_theta <span class="ot">&lt;-</span> current_theta <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">1</span>,<span class="dv">0</span>, theta_proposal_sd)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># MH Ratio</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">prior</span>(<span class="at">theta =</span> new_theta) <span class="sc">*</span> <span class="fu">likelihood</span>(<span class="at">theta =</span> new_theta, <span class="at">x =</span> x)<span class="sc">/</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>      (<span class="fu">prior</span>(<span class="at">theta =</span> current_theta)<span class="sc">*</span> <span class="fu">likelihood</span>(<span class="at">theta =</span> current_theta, <span class="at">x =</span> x))</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Decide to keep proposed theta or take a step</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(<span class="fu">runif</span>(<span class="dv">1</span>)<span class="sc">&lt;</span>r){</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>      theta[i] <span class="ot">&lt;-</span> new_theta</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span>{</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>      theta[i] <span class="ot">&lt;-</span> current_theta</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(theta)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can then sample from the posterior distribution given the initial values and our data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">336</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">theta_sampler</span>(<span class="at">x =</span> x, <span class="at">niter =</span> <span class="dv">5000</span>, <span class="at">theta_start_val =</span> <span class="dv">0</span>, <span class="at">theta_proposal_sd =</span> .<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can then graph our associated draws.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(out[<span class="dv">1000</span><span class="sc">:</span><span class="dv">5000</span>], </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Histogram of Posterior Draws of theta"</span>, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="fu">expression</span>(Posterior<span class="sc">~</span>Value<span class="sc">~</span>of<span class="sc">~</span>theta),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">30</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fu">mean</span>(out[<span class="dv">1000</span><span class="sc">:</span><span class="dv">5000</span>]), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The posterior mean of <span class="math inline">\(\theta\)</span> is:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1280924</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="c-version" class="level2">
+<h2 class="anchored" data-anchor-id="c-version">C++ Version</h2>
+<p>This is just an experiment to see if I can make the program a little faster using Rcpp.</p>
+<section id="c-code" class="level3">
+<h3 class="anchored" data-anchor-id="c-code">C++ Code</h3>
+<p>This code is nearly identical to the R code, just utilising C++. Astute readers will see that I really could drop some of the constants in the prior and the likelihood function because they will fall out when calculating the MH ratio, <em>r</em>. Additionally, it is worth noting that I have converted the equations to a log scale to avoid computations on very small numbers.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="fu">readLines</span>(<span class="st">"mh_sampler.cpp"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#include &lt;Rcpp.h&gt;
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+double Priorcpp(double theta) {
+  return 1/sqrt(2*M_PI)*exp(-pow(theta,2)/2);
+}
+
+// [[Rcpp::export]]
+double Likelihoodcpp(NumericVector x, double theta) {
+  double likelihood;
+  double loglike;
+  int n = x.size();
+  
+  loglike = log(1) - (n*log(M_PI)+sum(log(1+pow((x-theta),2))));
+  likelihood = exp(loglike);
+  return likelihood;
+}
+
+// [[Rcpp::export]]
+
+NumericVector make_posterior(NumericVector x, int niter, 
+                             double theta_start_val, double theta_proposal_sd){
+  NumericVector theta(niter);
+  double current_theta;
+  double new_theta;
+  double r;
+  double rand_val;
+  double thresh;
+  
+  theta[0] = theta_start_val;
+  
+  for(int i = 1; i &lt; niter; i++){
+    
+    current_theta = theta[i-1];
+    
+    rand_val = rnorm(1,0, theta_proposal_sd)[0];
+    
+    new_theta = current_theta + rand_val;
+    
+    
+    r = Priorcpp(new_theta) * Likelihoodcpp(x, new_theta)/
+      (Priorcpp(current_theta)* Likelihoodcpp(x, current_theta));
+    
+    
+    thresh = runif(1)[0];
+    
+    theta[i] = new_theta;
+    
+    
+    if(thresh&lt;r){
+      theta[i] = new_theta;
+    } else{
+      theta[i] = current_theta;
+    }
+    
+    
+  }
+  return theta;
+}</code></pre>
+</div>
+</div>
+</section>
+<section id="compilation-and-testing" class="level3">
+<h3 class="anchored" data-anchor-id="compilation-and-testing">Compilation and Testing</h3>
+<p>Now we need to compile the functions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rcpp)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="sc">::</span><span class="fu">sourceCpp</span>(<span class="st">"mh_sampler.cpp"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>First we meed to test that the prior and likelihood functions return equivalent values between base R and C++.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prior</span>(<span class="at">theta =</span> .<span class="dv">1</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Priorcpp</span>(<span class="at">theta =</span> .<span class="dv">1</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>So Priors are returning the same values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">likelihood</span>(<span class="at">x =</span> x, .<span class="dv">1</span>),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Likelihoodcpp</span>(<span class="at">x =</span> x, <span class="at">theta =</span> .<span class="dv">1</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>The likelihoods are returning the samples values. Now we have confidence that our C++ function is returning the same values.</p>
+</section>
+<section id="inference-using-c" class="level3">
+<h3 class="anchored" data-anchor-id="inference-using-c">Inference using C++</h3>
+<p>Now we can go ahead and draw from the posterior distribution using our sampler.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">336</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>out2 <span class="ot">&lt;-</span> <span class="fu">make_posterior</span>(<span class="at">x =</span> x, <span class="at">niter =</span> <span class="dv">5000</span>, <span class="at">theta_start_val =</span> <span class="dv">0</span>, </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">theta_proposal_sd =</span> .<span class="dv">5</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(out2[<span class="dv">1000</span><span class="sc">:</span><span class="dv">5000</span>],</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Histogram of Posterior Draws of theta"</span>, </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="fu">expression</span>(Posterior<span class="sc">~</span>Value<span class="sc">~</span>of<span class="sc">~</span>theta),</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">30</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fu">mean</span>(out2[<span class="dv">1000</span><span class="sc">:</span><span class="dv">5000</span>]), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The mean value, 0.127 is very similar to the base R version (some differences could be some differences in the random number generators used). However, we we compare the benchmark times we see that the C++ version of the sampler is roughly 20x faster.</p>
+</section>
+</section>
+<section id="benchmarking-performance" class="level2">
+<h2 class="anchored" data-anchor-id="benchmarking-performance">Benchmarking Performance</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>microbenchmark<span class="sc">::</span><span class="fu">microbenchmark</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Rcpp =</span> <span class="fu">make_posterior</span>(<span class="at">x =</span> x, <span class="at">niter =</span> <span class="dv">5000</span>, </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">theta_start_val =</span> <span class="dv">0</span>, <span class="at">theta_proposal_sd =</span> .<span class="dv">5</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">base=</span> <span class="fu">theta_sampler</span>(<span class="at">x =</span> x, <span class="at">niter =</span> <span class="dv">5000</span>, </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">theta_start_val =</span> <span class="dv">0</span>, <span class="at">theta_proposal_sd =</span> .<span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unit: milliseconds
+ expr       min        lq      mean    median         uq       max neval cld
+ Rcpp  2.526245  3.195239  4.406052  3.833075   4.641132  15.83486   100  a 
+ base 45.479338 55.770392 82.311837 68.692651 107.990967 167.98600   100   b</code></pre>
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2019,
+  author = {Michael DeWitt},
+  title = {Speeding {Things} {Up} with {Rcpp}},
+  date = {2019-04-04},
+  url = {https://michaeldewittjr.com/programming/2019-04-04-speeding-things-up-with-rcpp},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2019" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2019. <span>“Speeding Things Up with Rcpp.”</span> April
+4, 2019. <a href="https://michaeldewittjr.com/programming/2019-04-04-speeding-things-up-with-rcpp">https://michaeldewittjr.com/programming/2019-04-04-speeding-things-up-with-rcpp</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

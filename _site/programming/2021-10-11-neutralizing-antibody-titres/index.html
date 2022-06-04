@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2021-11-11">
+<meta name="description" content="How long someone has detectable neutralizing antibodies after vaccination is important in understanding the impact of vaccination on disease transmission. In this post I step through several different models and re-examine data from a prior paper.">
+
+<title>Insufficient Statistics - Neutralizing Antibody Titres</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - Neutralizing Antibody Titres">
+<meta property="og:description" content="How long someone has detectable neutralizing antibodies after vaccination is important in understanding the impact of vaccination on disease transmission. In this post I step through several different models and re-examine data from a prior paper.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - Neutralizing Antibody Titres">
+<meta name="twitter:description" content="How long someone has detectable neutralizing antibodies after vaccination is important in understanding the impact of vaccination on disease transmission. In this post I step through several different models and re-examine data from a prior paper.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">(<a href="#ref-medewittjr" role="doc-biblioref"><strong>medewittjr?</strong></a>)</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Neutralizing Antibody Titres</h1>
+                  <div>
+        <div class="description">
+          <p>How long someone has detectable neutralizing antibodies after vaccination is important in understanding the impact of vaccination on disease transmission. In this post I step through several different models and re-examine data from a prior paper.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">antibodies</div>
+                <div class="quarto-category">nAbs</div>
+                <div class="quarto-category">Covid-19</div>
+                <div class="quarto-category">Immunology</div>
+                <div class="quarto-category">Bayes</div>
+                <div class="quarto-category">Stan</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">November 11, 2021</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#reading-the-pre-prints" id="toc-reading-the-pre-prints" class="nav-link active" data-scroll-target="#reading-the-pre-prints">Reading the Pre-Prints</a></li>
+  <li><a href="#so-look-at-the-data" id="toc-so-look-at-the-data" class="nav-link" data-scroll-target="#so-look-at-the-data">So Look at the Data</a></li>
+  <li><a href="#so-whats-the-half-life" id="toc-so-whats-the-half-life" class="nav-link" data-scroll-target="#so-whats-the-half-life">So What’s the Half Life?</a></li>
+  <li><a href="#what-about-compartmental-models" id="toc-what-about-compartmental-models" class="nav-link" data-scroll-target="#what-about-compartmental-models">What about compartmental models?</a></li>
+  <li><a href="#other-method" id="toc-other-method" class="nav-link" data-scroll-target="#other-method">Other Method</a></li>
+  <li><a href="#viral-titre" id="toc-viral-titre" class="nav-link" data-scroll-target="#viral-titre">Viral Titre?</a></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="reading-the-pre-prints" class="level2">
+<h2 class="anchored" data-anchor-id="reading-the-pre-prints">Reading the Pre-Prints</h2>
+<p>A <a href="https://twitter.com/EricTopol">prominant scientist</a> has been posting his highlights of pre-prints on twitter during the course of the pandemic and occasionally, I come across one that makes me scratch my head. I think that the move to open and rapid science through pre-prints has been good, but not without issues. Review (and open review especially) makes work better and is an important part of science and progress.</p>
+<p>One paper that stood out to me was by <span class="citation" data-cites="sutharDurabilityImmuneResponses2021">Suthar et al. (<a href="#ref-sutharDurabilityImmuneResponses2021" role="doc-biblioref">2021</a>)</span> in which the authors look at the neutralizing antibody tires (nAbs) amongst T-cell response in those persons who were vaccinated with the Pfizer SARS-CoV-2 Vaccines (BNT162b2 vaccine). The authors found: “substantial waning of antibody response and T-cell Immunity” in those who were vaccinated. Naturally, this <em>could</em> be concerning because antibodies and T-cells are important in fighting infection and could help us understand the endgame of this first epidemic of SARS-CoV-2 (e.g., vaccine induced reduction of transmission, symptomatic disease, severe outcomes, and associated periodicity given time since last vaccine). However, there is the open question of what is the best correlate of protection (e.g., we know that antibodies wane with time, but the ability to produce antibodies in the face of a new infection from memory B-cells is also very important) <span class="citation" data-cites="Corbett">(<a href="#ref-Corbett" role="doc-biblioref">Corbett et al. 2021</a>)</span></p>
+</section>
+<section id="so-look-at-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="so-look-at-the-data">So Look at the Data</h2>
+<p>As mentioned, along with the bad things about pre-prints (media jumping on sensationalist findings, people seeking acclaim by making bold statements that are not rigorously founded in fact, general review help, etc) is that much of the data are available for secondary analysis. With the article in question, I could find some of the original data analyzed by the authors from a prior publication. We can start to look at these data ourselves:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✓ ggplot2 3.3.5.9000     ✓ purrr   0.3.4.9000
+✓ tibble  3.1.6.9001     ✓ dplyr   1.0.8.9000
+✓ tidyr   1.1.4.9000     ✓ stringr 1.4.0.9000
+✓ readr   2.1.2          ✓ forcats 0.5.1     </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+x dplyr::between()   masks data.table::between()
+x dplyr::filter()    masks stats::filter()
+x dplyr::first()     masks data.table::first()
+x dplyr::lag()       masks stats::lag()
+x dplyr::last()      masks data.table::last()
+x purrr::transpose() masks data.table::transpose()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(ggdist<span class="sc">::</span><span class="fu">theme_ggdist</span>())</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">"nAbs.xlsx"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(day, value, <span class="sc">-</span>PID, <span class="sc">-</span>Gender) <span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">day =</span> <span class="fu">as.numeric</span>(<span class="fu">str_extract</span>(<span class="at">string =</span> day, <span class="st">"</span><span class="sc">\\</span><span class="st">d+"</span>)))<span class="ot">-&gt;</span>dat_long</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(dat, <span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: right;">PID</th>
+<th style="text-align: left;">Gender</th>
+<th style="text-align: right;">D_0</th>
+<th style="text-align: right;">D_21</th>
+<th style="text-align: right;">D_42</th>
+<th style="text-align: right;">D_90_120</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">62.3</td>
+<td style="text-align: right;">1464.8</td>
+<td style="text-align: right;">666.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2001</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">964.3</td>
+<td style="text-align: right;">273.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2007</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">195.3</td>
+<td style="text-align: right;">101.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2009</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">224.0</td>
+<td style="text-align: right;">155.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2011</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">51.0</td>
+<td style="text-align: right;">679.9</td>
+<td style="text-align: right;">322.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2012</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">73.5</td>
+<td style="text-align: right;">343.4</td>
+<td style="text-align: right;">173.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2013</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">229.1</td>
+<td style="text-align: right;">145.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2018</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">12.3</td>
+<td style="text-align: right;">243.6</td>
+<td style="text-align: right;">218.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2020</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">73.2</td>
+<td style="text-align: right;">88.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2028</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">40.8</td>
+<td style="text-align: right;">814.5</td>
+<td style="text-align: right;">326.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2030</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">47.0</td>
+<td style="text-align: right;">286.9</td>
+<td style="text-align: right;">155.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2031</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">166.9</td>
+<td style="text-align: right;">68.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2034</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">474.1</td>
+<td style="text-align: right;">237.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2036</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">42.9</td>
+<td style="text-align: right;">306.4</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2040</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">249.3</td>
+<td style="text-align: right;">188.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2042</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">34.8</td>
+<td style="text-align: right;">484.1</td>
+<td style="text-align: right;">200.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2043</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">37.4</td>
+<td style="text-align: right;">108.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2044</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">30.5</td>
+<td style="text-align: right;">927.8</td>
+<td style="text-align: right;">341.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2045</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">266.8</td>
+<td style="text-align: right;">139.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2046</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">262.2</td>
+<td style="text-align: right;">75.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2047</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">279.4</td>
+<td style="text-align: right;">313.1</td>
+<td style="text-align: right;">245.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2048</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">678.0</td>
+<td style="text-align: right;">297.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2049</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">182.7</td>
+<td style="text-align: right;">167.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2050</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">431.5</td>
+<td style="text-align: right;">217.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2051</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">79.2</td>
+<td style="text-align: right;">435.8</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2052</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">252.1</td>
+<td style="text-align: right;">151.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2053</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">27.5</td>
+<td style="text-align: right;">319.3</td>
+<td style="text-align: right;">184.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2054</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">35.1</td>
+<td style="text-align: right;">179.2</td>
+<td style="text-align: right;">117.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2055</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">28.2</td>
+<td style="text-align: right;">493.1</td>
+<td style="text-align: right;">342.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2056</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">33.1</td>
+<td style="text-align: right;">387.3</td>
+<td style="text-align: right;">466.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2002</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">77.0</td>
+<td style="text-align: right;">801.1</td>
+<td style="text-align: right;">617.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2005</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">19.4</td>
+<td style="text-align: right;">349.3</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2006</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">44.6</td>
+<td style="text-align: right;">423.2</td>
+<td style="text-align: right;">217.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2008</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">61.5</td>
+<td style="text-align: right;">291.7</td>
+<td style="text-align: right;">101.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2010</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">34.5</td>
+<td style="text-align: right;">473.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2014</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">15.8</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">44.1</td>
+<td style="text-align: right;">483.2</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2019</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">112.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2022</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">131.4</td>
+<td style="text-align: right;">108.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2023</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">13.0</td>
+<td style="text-align: right;">203.3</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2025</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">58.9</td>
+<td style="text-align: right;">856.3</td>
+<td style="text-align: right;">2095.1</td>
+<td style="text-align: right;">769.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2026</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">21.4</td>
+<td style="text-align: right;">387.2</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2027</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">80.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2003</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">267.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2004</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">12.6</td>
+<td style="text-align: right;">1268.4</td>
+<td style="text-align: right;">523.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2015</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">2876.5</td>
+<td style="text-align: right;">4379.5</td>
+<td style="text-align: right;">2492.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2017</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">122.9</td>
+<td style="text-align: right;">587.6</td>
+<td style="text-align: right;">546.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2024</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2029</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">341.9</td>
+<td style="text-align: right;">159.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2032</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">1143.4</td>
+<td style="text-align: right;">1845.0</td>
+<td style="text-align: right;">247.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2033</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">15.4</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2035</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">35.3</td>
+<td style="text-align: right;">422.1</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2037</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">26.9</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2038</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">45.9</td>
+<td style="text-align: right;">391.5</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2039</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">143.6</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2041</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">47.8</td>
+<td style="text-align: right;">2131.4</td>
+<td style="text-align: right;">3044.5</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2021</td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>So it appears that there are 57 unique participants. Some participants were lost to follow-up and the final date range is kind of wide (90-120 days).</p>
+<p>One of the most important steps in any analysis is to graph the data to gain a general understanding of the trends and shape of the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dat_long <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, value, <span class="at">group =</span> PID))<span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>PID)<span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Antibody Titres by Participate"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 20 row(s) containing missing values (geom_path).</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Antibody Titres Over Time by Participant</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>One things that stands out to me is participant 2015. This individual has nAbs that are much higher than the other participants.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dat_long <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tst =</span> <span class="fu">ifelse</span>(PID<span class="sc">==</span><span class="dv">2015</span>,<span class="st">"PID: 2015"</span>,<span class="st">"All Others"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tst, day) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mu =</span> <span class="fu">mean</span>(value, <span class="at">na.rm=</span><span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(day,mu) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">caption =</span> <span class="st">"Mean Value of nAbs by Group"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'tst'. You can override using the `.groups`
+argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Mean Value of nAbs by Group</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">tst</th>
+<th style="text-align: right;">0</th>
+<th style="text-align: right;">21</th>
+<th style="text-align: right;">42</th>
+<th style="text-align: right;">90</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">All Others</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">104.0</td>
+<td style="text-align: right;">499.3</td>
+<td style="text-align: right;">251.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PID: 2015</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">2876.5</td>
+<td style="text-align: right;">4379.5</td>
+<td style="text-align: right;">2492.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>If this were me, I would go back and check those data just in case someone got a little too happy when titrating (been there). Regardless, accepting this level of variability in the individual, these kind of data lend themselves well to hierarchical modeling.</p>
+</section>
+<section id="so-whats-the-half-life" class="level2">
+<h2 class="anchored" data-anchor-id="so-whats-the-half-life">So What’s the Half Life?</h2>
+<p>We can model the half life of the nAbs in the participants using the multilevel model framework with lme4. I will subset the data to include only the levels after the peak antibody level and include a random effect for the participant (since we know that there is within-person variability and serial dependence).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'Matrix'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:tidyr':
+
+    expand, pack, unpack</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fit_lme <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log</span>(value) <span class="sc">~</span> day <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>PID), <span class="at">data =</span> <span class="fu">subset</span>(dat_long, day <span class="sc">&gt;</span><span class="dv">21</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>(half_life <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">log</span>(<span class="dv">2</span>)<span class="sc">/</span><span class="fu">confint</span>(fit_lme)[<span class="dv">4</span>,])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Computing profile confidence intervals ...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   2.5 %   97.5 % 
+46.31701 84.74999 </code></pre>
+</div>
+</div>
+<p>So based on this model, the half-life for nAbs is between 46.3 and 84.7 days.</p>
+<div class="cell" data-preview="true">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>nab_out <span class="ot">&lt;-</span> <span class="cf">function</span>(t,hl){</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="sc">^</span>(<span class="sc">-</span>t<span class="sc">/</span>hl)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>sim_dat <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">day =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">365</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lower_bound =</span> <span class="fu">nab_out</span>(day, half_life[<span class="dv">1</span>]),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">upper_bound =</span> <span class="fu">nab_out</span>(day, half_life[<span class="dv">2</span>]))</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>sim_dat <span class="sc">%&gt;%</span>   </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> day))<span class="sc">+</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower_bound,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ymax =</span> upper_bound), </span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">"orange"</span>, <span class="at">alpha =</span> .<span class="dv">5</span>)<span class="sc">+</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> .<span class="dv">25</span>, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>)<span class="sc">+</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Simulated Decay of nAbs"</span>,</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y  =</span> <span class="st">"Percent of Maximum nAbs"</span>,</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Day After Peak nAbs"</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>So it appears that in roughly 3-6 months after maximum antibody levels a given vaccinated person would have 1/4 of nAb titres.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>days_until_perc <span class="ot">&lt;-</span> <span class="cf">function</span>(target, hl){</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span><span class="fu">log</span>(target)<span class="sc">*</span>hl<span class="sc">/</span><span class="fu">log</span>(<span class="dv">2</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">days_until_perc</span>(.<span class="dv">25</span>, half_life)<span class="sc">/</span><span class="dv">30</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> 2.5 % 97.5 % 
+   3.1    5.6 </code></pre>
+</div>
+</div>
+<p>The big question of course is first, does this matter and in what context (protection vs infection where high levels of nAbs make sense vs symptomatic disease where a trained immune system is all that is required (thinking memory B and T cells)) and what concentration is enough at each level.</p>
+<p>Is 5% of peak is enough then we have between 6 months and a year, perhaps in time for a teaser from infection to boost nAbs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">days_until_perc</span>(.<span class="dv">05</span>, half_life)<span class="sc">/</span><span class="dv">30</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> 2.5 % 97.5 % 
+   6.7   12.2 </code></pre>
+</div>
+</div>
+</section>
+<section id="what-about-compartmental-models" class="level2">
+<h2 class="anchored" data-anchor-id="what-about-compartmental-models">What about compartmental models?</h2>
+<p>This is not my forte, but it would seem that compartmental models would be a good way to approach this problem. We would have to fix some parameters due to the data available but one could imagine that a decent data generating process could look like (at least as far as I understand how mRNA vaccines work):</p>
+<ol type="1">
+<li>Inoculum is added to the blood stream via vaccination</li>
+<li>A latent phase for vaccinated individual’s cells to produce the spike protein which would be a function of the volume of inoculum and the number of cells encountered. The inoculum also has some decay function.</li>
+<li>A phase where the encoded protein is in the bloodstream and recognized by the immune system as a foreign body which ramps up the innate and humoral immune response.</li>
+<li>Eventually the spike proteins would be cleared at some rate as the immune response increases</li>
+</ol>
+<p>I started down this path and then realized that I would need to make some assumptions for some of the parameters (transition rates between compartments). Being that I do not have reasonable priors for these rates, I decided not to code up this mdoel.</p>
+</section>
+<section id="other-method" class="level2">
+<h2 class="anchored" data-anchor-id="other-method">Other Method</h2>
+<p>I read another paper on waning immunity on coronaviruses that had much more longitudinal data <span class="citation" data-cites="Townsend_Hassler_Wang_Miura_Singh_Kumar_Ruddle_Galvani_Dornburg_2021">(<a href="#ref-Townsend_Hassler_Wang_Miura_Singh_Kumar_Ruddle_Galvani_Dornburg_2021" role="doc-biblioref">Townsend et al. 2021</a>)</span>. The key model in the paper was locked away in a proprietary Mathematica Notebook that couldn’t open without buying the software. I coded the below model based on their methods, but we will find is that we do not have enough data to fit a very good model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rw</span>(<span class="st">"decay.stan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>data {
+    int&lt;lower=1&gt; N; // Number of Samples
+    int&lt;lower=1&gt; J; //Number of participants
+    vector [N] nAbs; //The concentration of the antibodies
+    vector [N] time; //The concentration of the antibodies
+}
+
+parameters{
+    real omega;
+    real hl;
+    real&lt;lower=0&gt; sigma;
+}
+
+transformed parameters {
+    vector[N] theta;  //vac effect
+    theta[1:N] = omega + (1- omega)  * exp(-hl*time[1:N]);
+}
+
+model {
+    hl ~ normal(0,2);
+    omega ~ normal(0,1);
+    nAbs ~ normal(theta, sigma);
+}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is cmdstanr version 0.4.0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- Online documentation and vignettes at mc-stan.org/cmdstanr</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- CmdStan path set to: /Users/michael/.cmdstanr/cmdstan-2.28.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- Use set_cmdstan_path() to change the path</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+A newer version of CmdStan is available. See ?install_cmdstan() to install it.
+To disable this check set option or environment variable CMDSTANR_NO_VER_CHECK=TRUE.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>mod_ex <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="st">"decay.stan"</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>dat_stan_base <span class="ot">&lt;-</span> dat_long <span class="sc">%&gt;%</span> </span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(day<span class="sc">&gt;</span><span class="dv">21</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>stan_dat <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="fu">nrow</span>(dat_stan_base),</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">J =</span> <span class="fu">length</span>(<span class="fu">unique</span>(dat_stan_base<span class="sc">$</span>PID)),</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">nAbs =</span> dat_stan_base<span class="sc">$</span>value,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">time =</span> dat_stan_base<span class="sc">$</span>day</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>fit_ex <span class="ot">&lt;-</span> mod_ex<span class="sc">$</span><span class="fu">sample</span>(stan_dat, </span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>                        <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">iter_sampling =</span> <span class="dv">500</span>,</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>                                                <span class="at">iter_warmup =</span> <span class="dv">200</span>,</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>                        <span class="at">adapt_delta =</span> .<span class="dv">98</span>,</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>                        <span class="at">max_treedepth =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Exception: normal_lpdf: Location parameter[55] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain 2 finished in 0.2 seconds.
+Chain 4 finished in 0.1 seconds.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[55] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/Rtmp8xeEVQ/model-4cb07f1e8483.stan', line 22, column 1 to column 29)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain 3 finished in 0.3 seconds.
+Chain 1 finished in 42.3 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 10.7 seconds.
+Total execution time: 42.7 seconds.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Warning: 232 of 2000 (12.0%) transitions ended with a divergence.
+This may indicate insufficient exploration of the posterior distribution.
+Possible remedies include: 
+  * Increasing adapt_delta closer to 1 (default is 0.8) 
+  * Reparameterizing the model (e.g. using a non-centered parameterization)
+  * Using informative or weakly informative prior distributions </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>187 of 2000 (9.0%) transitions hit the maximum treedepth limit of 15 or 2^15-1 leapfrog steps.
+Trajectories that are prematurely terminated due to this limit will result in slow exploration.
+Increasing the max_treedepth limit can avoid this at the expense of more computation.
+If increasing max_treedepth does not remove warnings, try to reparameterize the model.</code></pre>
+</div>
+</div>
+<p>Not a great fit as we are trying to draw a complicated curve through basically two points and there are (infinitely) many ways to do this.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>fit_ex<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"omega"</span>, <span class="st">"hl"</span>, <span class="st">"sigma"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 10
+  variable    mean  median      sd     mad     q5    q95  rhat ess_bulk ess_tail
+  &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+1 omega     -0.523 -0.851    0.937   0.851 -1.43    1.20  1.72     7.97    34.0 
+2 hl         0.139 -0.0548   1.52    1.43  -1.81    2.98  2.49     4.90    11.5 
+3 sigma    389.    71.6    401.    105.     0.547 878.    2.37     4.98     7.61</code></pre>
+</div>
+</div>
+</section>
+<section id="viral-titre" class="level2">
+<h2 class="anchored" data-anchor-id="viral-titre">Viral Titre?</h2>
+<p>A model that is somewhat of a compromise between the compartmental model which captures more of the underlying biological process and the hierarchical model which fit the within-host variability is to model the viral decay with a direct functional form. This is similar to the approach performed by <span class="citation" data-cites="Singanayagam_2021">Singanayagam et al. (<a href="#ref-Singanayagam_2021" role="doc-biblioref">2021</a>)</span> who use this functional form for estimated RNA copies from Cycle Threshold values. The issues, as before, is that we only have a few observations per person and I don’t have strong priors, but this model is closer to what we see in the graphs where the titre increases to some point and then decay afterwards. Ideally we would have some additional measures for the participants.</p>
+<p>This can be modeled by the following equations:</p>
+<p><span class="math display">\[
+v(\tau) = v_{max} \frac{(a+b)}{be^{-a(\tau-\tau_{max})}+ae^{b(\tau-\tau_{max})}}
+\]</span></p>
+<p>The a and b parameters can be fit and influence the rate of increase and decrease of nAb tire (or virus titre for that matter).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb135"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a>nab_kinetics <span class="ot">&lt;-</span> <span class="cf">function</span>(v_max, a,b,t,tmax){</span>
+<span id="cb135-2"><a href="#cb135-2" aria-hidden="true" tabindex="-1"></a>  v_max <span class="sc">*</span> (a<span class="sc">+</span>b)<span class="sc">/</span>(b<span class="sc">*</span><span class="fu">exp</span>(<span class="sc">-</span>a<span class="sc">*</span>(t<span class="sc">-</span>tmax))<span class="sc">+</span>a<span class="sc">*</span><span class="fu">exp</span>(b<span class="sc">*</span>(t<span class="sc">-</span>tmax)))</span>
+<span id="cb135-3"><a href="#cb135-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb135-4"><a href="#cb135-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb135-5"><a href="#cb135-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">nab_kinetics</span>(<span class="dv">50</span>, <span class="at">a =</span> .<span class="dv">8</span>, <span class="at">b=</span> .<span class="dv">1</span>, <span class="at">t =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">70</span>, <span class="at">tmax =</span> <span class="dv">20</span>), <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb135-6"><a href="#cb135-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"nAb Titre"</span>, <span class="at">main =</span> <span class="st">"Simulated Results"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We need to comport our data to provide the ability to identify the individual maximums and times for each participant.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a>long_model_dat <span class="ot">&lt;-</span> dat_long <span class="sc">%&gt;%</span> </span>
+<span id="cb136-2"><a href="#cb136-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-3"><a href="#cb136-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(PID) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-4"><a href="#cb136-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">v_max =</span> <span class="fu">max</span>(value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-5"><a href="#cb136-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">t_max =</span>  <span class="fu">max</span>((v_max <span class="sc">==</span> value)<span class="sc">*</span>day))<span class="sc">%&gt;%</span> </span>
+<span id="cb136-6"><a href="#cb136-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb136-7"><a href="#cb136-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.integer</span>(<span class="fu">as.factor</span>(PID)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And our model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb137"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb137-1"><a href="#cb137-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rw</span>(<span class="st">"rise.stan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in readLines(x): incomplete final line found on 'rise.stan'</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>functions{
+    real viral_kinetics (real v_max, real a, real b, real t, real t_max){
+        return(v_max * (a + b) / (b * exp(-a*(t - t_max)) + a * exp(b*(t-t_max))));
+    }
+}
+
+data {
+    int&lt;lower=1&gt; N; // Number of records
+    int&lt;lower=0&gt; id[N]; //Participant IDs
+    vector&lt;lower=0&gt; [N] nAbs_max; // Maximum Ab concentration
+    vector&lt;lower=0&gt; [N] nAbs; //The concentration of the antibodies
+    vector [N] time; //The concentration of the antibodies
+    vector [N] t_max; //The concentration of the antibodies
+    real prior_a_mu;
+    real prior_b_mu;
+    real prior_a_sd;
+    real prior_b_sd;
+    int pred_window;
+}
+
+parameters {
+    real&lt;lower=0&gt; a;
+    real&lt;lower=0&gt; b;
+    real&lt;lower=0&gt; sigma;
+}
+
+transformed parameters{
+    vector&lt;lower=0&gt;[N] mu;
+    
+    for( i in 1:N){
+        mu[i] = viral_kinetics(nAbs_max[id[i]], a, b, time[id[i]], t_max[id[i]]);
+    }
+    
+}
+model {
+    a ~ normal(prior_a_mu, prior_a_sd);
+    b ~ normal(prior_b_mu, prior_b_sd);
+    sigma ~ normal(0,1);
+    
+    nAbs ~ normal(mu, sigma);
+}
+
+generated quantities{
+    vector[pred_window] yhat;
+    vector[pred_window] mu_pred;
+    real avg_nabs_max = mean(nAbs_max);
+    real avg_tmax = mean(t_max);
+    
+    for(i in 1:pred_window){
+        mu_pred[i] = viral_kinetics(avg_nabs_max, a, b, i, avg_tmax);
+        yhat[i] = normal_rng(mu_pred[i], sigma);
+    }
+    
+}</code></pre>
+</div>
+</div>
+<p>We can fit the model in the usual ways:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a>mod_titre <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="st">"rise.stan"</span>)</span>
+<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb140-3"><a href="#cb140-3" aria-hidden="true" tabindex="-1"></a>titre_dat <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb140-4"><a href="#cb140-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">N =</span> <span class="fu">nrow</span>(long_model_dat),</span>
+<span id="cb140-5"><a href="#cb140-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">id =</span> long_model_dat<span class="sc">$</span>id,</span>
+<span id="cb140-6"><a href="#cb140-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">nAbs_max =</span> long_model_dat<span class="sc">$</span>v_max,</span>
+<span id="cb140-7"><a href="#cb140-7" aria-hidden="true" tabindex="-1"></a><span class="at">nAbs =</span> long_model_dat<span class="sc">$</span>value,</span>
+<span id="cb140-8"><a href="#cb140-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">time=</span> long_model_dat<span class="sc">$</span>day,</span>
+<span id="cb140-9"><a href="#cb140-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">t_max =</span> long_model_dat<span class="sc">$</span>t_max,</span>
+<span id="cb140-10"><a href="#cb140-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior_a_mu =</span> .<span class="dv">8</span>,</span>
+<span id="cb140-11"><a href="#cb140-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior_b_mu =</span> .<span class="dv">1</span>,</span>
+<span id="cb140-12"><a href="#cb140-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior_a_sd =</span> .<span class="dv">05</span>,</span>
+<span id="cb140-13"><a href="#cb140-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior_b_sd =</span> .<span class="dv">05</span>,</span>
+<span id="cb140-14"><a href="#cb140-14" aria-hidden="true" tabindex="-1"></a><span class="at">pred_window =</span> <span class="dv">180</span></span>
+<span id="cb140-15"><a href="#cb140-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb140-16"><a href="#cb140-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb140-17"><a href="#cb140-17" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">336</span>)</span>
+<span id="cb140-18"><a href="#cb140-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb140-19"><a href="#cb140-19" aria-hidden="true" tabindex="-1"></a>fit_titre <span class="ot">&lt;-</span> mod_titre<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> titre_dat, </span>
+<span id="cb140-20"><a href="#cb140-20" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">adapt_delta =</span> .<span class="dv">99</span>,</span>
+<span id="cb140-21"><a href="#cb140-21" aria-hidden="true" tabindex="-1"></a>                                                            <span class="at">max_treedepth =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: rise_model_namespace::log_prob: mu[sym1__] is nan, but must be greater than or equal to 0 (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmpJ4OPS5/model-dbcf188d05cc.stan', line 28, column 1 to column 23)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Exception: rise_model_namespace::log_prob: mu[sym1__] is nan, but must be greater than or equal to 0 (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmpJ4OPS5/model-dbcf188d05cc.stan', line 28, column 1 to column 23)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Exception: rise_model_namespace::log_prob: mu[sym1__] is nan, but must be greater than or equal to 0 (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmpJ4OPS5/model-dbcf188d05cc.stan', line 28, column 1 to column 23)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Exception: rise_model_namespace::log_prob: mu[sym1__] is nan, but must be greater than or equal to 0 (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmpJ4OPS5/model-dbcf188d05cc.stan', line 28, column 1 to column 23)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Exception: rise_model_namespace::log_prob: mu[sym1__] is nan, but must be greater than or equal to 0 (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmpJ4OPS5/model-dbcf188d05cc.stan', line 28, column 1 to column 23)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Exception: rise_model_namespace::log_prob: mu[sym1__] is nan, but must be greater than or equal to 0 (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmpJ4OPS5/model-dbcf188d05cc.stan', line 28, column 1 to column 23)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain 1 finished in 2.2 seconds.
+Chain 2 finished in 2.3 seconds.
+Chain 3 finished in 2.3 seconds.
+Chain 4 finished in 2.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 2.2 seconds.
+Total execution time: 2.6 seconds.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb184"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb184-1"><a href="#cb184-1" aria-hidden="true" tabindex="-1"></a>fit_titre<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"sigma"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 10
+  variable   mean  median     sd    mad      q5    q95  rhat ess_bulk ess_tail
+  &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+1 a         0.801  0.801  0.0511 0.0501  0.714   0.885  1.00    2165.    1948.
+2 b         0.102  0.0996 0.0479 0.0505  0.0252  0.182  1.00    1447.    1034.
+3 sigma    91.9   91.9    0.499  0.494  91.1    92.7    1.01    2466.    2321.</code></pre>
+</div>
+</div>
+<p>Note that there is a fair bit of variance in our model represented by zero. Additionally, we have some values of the predicted titre below zero. We could resolve this by changing the distribution to use a distribution that is always positive like a lognormal distribution. This would require some careful transformation of our data and associated parameters. We’ll stick with this formulation for now.</p>
+<p>We can now visualize our results from this model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb197"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb197-1"><a href="#cb197-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(posterior)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is posterior version 1.2.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'posterior'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    mad, sd, var</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb201"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb201-1"><a href="#cb201-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggdist)</span>
+<span id="cb201-2"><a href="#cb201-2" aria-hidden="true" tabindex="-1"></a> pred_nab <span class="ot">&lt;-</span> tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(fit_titre<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"yhat"</span>),yhat[i] ) <span class="sc">%&gt;%</span></span>
+<span id="cb201-3"><a href="#cb201-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb201-4"><a href="#cb201-4" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">group_by</span>(i) <span class="sc">%&gt;%</span> </span>
+<span id="cb201-5"><a href="#cb201-5" aria-hidden="true" tabindex="-1"></a>    ggdist<span class="sc">::</span><span class="fu">median_qi</span>(.value, <span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">5</span>, .<span class="dv">8</span>, .<span class="dv">95</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb224"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb224-1"><a href="#cb224-1" aria-hidden="true" tabindex="-1"></a>pred_nab <span class="sc">%&gt;%</span> </span>
+<span id="cb224-2"><a href="#cb224-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(i, .value))<span class="sc">+</span></span>
+<span id="cb224-3"><a href="#cb224-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_lineribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .lower, <span class="at">ymax =</span> .upper))<span class="sc">+</span></span>
+<span id="cb224-4"><a href="#cb224-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_brewer</span>()<span class="sc">+</span></span>
+<span id="cb224-5"><a href="#cb224-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb224-6"><a href="#cb224-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Estimated Quantity of nAbs with Viral Evolution Model"</span>,</span>
+<span id="cb224-7"><a href="#cb224-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Quantity"</span>,</span>
+<span id="cb224-8"><a href="#cb224-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Days"</span>,</span>
+<span id="cb224-9"><a href="#cb224-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">fill =</span> <span class="st">"Proportion of Scenarios"</span></span>
+<span id="cb224-10"><a href="#cb224-10" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb224-11"><a href="#cb224-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">col =</span> <span class="st">"orange"</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>)<span class="sc">+</span></span>
+<span id="cb224-12"><a href="#cb224-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Again, we see evidence of detectable tire above 180 days, but there is a decent bit of variability.</p>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<p>If we had additional measurements per person and some additional information on the kinetics, In the time it took me to write this post several other papers have come out with much more information that would be fun to analyze that find that immunity is likely long lasting <span class="citation" data-cites="Mateus_Dan_Zha Grifoni_Sidney_Vita_Peters_Crotty_Weiskopf_Sette_2021">(<a href="#ref-Mateus_Dan_Zha" role="doc-biblioref">Mateus et al., n.d.</a>; <a href="#ref-Grifoni_Sidney_Vita_Peters_Crotty_Weiskopf_Sette_2021" role="doc-biblioref">Grifoni et al. 2021</a>)</span>.</p>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-Corbett" class="csl-entry" role="doc-biblioentry">
+Corbett, Kizzmekia S., Martha C. Nason, Britta Flach, Matthew Gagne, Sarah O’Connell, Timothy S. Johnston, Shruti N. Shah, et al. 2021. <span>“Immune Correlates of Protection by mRNA-1273 Vaccine Against SARS-CoV-2 in Nonhuman Primates.”</span> <em>Science</em>, July. <a href="https://doi.org/10.1126/science.abj0299">https://doi.org/10.1126/science.abj0299</a>.
+</div>
+<div id="ref-Grifoni_Sidney_Vita_Peters_Crotty_Weiskopf_Sette_2021" class="csl-entry" role="doc-biblioentry">
+Grifoni, Alba, John Sidney, Randi Vita, Bjoern Peters, Shane Crotty, Daniela Weiskopf, and Alessandro Sette. 2021. <span>“SARS-CoV-2 Human t&nbsp;Cell Epitopes: Adaptive Immune Response Against COVID-19.”</span> <em>Cell Host &amp; Microbe</em> 29 (7): 1076–92. <a href="https://doi.org/10.1016/j.chom.2021.05.010">https://doi.org/10.1016/j.chom.2021.05.010</a>.
+</div>
+<div id="ref-Mateus_Dan_Zha" class="csl-entry" role="doc-biblioentry">
+Mateus, Jose, Jennifer M. Dan, Zeli Zhang, Carolyn Rydyznski Moderbacher, Marshall Lammers, Benjamin Goodwin, Alessandro Sette, Shane Crotty, and Daniela Weiskopf. n.d. <span>“Low-Dose mRNA-1273 COVID-19 Vaccine Generates Durable Memory Enhanced by Cross-Reactive t Cells.”</span> <em>Science</em> 0 (0): eabj9853. <a href="https://doi.org/10.1126/science.abj9853">https://doi.org/10.1126/science.abj9853</a>.
+</div>
+<div id="ref-Singanayagam_2021" class="csl-entry" role="doc-biblioentry">
+Singanayagam, Anika, Seran Hakki, Jake Dunning, Kieran J. Madon, Michael A. Crone, Aleksandra Koycheva, Nieves Derqui-Fernandez, et al. 2021. <span>“Community Transmission and Viral Load Kinetics of the SARS-CoV-2 Delta (b.1.617.2) Variant in Vaccinated and Unvaccinated Individuals in the UK: A Prospective, Longitudinal, Cohort Study.”</span> <em>The Lancet Infectious Diseases</em> 0 (0). <a href="https://doi.org/10.1016/S1473-3099(21)00648-4">https://doi.org/10.1016/S1473-3099(21)00648-4</a>.
+</div>
+<div id="ref-sutharDurabilityImmuneResponses2021" class="csl-entry" role="doc-biblioentry">
+Suthar, Mehul S., Prabhu S. Arunachalam, Mengyun Hu, Noah Reis, Meera Trisal, Olivia Raeber, Sharon Chinthrajah, et al. 2021. <span>“Durability of Immune Responses to the <span>BNT162b2</span> <span class="nocase">mRNA</span> Vaccine.”</span> <a href="https://doi.org/10.1101/2021.09.30.462488">https://doi.org/10.1101/2021.09.30.462488</a>.
+</div>
+<div id="ref-Townsend_Hassler_Wang_Miura_Singh_Kumar_Ruddle_Galvani_Dornburg_2021" class="csl-entry" role="doc-biblioentry">
+Townsend, Jeffrey P., Hayley B. Hassler, Zheng Wang, Sayaka Miura, Jaiveer Singh, Sudhir Kumar, Nancy H. Ruddle, Alison P. Galvani, and Alex Dornburg. 2021. <span>“The Durability of Immunity Against Reinfection by SARS-CoV-2: A Comparative Evolutionary Study.”</span> <em>The Lancet Microbe</em> 0 (0). <a href="https://doi.org/10.1016/S2666-5247(21)00219-6">https://doi.org/10.1016/S2666-5247(21)00219-6</a>.
+</div>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2021,
+  author = {Michael DeWitt},
+  title = {Neutralizing {Antibody} {Titres}},
+  date = {2021-11-11},
+  url = {https://michaeldewittjr.com/programming/2021-10-11-neutralizing-antibody-titres},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2021" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2021. <span>“Neutralizing Antibody Titres.”</span>
+November 11, 2021. <a href="https://michaeldewittjr.com/programming/2021-10-11-neutralizing-antibody-titres">https://michaeldewittjr.com/programming/2021-10-11-neutralizing-antibody-titres</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

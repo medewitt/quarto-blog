@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2018-09-17">
+<meta name="description" content="Network analysis provides an way to analyse the interconnectedness of different networks. This can provide insight into social networks, interconnected groups of text, tweets, etc. Visualisations help to show these relationships but also some numeric values to quantify them.">
+
+<title>Insufficient Statistics - a foray into network analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - a foray into network analysis">
+<meta property="og:description" content="Network analysis provides an way to analyse the interconnectedness of different networks.
+This can provide insight into social networks, interconnected groups of text, tweets, etc.
+Visualisations help to show these relationships but also some numeric values to quantify them.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - a foray into network analysis">
+<meta name="twitter:description" content="Network analysis provides an way to analyse the interconnectedness of different networks.
+This can provide insight into social networks, interconnected groups of text, tweets, etc.
+Visualisations help to show these relationships but also some numeric values to quantify them.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">a foray into network analysis</h1>
+                  <div>
+        <div class="description">
+          <p>Network analysis provides an way to analyse the interconnectedness of different networks. This can provide insight into social networks, interconnected groups of text, tweets, etc. Visualisations help to show these relationships but also some numeric values to quantify them.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">network analysis</div>
+                <div class="quarto-category">r</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 17, 2018</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#marriage-networks-of-florence" id="toc-marriage-networks-of-florence" class="nav-link active" data-scroll-target="#marriage-networks-of-florence">Marriage Networks of Florence</a></li>
+  <li><a href="#formatting-the-data" id="toc-formatting-the-data" class="nav-link" data-scroll-target="#formatting-the-data">Formatting the Data</a>
+  <ul class="collapse">
+  <li><a href="#starting-table" id="toc-starting-table" class="nav-link" data-scroll-target="#starting-table">Starting Table</a></li>
+  </ul></li>
+  <li><a href="#visualising-the-network" id="toc-visualising-the-network" class="nav-link" data-scroll-target="#visualising-the-network">Visualising the Network</a></li>
+  <li><a href="#the-numeric-outputs" id="toc-the-numeric-outputs" class="nav-link" data-scroll-target="#the-numeric-outputs">The Numeric Outputs</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="marriage-networks-of-florence" class="level2">
+<h2 class="anchored" data-anchor-id="marriage-networks-of-florence">Marriage Networks of Florence</h2>
+<p>This post takes the example provided in Kosuke Imai’s <a href="https://press.princeton.edu/titles/11025.html">Quantitative Social Science: An Introduction</a>. It provides some exploration of network analysis through looking at the <em>florentine</em> dataset which counts the marraige relationships between several Florentine families in the 15th century. My historical side knows that our analysis should show that the [Medici Family] should appear at the center of all of the political intrigue. Let’s see if the analysis plays out.</p>
+</section>
+<section id="formatting-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="formatting-the-data">Formatting the Data</h2>
+<p>The florentine data set comes as a dataframe. In order to work with <code>igraph</code> it will need to be converted to a matrix with named columns and rows. That conversion can be done here:</p>
+<section id="starting-table" class="level3">
+<h3 class="anchored" data-anchor-id="starting-table">Starting Table</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">FAMILY</th>
+<th style="text-align: right;">ACCIAIUOL</th>
+<th style="text-align: right;">ALBIZZI</th>
+<th style="text-align: right;">BARBADORI</th>
+<th style="text-align: right;">BISCHERI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ACCIAIUOL</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ALBIZZI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BARBADORI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BISCHERI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CASTELLAN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GINORI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GUADAGNI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LAMBERTES</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MEDICI</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PAZZI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PERUZZI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PUCCI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RIDOLFI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SALVIATI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STROZZI</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TORNABUON</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now we need to manipulate the dataframe to turn it into a matrix object so that we can pass it to the <code>igraph</code> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>florentine_g <span class="ot">&lt;-</span> florentine <span class="sc">%&gt;%</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(FAMILY <span class="sc">!=</span> <span class="st">"PUCCI"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>PUCCI) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>FAMILY) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(florentine_g) <span class="ot">&lt;-</span> florentine[<span class="sc">-</span><span class="dv">12</span>,<span class="dv">1</span>] <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we need to pass this object to <code>igraph</code>. The path is <code>undirected</code> because there is no ordinality to this data. It does not encode if one family proposed the marriage to the other group. If this were the case then there could be some directedness to the graph. In this case there isn’t so that is the parameter we will pass.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>florentine_g <span class="ot">&lt;-</span> <span class="fu">graph.adjacency</span>(florentine_g, <span class="at">mode =</span> <span class="st">"undirected"</span>, <span class="at">diag =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can plot based on several features:</p>
+<ul>
+<li><p>degree</p></li>
+<li><p>closeness</p></li>
+<li><p>betweeness</p></li>
+<li><p>PageRank</p></li>
+</ul>
+</section>
+</section>
+<section id="visualising-the-network" class="level2">
+<h2 class="anchored" data-anchor-id="visualising-the-network">Visualising the Network</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(florentine_g, <span class="at">vertex.size =</span> <span class="fu">betweenness</span>(florentine_g), <span class="at">main =</span> <span class="st">"Betweeness"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in plot.default(0, 0, type = "n", xlab = xlab, ylab = ylab, xlim =
+xlim, : partial argument match of 'frame' to 'frame.plot'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(0, cin^2, length = floor(35 * cin) + 2): partial argument
+match of 'length' to 'length.out'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="600" height="600"></p>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(florentine_g, <span class="at">vertex.size =</span> <span class="fu">closeness</span>(florentine_g)<span class="sc">*</span><span class="dv">1000</span>, <span class="at">main =</span> <span class="st">"Closeness"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in plot.default(0, 0, type = "n", xlab = xlab, ylab = ylab, xlim =
+xlim, : partial argument match of 'frame' to 'frame.plot'
+
+Warning in plot.default(0, 0, type = "n", xlab = xlab, ylab = ylab, xlim =
+xlim, : partial argument match of 'length' to 'length.out'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-8-2.png" width="600" height="600"></p>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(florentine_g, <span class="at">vertex.size =</span> <span class="fu">degree</span>(florentine_g)<span class="sc">*</span><span class="dv">10</span>, <span class="at">main =</span> <span class="st">"Degree"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in plot.default(0, 0, type = "n", xlab = xlab, ylab = ylab, xlim =
+xlim, : partial argument match of 'frame' to 'frame.plot'
+
+Warning in plot.default(0, 0, type = "n", xlab = xlab, ylab = ylab, xlim =
+xlim, : partial argument match of 'length' to 'length.out'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-8-3.png" width="600" height="600"></p>
+</div>
+</div>
+</section>
+<section id="the-numeric-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="the-numeric-outputs">The Numeric Outputs</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>floretine_networks <span class="ot">&lt;-</span> <span class="fu">data_frame</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">names</span>(<span class="fu">closeness</span>(florentine_g)),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">closeness =</span> <span class="fu">closeness</span>(florentine_g),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree =</span> <span class="fu">degree</span>(florentine_g),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">betweeness =</span> <span class="fu">betweenness</span>(florentine_g)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>closeness)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `data_frame()` was deprecated in tibble 1.1.0.
+Please use `tibble()` instead.
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(floretine_networks)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">family</th>
+<th style="text-align: right;">closeness</th>
+<th style="text-align: right;">degree</th>
+<th style="text-align: right;">betweeness</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">MEDICI</td>
+<td style="text-align: right;">0.0400000</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">47.500000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RIDOLFI</td>
+<td style="text-align: right;">0.0357143</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">10.333333</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ALBIZZI</td>
+<td style="text-align: right;">0.0344828</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">19.333333</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TORNABUON</td>
+<td style="text-align: right;">0.0344828</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">8.333333</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GUADAGNI</td>
+<td style="text-align: right;">0.0333333</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">23.166667</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BARBADORI</td>
+<td style="text-align: right;">0.0312500</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8.500000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STROZZI</td>
+<td style="text-align: right;">0.0312500</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9.333333</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BISCHERI</td>
+<td style="text-align: right;">0.0285714</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">9.500000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CASTELLAN</td>
+<td style="text-align: right;">0.0277778</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5.000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SALVIATI</td>
+<td style="text-align: right;">0.0277778</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">13.000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ACCIAIUOL</td>
+<td style="text-align: right;">0.0263158</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PERUZZI</td>
+<td style="text-align: right;">0.0263158</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2.000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GINORI</td>
+<td style="text-align: right;">0.0238095</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LAMBERTES</td>
+<td style="text-align: right;">0.0232558</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PAZZI</td>
+<td style="text-align: right;">0.0204082</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.000000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Additionally, the “pagerank” algorithm can be used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(florentine_g, <span class="at">vertex.size =</span> <span class="fu">page.rank</span>(<span class="at">graph =</span> florentine_g, <span class="at">directed =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>vector<span class="sc">*</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in plot.default(0, 0, type = "n", xlab = xlab, ylab = ylab, xlim =
+xlim, : partial argument match of 'frame' to 'frame.plot'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(0, cin^2, length = floor(35 * cin) + 2): partial argument
+match of 'length' to 'length.out'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2018,
+  author = {Michael DeWitt},
+  title = {A Foray into Network Analysis},
+  date = {2018-09-17},
+  url = {https://michaeldewittjr.com/programming/2018-09-16-a-foray-into-network-analysis},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2018" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2018. <span>“A Foray into Network Analysis.”</span>
+September 17, 2018. <a href="https://michaeldewittjr.com/programming/2018-09-16-a-foray-into-network-analysis">https://michaeldewittjr.com/programming/2018-09-16-a-foray-into-network-analysis</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

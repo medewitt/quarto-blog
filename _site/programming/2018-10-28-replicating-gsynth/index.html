@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2018-10-29">
+<meta name="description" content="The purpose of this post is to replicate the examples in the gsynth package for synthetic controls. This is a methodology for causal inference especially at the state level.">
+
+<title>Insufficient Statistics - Replicating gsynth</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - Replicating gsynth">
+<meta property="og:description" content="The purpose of this post is to replicate the examples in the gsynth package for synthetic controls. This is a methodology for causal inference especially at the state level.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - Replicating gsynth">
+<meta name="twitter:description" content="The purpose of this post is to replicate the examples in the gsynth package for synthetic controls. This is a methodology for causal inference especially at the state level.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">(<a href="#ref-medewittjr" role="doc-biblioref"><strong>medewittjr?</strong></a>)</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Replicating gsynth</h1>
+                  <div>
+        <div class="description">
+          <p>The purpose of this post is to replicate the examples in the gsynth package for synthetic controls. This is a methodology for causal inference especially at the state level.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">causal inference</div>
+                <div class="quarto-category">synthetic controls</div>
+                <div class="quarto-category">econometrics</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">October 29, 2018</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#package" id="toc-package" class="nav-link" data-scroll-target="#package">Package</a></li>
+  <li><a href="#method-assumptions" id="toc-method-assumptions" class="nav-link" data-scroll-target="#method-assumptions">Method Assumptions</a></li>
+  <li><a href="#modeling" id="toc-modeling" class="nav-link" data-scroll-target="#modeling">Modeling</a></li>
+  <li><a href="#voter-turnout" id="toc-voter-turnout" class="nav-link" data-scroll-target="#voter-turnout">Voter Turnout</a>
+  <ul class="collapse">
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a></li>
+  <li><a href="#now-with-synth" id="toc-now-with-synth" class="nav-link" data-scroll-target="#now-with-synth">Now with Synth</a></li>
+  <li><a href="#thoughts" id="toc-thoughts" class="nav-link" data-scroll-target="#thoughts">Thoughts</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Synthethic methods are a method of causal inference that seeks to combine traditional difference-in-difference types studies with time series cross sectional differences with factor analysis for uncontrolled/ unobserved measures. This method has been growing our of work initially from Abadie <span class="citation" data-cites="Synth">(<a href="#ref-Synth" role="doc-biblioref">Abadie, Diamond, and Hainmueller 2011a</a>)</span> and growing in importance/ research for state level policy analysis. It is interesting from the fact that it combines some elements of factor analysis to develop predictors and regression analysis to try to capture explained and unexplained variance.</p>
+</section>
+<section id="package" class="level2">
+<h2 class="anchored" data-anchor-id="package">Package</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✓ ggplot2 3.3.5.9000     ✓ purrr   0.3.4.9000
+✓ tibble  3.1.6.9001     ✓ dplyr   1.0.8.9000
+✓ tidyr   1.1.4.9000     ✓ stringr 1.4.0.9000
+✓ readr   2.1.2          ✓ forcats 0.5.1     </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gsynth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>## Syntax has been updated since v.1.2.0.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>## Comments and suggestions -&gt; yiqingxu@stanford.edu.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(panelView)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>## See bit.ly/panelview4r for more info.
+## Report bugs -&gt; yiqingxu@stanford.edu.</code></pre>
+</div>
+</div>
+</section>
+<section id="method-assumptions" class="level2">
+<h2 class="anchored" data-anchor-id="method-assumptions">Method Assumptions</h2>
+<p>This methodology makes several critical assumptions.</p>
+<ol type="1">
+<li>The model takes the functional form of <span class="math display">\[Y_{i,t}=\delta_{i,t}D_{i,t}+x_{i,t}^\prime\beta+\lambda_i^{\prime}f_i+\epsilon_{i,t}\]</span></li>
+<li>Strict exogeneity (e.g.&nbsp;the error terms are indepdent to D, X, <span class="math inline">\(\lambda\)</span> and f)</li>
+<li>Weak serial dependence of the error terms</li>
+<li>Regularity of conditions</li>
+</ol>
+<p>The method then uses bootstrapping for confidence intervals.</p>
+<p>There is some basic data available in the package</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(gsynth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The data that will be initially used will be the <code>simdata</code> dataset</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">id</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: right;">Y</th>
+<th style="text-align: right;">D</th>
+<th style="text-align: right;">X1</th>
+<th style="text-align: right;">X2</th>
+<th style="text-align: right;">eff</th>
+<th style="text-align: right;">error</th>
+<th style="text-align: right;">mu</th>
+<th style="text-align: right;">alpha</th>
+<th style="text-align: right;">xi</th>
+<th style="text-align: right;">F1</th>
+<th style="text-align: right;">L1</th>
+<th style="text-align: right;">F2</th>
+<th style="text-align: right;">L2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">13.71</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.85</td>
+<td style="text-align: right;">2.19</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-0.35</td>
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;">1.52</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">-0.42</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">4.39</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-1.53</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.90</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-0.25</td>
+<td style="text-align: right;">-1.46</td>
+<td style="text-align: right;">-0.50</td>
+<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: right;">-1.40</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">125</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.24</td>
+<td style="text-align: right;">-1.04</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.56</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-0.65</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">-1.55</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">-0.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">3.05</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.25</td>
+<td style="text-align: right;">-0.62</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">1.50</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-0.28</td>
+<td style="text-align: right;">-0.49</td>
+<td style="text-align: right;">1.36</td>
+<td style="text-align: right;">-0.71</td>
+<td style="text-align: right;">0.88</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">15.04</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2.01</td>
+<td style="text-align: right;">2.87</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.83</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-1.01</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">1.36</td>
+<td style="text-align: right;">-0.24</td>
+<td style="text-align: right;">0.88</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">136</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9.13</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.34</td>
+<td style="text-align: right;">1.06</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.99</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">-1.55</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">-0.23</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">7.01</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3.53</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-1.64</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.44</td>
+<td style="text-align: right;">-1.29</td>
+<td style="text-align: right;">-1.07</td>
+<td style="text-align: right;">-0.15</td>
+<td style="text-align: right;">1.36</td>
+<td style="text-align: right;">-0.43</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">14.93</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.72</td>
+<td style="text-align: right;">1.07</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">2.42</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.62</td>
+<td style="text-align: right;">0.74</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">-0.73</td>
+<td style="text-align: right;">-0.37</td>
+<td style="text-align: right;">-0.51</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">12.52</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2.29</td>
+<td style="text-align: right;">2.44</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.45</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-0.84</td>
+<td style="text-align: right;">-0.53</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">1.60</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">-0.89</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">135</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">6.72</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">1.04</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-1.51</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">-1.65</td>
+<td style="text-align: right;">-0.33</td>
+<td style="text-align: right;">-1.38</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">9.94</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2.80</td>
+<td style="text-align: right;">1.69</td>
+<td style="text-align: right;">8.30</td>
+<td style="text-align: right;">-0.63</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-0.84</td>
+<td style="text-align: right;">-0.42</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">1.60</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">-0.89</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">12.76</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.40</td>
+<td style="text-align: right;">1.64</td>
+<td style="text-align: right;">4.78</td>
+<td style="text-align: right;">0.87</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.44</td>
+<td style="text-align: right;">1.05</td>
+<td style="text-align: right;">1.03</td>
+<td style="text-align: right;">-0.15</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">-0.43</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">109</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">7.48</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.72</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.69</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">2.05</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">-1.03</td>
+<td style="text-align: right;">1.37</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">103</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">9.22</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.79</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.48</td>
+<td style="text-align: right;">0.79</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">-0.60</td>
+<td style="text-align: right;">1.73</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">13.64</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.65</td>
+<td style="text-align: right;">2.46</td>
+<td style="text-align: right;">2.87</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-0.81</td>
+<td style="text-align: right;">-0.37</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: right;">-0.25</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">148</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">-2.14</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">-1.10</td>
+<td style="text-align: right;">10.99</td>
+<td style="text-align: right;">-1.71</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-0.53</td>
+<td style="text-align: right;">-0.42</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">-1.41</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">3.62</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.05</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">-1.55</td>
+<td style="text-align: right;">1.57</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">-0.21</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7.06</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">1.31</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.47</td>
+<td style="text-align: right;">-1.46</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">-1.24</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">-1.28</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">17.50</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">3.32</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.55</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.47</td>
+<td style="text-align: right;">0.69</td>
+<td style="text-align: right;">-0.33</td>
+<td style="text-align: right;">-1.24</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">-1.28</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">15.38</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.71</td>
+<td style="text-align: right;">2.63</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-1.01</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">1.24</td>
+<td style="text-align: right;">-0.24</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">109</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">12.14</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.18</td>
+<td style="text-align: right;">1.63</td>
+<td style="text-align: right;">8.78</td>
+<td style="text-align: right;">-1.01</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.69</td>
+<td style="text-align: right;">3.24</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">1.37</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">142</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11.30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.32</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">1.29</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.32</td>
+<td style="text-align: right;">-0.53</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">-0.30</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.53</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">109</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">16.90</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3.02</td>
+<td style="text-align: right;">2.80</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.65</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.69</td>
+<td style="text-align: right;">-1.57</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.44</td>
+<td style="text-align: right;">1.37</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">12.68</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.23</td>
+<td style="text-align: right;">2.75</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">1.48</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-0.81</td>
+<td style="text-align: right;">-1.29</td>
+<td style="text-align: right;">-1.07</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: right;">1.36</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">16.08</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3.06</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-1.60</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">1.36</td>
+<td style="text-align: right;">1.15</td>
+<td style="text-align: right;">0.88</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>It can be examined via the <code>panelView</code> package:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">panelview</span>(Y <span class="sc">~</span> D, <span class="at">data =</span> simdata,  <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"id"</span>,<span class="st">"time"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">panelview</span>(Y <span class="sc">~</span> D, <span class="at">data =</span> simdata,  <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"id"</span>,<span class="st">"time"</span>), <span class="at">type =</span> <span class="st">"raw"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="modeling" class="level2">
+<h2 class="anchored" data-anchor-id="modeling">Modeling</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">gsynth</span>(Y <span class="sc">~</span> D <span class="sc">+</span> X1 <span class="sc">+</span> X2, <span class="at">data =</span> simdata, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"id"</span>,<span class="st">"time"</span>), <span class="at">force =</span> <span class="st">"two-way"</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">CV =</span> <span class="cn">TRUE</span>, <span class="at">r =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">se =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">inference =</span> <span class="st">"parametric"</span>, <span class="at">nboots =</span> <span class="dv">1000</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">parallel =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cross-validating ... 
+ r = 0; sigma2 = 1.84865; IC = 1.02023; PC = 1.74458; MSPE = 2.37280
+ r = 1; sigma2 = 1.51541; IC = 1.20588; PC = 1.99818; MSPE = 1.71743
+ r = 2; sigma2 = 0.99737; IC = 1.16130; PC = 1.69046; MSPE = 1.14540*
+ r = 3; sigma2 = 0.94664; IC = 1.47216; PC = 1.96215; MSPE = 1.15032
+ r = 4; sigma2 = 0.89411; IC = 1.76745; PC = 2.19241; MSPE = 1.21397
+ r = 5; sigma2 = 0.85060; IC = 2.05928; PC = 2.40964; MSPE = 1.23876
+
+ r* = 2
+
+
+Simulating errors .............
+Bootstrapping ...
+..........</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+gsynth.formula(formula = Y ~ D + X1 + X2, data = simdata, index = c("id", 
+    "time"), force = "two-way", r = c(0, 5), CV = TRUE, se = TRUE, 
+    nboots = 1000, inference = "parametric", parallel = FALSE)
+
+Average Treatment Effect on the Treated:
+        Estimate   S.E. CI.lower CI.upper p.value
+ATT.avg    5.544 0.2521    5.049    6.038       0
+
+   ~ by Period (including Pre-treatment Periods):
+          ATT   S.E. CI.lower CI.upper   p.value n.Treated
+-19  0.392160 0.5859  -0.7562  1.54054 5.033e-01         0
+-18  0.276548 0.4509  -0.6072  1.16031 5.397e-01         0
+-17 -0.275393 0.4935  -1.2427  0.69190 5.768e-01         0
+-16  0.441201 0.4396  -0.4205  1.30289 3.156e-01         0
+-15 -0.889595 0.5067  -1.8828  0.10359 7.917e-02         0
+-14  0.593891 0.4823  -0.3513  1.53909 2.181e-01         0
+-13  0.528749 0.3960  -0.2473  1.30480 1.817e-01         0
+-12  0.171569 0.5745  -0.9545  1.29762 7.652e-01         0
+-11  0.610832 0.4729  -0.3160  1.53763 1.964e-01         0
+-10  0.170597 0.4750  -0.7604  1.10163 7.195e-01         0
+-9  -0.271892 0.5773  -1.4034  0.85959 6.377e-01         0
+-8   0.094843 0.4925  -0.8704  1.06008 8.473e-01         0
+-7  -0.651976 0.5312  -1.6931  0.38918 2.197e-01         0
+-6   0.573686 0.4869  -0.3806  1.52795 2.387e-01         0
+-5  -0.469686 0.5011  -1.4518  0.51239 3.486e-01         0
+-4  -0.077766 0.5549  -1.1653  1.00979 8.885e-01         0
+-3  -0.141785 0.5539  -1.2275  0.94388 7.980e-01         0
+-2  -0.157100 0.3748  -0.8917  0.57748 6.751e-01         0
+-1  -0.915575 0.5051  -1.9055  0.07434 6.987e-02         0
+0   -0.003309 0.3455  -0.6804  0.67382 9.924e-01         0
+1    1.235962 0.6865  -0.1096  2.58150 7.180e-02         5
+2    1.630264 0.5678   0.5173  2.74321 4.092e-03         5
+3    2.712178 0.5836   1.5684  3.85599 3.361e-06         5
+4    3.466758 0.7068   2.0815  4.85199 9.338e-07         5
+5    5.740132 0.5131   4.7346  6.74571 0.000e+00         5
+6    5.280035 0.5820   4.1393  6.42077 0.000e+00         5
+7    8.436485 0.4645   7.5261  9.34687 0.000e+00         5
+8    7.839902 0.6348   6.5957  9.08407 0.000e+00         5
+9    9.455115 0.5320   8.4124 10.49779 0.000e+00         5
+10   9.638509 0.4702   8.7169 10.56009 0.000e+00         5
+
+Coefficients for the Covariates:
+    beta    S.E. CI.lower CI.upper p.value
+X1 1.022 0.02936   0.9643    1.079       0
+X2 3.053 0.02989   2.9944    3.112       0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>out<span class="sc">$</span>est.att</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             ATT      S.E.   CI.lower    CI.upper      p.value n.Treated
+-19  0.392159788 0.5859169 -0.7562162  1.54053575 5.032980e-01         0
+-18  0.276547958 0.4509094 -0.6072181  1.16031405 5.396703e-01         0
+-17 -0.275392926 0.4935264 -1.2426870  0.69190114 5.768372e-01         0
+-16  0.441201288 0.4396455 -0.4204880  1.30289054 3.156009e-01         0
+-15 -0.889595124 0.5067364 -1.8827802  0.10358994 7.916728e-02         0
+-14  0.593890957 0.4822546 -0.3513106  1.53909252 2.181402e-01         0
+-13  0.528749012 0.3959513 -0.2473013  1.30479930 1.817491e-01         0
+-12  0.171568737 0.5745280 -0.9544855  1.29762299 7.652258e-01         0
+-11  0.610832288 0.4728667 -0.3159694  1.53763397 1.964388e-01         0
+-10  0.170597468 0.4750257 -0.7604358  1.10163075 7.194955e-01         0
+-9  -0.271891657 0.5772960 -1.4033711  0.85958778 6.376590e-01         0
+-8   0.094842558 0.4924788 -0.8703981  1.06008324 8.472863e-01         0
+-7  -0.651975701 0.5312128 -1.6931337  0.38918234 2.196970e-01         0
+-6   0.573686472 0.4868788 -0.3805785  1.52795142 2.386793e-01         0
+-5  -0.469685905 0.5010664 -1.4517580  0.51238615 3.485669e-01         0
+-4  -0.077766449 0.5548839 -1.1653190  1.00978606 8.885422e-01         0
+-3  -0.141784521 0.5539217 -1.2274511  0.94388205 7.979779e-01         0
+-2  -0.157100323 0.3747931 -0.8916812  0.57748057 6.750952e-01         0
+-1  -0.915575087 0.5050680 -1.9054902  0.07433998 6.986639e-02         0
+0   -0.003308833 0.3454817 -0.6804406  0.67382292 9.923584e-01         0
+1    1.235962010 0.6865104 -0.1095737  2.58149768 7.180470e-02         5
+2    1.630264312 0.5678415  0.5173154  2.74321319 4.091952e-03         5
+3    2.712177702 0.5835872  1.5683677  3.85598769 3.361050e-06         5
+4    3.466757691 0.7067657  2.0815223  4.85199305 9.337898e-07         5
+5    5.740132310 0.5130594  4.7345544  6.74571021 0.000000e+00         5
+6    5.280034526 0.5820196  4.1392970  6.42077205 0.000000e+00         5
+7    8.436484821 0.4644907  7.5260998  9.34686989 0.000000e+00         5
+8    7.839901526 0.6347913  6.5957335  9.08406955 0.000000e+00         5
+9    9.455114684 0.5319883  8.4124368 10.49779258 0.000000e+00         5
+10   9.638509457 0.4702021  8.7169304 10.56008856 0.000000e+00         5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>out<span class="sc">$</span>est.avg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Estimate      S.E. CI.lower CI.upper p.value
+ATT.avg 5.543534 0.2520962 5.049434 6.037633       0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>out<span class="sc">$</span>est.beta</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       beta       S.E.  CI.lower CI.upper p.value
+X1 1.021890 0.02936027 0.9643451 1.079435       0
+X2 3.052994 0.02988840 2.9944142 3.111575       0</code></pre>
+</div>
+</div>
+<p>The default plot:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out) <span class="sc">+</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Modified:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out, <span class="at">theme.bw =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-18-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>With the raw data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out, <span class="at">type =</span> <span class="st">"raw"</span>, <span class="at">theme.bw =</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out,<span class="at">type =</span> <span class="st">"raw"</span>, <span class="at">legendOff =</span> <span class="cn">TRUE</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">40</span>), <span class="at">main=</span><span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out, <span class="at">type =</span> <span class="st">"counterfactual"</span>, <span class="at">raw =</span> <span class="st">"none"</span>, <span class="at">main=</span><span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-24-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out, <span class="at">type =</span> <span class="st">"counterfactual"</span>, <span class="at">raw =</span> <span class="st">"band"</span>, <span class="at">xlab =</span> <span class="st">"Time"</span>, </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">35</span>), <span class="at">theme.bw =</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'
+
+Warning in quantile.default(newX[, i], ...): partial argument match of 'prob' to
+'probs'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out, <span class="at">type =</span> <span class="st">"counterfactual"</span>, <span class="at">raw =</span> <span class="st">"all"</span>)<span class="sc">+</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-28-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out, <span class="at">type =</span> <span class="st">"factors"</span>, <span class="at">xlab =</span> <span class="st">"Time"</span>)<span class="sc">+</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-30-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="voter-turnout" class="level1">
+<h1>Voter Turnout</h1>
+<p>Now I am going to try to reproduce the results from Xu’s paper [xu_generalized_2017] and implemented in his package <span class="citation" data-cites="gsynth">(<a href="#ref-gsynth" role="doc-biblioref">Xu and Liu 2018</a>)</span>.</p>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">abb</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">turnout</th>
+<th style="text-align: right;">policy_edr</th>
+<th style="text-align: right;">policy_mail_in</th>
+<th style="text-align: right;">policy_motor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">AL</td>
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">21.02107</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AL</td>
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">13.58233</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AL</td>
+<td style="text-align: right;">1928</td>
+<td style="text-align: right;">19.03850</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AL</td>
+<td style="text-align: right;">1932</td>
+<td style="text-align: right;">17.62002</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AL</td>
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">18.69238</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AL</td>
+<td style="text-align: right;">1940</td>
+<td style="text-align: right;">18.86406</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="model" class="level2">
+<h2 class="anchored" data-anchor-id="model">Model</h2>
+<p>The paper builds two models, one will only the impact of voter education, another with additional controls. For the sake of time I will build the model with all of the controls used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">gsynth</span>(turnout <span class="sc">~</span> policy_edr <span class="sc">+</span> policy_mail_in <span class="sc">+</span> policy_motor, <span class="at">data =</span> turnout, </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"abb"</span>,<span class="st">"year"</span>), <span class="at">force =</span> <span class="st">"two-way"</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">CV =</span> <span class="cn">TRUE</span>, <span class="at">r =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">se =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">inference =</span> <span class="st">"parametric"</span>, <span class="at">nboots =</span> <span class="dv">1000</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">parallel =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cross-validating ... 
+ r = 0; sigma2 = 77.99366; IC = 4.82744; PC = 72.60594; MSPE = 22.13889
+ r = 1; sigma2 = 13.65239; IC = 3.52566; PC = 21.67581; MSPE = 12.03686
+ r = 2; sigma2 = 8.56312; IC = 3.48518; PC = 19.23841; MSPE = 10.31254*
+ r = 3; sigma2 = 6.40268; IC = 3.60547; PC = 18.61783; MSPE = 11.48390
+ r = 4; sigma2 = 4.74273; IC = 3.70145; PC = 16.93707; MSPE = 16.28613
+ r = 5; sigma2 = 4.02488; IC = 3.91847; PC = 17.05226; MSPE = 15.78683
+
+ r* = 2
+
+
+Simulating errors .............
+Bootstrapping ...
+..........</code></pre>
+</div>
+</div>
+<p>The model completed and appeared that it did well. Now to examine the figures to see if they match:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Now we can look at the estimated average treatment</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>out<span class="sc">$</span>est.avg <span class="sc">%&gt;%</span> </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">S.E.</th>
+<th style="text-align: right;">CI.lower</th>
+<th style="text-align: right;">CI.upper</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ATT.avg</td>
+<td style="text-align: right;">4.895788</td>
+<td style="text-align: right;">2.370876</td>
+<td style="text-align: right;">0.2489566</td>
+<td style="text-align: right;">9.54262</td>
+<td style="text-align: right;">0.0389258</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out, <span class="at">type =</span> <span class="st">"counterfactual"</span>, <span class="at">raw =</span> <span class="st">"all"</span>)<span class="sc">+</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 81 row(s) containing missing values (geom_path).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-40-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="now-with-synth" class="level2">
+<h2 class="anchored" data-anchor-id="now-with-synth">Now with Synth</h2>
+<p>Now I want to try to replicate the previous case study used in <code>Synth</code> <span class="citation" data-cites="JSSv042i13">(<a href="#ref-JSSv042i13" role="doc-biblioref">Abadie, Diamond, and Hainmueller 2011b</a>)</span> and see if it is possible.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Synth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>##
+## Synth Package: Implements Synthetic Control Methods.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>## See http://www.mit.edu/~jhainm/software.htm for additional information.</code></pre>
+</div>
+</div>
+<p>I am going to recode some variable in order to fit with the methods used in <code>gsynth</code>. The <code>Synth</code> package uses a dataprep function in order to format the data into the requirements.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"basque"</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>basque_treat <span class="ot">&lt;-</span> basque <span class="sc">%&gt;%</span> </span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treat =</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="at">pattern =</span> <span class="st">"Basque"</span>, <span class="at">x =</span> regionname) <span class="sc">&amp;</span> year <span class="sc">&gt;</span> <span class="dv">1969</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(basque_treat) <span class="sc">%&gt;%</span> </span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">regionno</th>
+<th style="text-align: left;">regionname</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">gdpcap</th>
+<th style="text-align: right;">sec.agriculture</th>
+<th style="text-align: right;">sec.energy</th>
+<th style="text-align: right;">sec.industry</th>
+<th style="text-align: right;">sec.construction</th>
+<th style="text-align: right;">sec.services.venta</th>
+<th style="text-align: right;">sec.services.nonventa</th>
+<th style="text-align: right;">school.illit</th>
+<th style="text-align: right;">school.prim</th>
+<th style="text-align: right;">school.med</th>
+<th style="text-align: right;">school.high</th>
+<th style="text-align: right;">school.post.high</th>
+<th style="text-align: right;">popdens</th>
+<th style="text-align: right;">invest</th>
+<th style="text-align: right;">treat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Spain (Espana)</td>
+<td style="text-align: right;">1955</td>
+<td style="text-align: right;">2.354542</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Spain (Espana)</td>
+<td style="text-align: right;">1956</td>
+<td style="text-align: right;">2.480149</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Spain (Espana)</td>
+<td style="text-align: right;">1957</td>
+<td style="text-align: right;">2.603613</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Spain (Espana)</td>
+<td style="text-align: right;">1958</td>
+<td style="text-align: right;">2.637104</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Spain (Espana)</td>
+<td style="text-align: right;">1959</td>
+<td style="text-align: right;">2.669880</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Spain (Espana)</td>
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">2.869966</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>out_basque <span class="ot">&lt;-</span> <span class="fu">gsynth</span>(gdpcap <span class="sc">~</span> treat, <span class="at">data =</span> basque_treat, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"regionname"</span>,<span class="st">"year"</span>), <span class="at">force =</span> <span class="st">"two-way"</span>,</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">CV =</span> <span class="cn">TRUE</span>, <span class="at">r =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">se =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">inference =</span> <span class="st">"parametric"</span>, <span class="at">nboots =</span> <span class="dv">1000</span>,</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">parallel =</span> <span class="cn">FALSE</span>, )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cross-validating ... 
+ r = 0; sigma2 = 0.15833; IC = -1.31080; PC = 0.14556; MSPE = 0.02963
+ r = 1; sigma2 = 0.02499; IC = -2.64303; PC = 0.04627; MSPE = 0.00994
+ r = 2; sigma2 = 0.00985; IC = -3.07772; PC = 0.02745; MSPE = 0.00755*
+ r = 3; sigma2 = 0.00581; IC = -3.12683; PC = 0.02166; MSPE = 0.00981
+ r = 4; sigma2 = 0.00395; IC = -3.05355; PC = 0.01843; MSPE = 0.00329
+ r = 5; sigma2 = 0.00256; IC = -3.04564; PC = 0.01435; MSPE = 0.00260
+
+ r* = 5
+
+
+Simulating errors .............
+Bootstrapping ...
+..........</code></pre>
+</div>
+</div>
+<p>Let’s check the results</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out_basque)<span class="sc">+</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-48-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(out_basque, <span class="at">type =</span> <span class="st">"counterfactual"</span>, <span class="at">raw =</span> <span class="st">"all"</span>)<span class="sc">+</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-50-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-50-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Interesting that this method lands on a slightly different estimate than the previous paper. I think that this is due to some missing covariates. It appears that <code>gsynth</code> doesn’t handle missing data too well, which is ok.</p>
+</section>
+<section id="thoughts" class="level2">
+<h2 class="anchored" data-anchor-id="thoughts">Thoughts</h2>
+<p>I think that a combination of Bayesian Hierarchical modeling with structural timeseries modeling could get somewhere close to the method, and take advantage of specifying knowns, group effects, etc. But the method is neat and a good way to do some quick analysis.</p>
+
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-Synth" class="csl-entry" role="doc-biblioentry">
+Abadie, Alberto, Alexis Diamond, and Jens Hainmueller. 2011a. <span>“<span>Synth</span>: An <span>R</span> Package for Synthetic Control Methods in Comparative Case Studies.”</span> <em>Journal of Statistical Software</em> 42 (13): 1–17. <a href="http://www.jstatsoft.org/v42/i13/">http://www.jstatsoft.org/v42/i13/</a>.
+</div>
+<div id="ref-JSSv042i13" class="csl-entry" role="doc-biblioentry">
+———. 2011b. <span>“Synth: An r Package for Synthetic Control Methods in Comparative Case Studies.”</span> <em>Journal of Statistical Software, Articles</em> 42 (13): 1–17. <a href="https://doi.org/10.18637/jss.v042.i13">https://doi.org/10.18637/jss.v042.i13</a>.
+</div>
+<div id="ref-gsynth" class="csl-entry" role="doc-biblioentry">
+Xu, Yiqing, and Licheng Liu. 2018. <em>Gsynth: Generalized Synthetic Control Method</em>. <a href="https://CRAN.R-project.org/package=gsynth">https://CRAN.R-project.org/package=gsynth</a>.
+</div>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2018,
+  author = {Michael DeWitt},
+  title = {Replicating Gsynth},
+  date = {2018-10-29},
+  url = {https://michaeldewittjr.com/programming/2018-10-28-replicating-gsynth},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2018" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2018. <span>“Replicating Gsynth.”</span> October 29,
+2018. <a href="https://michaeldewittjr.com/programming/2018-10-28-replicating-gsynth">https://michaeldewittjr.com/programming/2018-10-28-replicating-gsynth</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

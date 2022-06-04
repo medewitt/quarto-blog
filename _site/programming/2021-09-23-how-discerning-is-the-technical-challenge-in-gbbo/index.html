@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2021-09-23">
+<meta name="description" content="Are the technical challenges which are judged blindly good indcators of if a baker will win overall?">
+
+<title>Insufficient Statistics - How Discerning is the Technical Challenge in GBBO?</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - How Discerning is the Technical Challenge in GBBO?">
+<meta property="og:description" content="Are the technical challenges which are judged blindly good indcators of if a baker will win overall?
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - How Discerning is the Technical Challenge in GBBO?">
+<meta name="twitter:description" content="Are the technical challenges which are judged blindly good indcators of if a baker will win overall?
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">How Discerning is the Technical Challenge in GBBO?</h1>
+                  <div>
+        <div class="description">
+          <p>Are the technical challenges which are judged blindly good indcators of if a baker will win overall?</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">IRT</div>
+                <div class="quarto-category">baking</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 23, 2021</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#enter-the-pyschometrics" id="toc-enter-the-pyschometrics" class="nav-link active" data-scroll-target="#enter-the-pyschometrics">Enter the Pyschometrics</a></li>
+  <li><a href="#irt-and-crm" id="toc-irt-and-crm" class="nav-link" data-scroll-target="#irt-and-crm">IRT and CRM</a></li>
+  <li><a href="#analysis-plan" id="toc-analysis-plan" class="nav-link" data-scroll-target="#analysis-plan">Analysis Plan</a></li>
+  <li><a href="#getting-the-data" id="toc-getting-the-data" class="nav-link" data-scroll-target="#getting-the-data">Getting the Data</a></li>
+  <li><a href="#modelling-the-data" id="toc-modelling-the-data" class="nav-link" data-scroll-target="#modelling-the-data">Modelling the Data</a></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">Next Steps</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content">
+
+
+
+
+<p>My wife and I love to watch the Great British Bake Off on Netflix. The competition is for the most part collegial in general and all around feel good television, especially at night. After watching several seasons of the show, a lingering question came to mind: how good are the judges at estimating talent?</p>
+<p>The format of the show is composed of three rounds; the first and third rounds have themes/genre of baked good that the contestants knew about in advance and could decide (and practice) what they wanted to make. The second/middle round is composed of a “technical” challenge where the bakers have all given the same ingrediants and instructions and asked to make something of which they had no prior knowledge. Unlike the other rounds, the judges judge each bake blindly in the technical (and of course the contestants make the same dish).</p>
+<section id="enter-the-pyschometrics" class="level2">
+<h2 class="anchored" data-anchor-id="enter-the-pyschometrics">Enter the Pyschometrics</h2>
+<p>This set-up is perfect for understanding how well the judges can estimate “ability” to use a psychometric term. Because we have contestants facing the same exact challenge and being judged blindly, we can use pyschometric tools to judge the “ability” of the baker and the “difficulty” of the challenge. There is a lot of noise on these measures due to the fact that contestants are eliminated after each show meaning that they do not get a chance at each challenge, but it will give a little bit of insight the ability of the bakers. We can then compare the outcomes of each round with the judged “technical” ability.</p>
+</section>
+<section id="irt-and-crm" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="irt-and-crm">IRT and CRM</h2>
+<p>High stakes tests like the GRE and GMAT use something called Item Response Theory (IRT) to measure “ability.” The tests work by matching item difficulty (or how hard a question is) to the test-taker’s latent ability (tendency to get the right answer). Test takers should get the correct answer for those items where their ability is greater than the item difficulty, should get those items wrong where the difficulty is greater than their ability, and some distribution due to the measurement error in both ability and difficulty.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Not mentioned here, but a random component for guessing can be added. The literature for IRT is immense and there are many different models (2PL,3PL, Rasch, among others).</p>
+</div></div><p>The key contribution of IRT over classical test theory (in my opinion) is that there is some latent noise in the test question/item.</p>
+<p>IRT typically required a single “correct” answer. When we are looking at the rating of Bakers from 1 to N bakers, we need to observe the continuous data of the data. Enter the Continuous Response Models which allow us to use the principles of IRT for continuous data. In particular we will use Samejima’s continuous response model for the ranking of contestants.</p>
+</section>
+<section id="analysis-plan" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-plan">Analysis Plan</h2>
+<p>So now we can lay out our analysis plan:</p>
+<ul>
+<li>Get the baking results</li>
+<li>Run the CRM to understand and rank baker ability</li>
+<li>Compare the modelled ability to the actual results</li>
+</ul>
+</section>
+<section id="getting-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="getting-the-data">Getting the Data</h2>
+<p>The first part in this analysis is getting the data. Luckily, Wikipedia, the grandest resource on the interweb, provides these data in a regular pattern.</p>
+<p>First, we will load the usual suite of packages for webscraping and analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✓ ggplot2 3.3.5.9000     ✓ purrr   0.3.4.9000
+✓ tibble  3.1.6.9001     ✓ dplyr   1.0.8.9000
+✓ tidyr   1.1.4.9000     ✓ stringr 1.4.0.9000
+✓ readr   2.1.2          ✓ forcats 0.5.1     </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rvest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'rvest'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:readr':
+
+    guess_encoding</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'data.table'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:dplyr':
+
+    between, first, last</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:purrr':
+
+    transpose</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is cmdstanr version 0.4.0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- Online documentation and vignettes at mc-stan.org/cmdstanr</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- CmdStan path set to: /Users/michael/.cmdstanr/cmdstan-2.28.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- Use set_cmdstan_path() to change the path</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+A newer version of CmdStan is available. See ?install_cmdstan() to install it.
+To disable this check set option or environment variable CMDSTANR_NO_VER_CHECK=TRUE.</code></pre>
+</div>
+</div>
+<p>To run an initial test, I am just going to pull Season 3.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://en.m.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_3)"</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>content <span class="ot">&lt;-</span> <span class="fu">read_html</span>(url)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>tables <span class="ot">&lt;-</span> content <span class="sc">%&gt;%</span> <span class="fu">html_table</span>(<span class="at">fill =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can see that there are 15 available. The second table gives us the biographies of the contestants:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(tables[[<span class="dv">2</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 4%">
+<col style="width: 32%">
+<col style="width: 31%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Baker</th>
+<th style="text-align: right;">Age</th>
+<th style="text-align: left;">Occupation</th>
+<th style="text-align: left;">Hometown</th>
+<th style="text-align: left;">Links</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Brendan Lynch</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: left;">Recruitment consultant</td>
+<td style="text-align: left;">Sutton Coldfield</td>
+<td style="text-align: left;">[4]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cathryn Dresser</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: left;">Shop assistant</td>
+<td style="text-align: left;">Pease Pottage, West Sussex</td>
+<td style="text-align: left;">[5]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Danny Bryden</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: left;">Intensive care consultant</td>
+<td style="text-align: left;">Sheffield</td>
+<td style="text-align: left;">[6]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">James Morton</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: left;">Medical student</td>
+<td style="text-align: left;">Hillswick, Shetland Islands</td>
+<td style="text-align: left;">[7]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">John Whaite</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: left;">Law student</td>
+<td style="text-align: left;">Wigan</td>
+<td style="text-align: left;">[8]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Manisha Parmar</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: left;">Nursery nurse</td>
+<td style="text-align: left;">Leicester</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Natasha Stringer</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">Midwife</td>
+<td style="text-align: left;">Tamworth, Staffordshire</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Peter Maloney</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: left;">Sales manager</td>
+<td style="text-align: left;">Windsor, Berkshire</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ryan Chong</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: left;">Photographer</td>
+<td style="text-align: left;">Bristol</td>
+<td style="text-align: left;">[9]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sarah-Jane Willis</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: left;">Vicar’s wife</td>
+<td style="text-align: left;">Bewbush, West Sussex</td>
+<td style="text-align: left;">[5]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Stuart Marston-Smith</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: left;">PE teacher</td>
+<td style="text-align: left;">Lichfield, Staffordshire</td>
+<td style="text-align: left;">[10]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Victoria Chester</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: left;">CEO of the charity Plantlife</td>
+<td style="text-align: left;">Somerset</td>
+<td style="text-align: left;">[11]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>With a little bit of work, we can turn the third table into a nice representation of the results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>tables[[<span class="dv">3</span>]] <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.table</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  .[<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>] <span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="st">"baker"</span>, <span class="fu">sprintf</span>(<span class="st">"%s"</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">melt</span>(<span class="at">id.vars =</span> <span class="st">"baker"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  .[,round_num<span class="sc">:</span><span class="er">=</span><span class="fu">as.numeric</span>(variable)] <span class="sc">%&gt;%</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>value <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"SB"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">perf =</span> <span class="fu">sprintf</span>(<span class="st">"%s %s"</span>, value, round_num))<span class="ot">-&gt;</span>performance</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(performance)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">baker</th>
+<th style="text-align: left;">variable</th>
+<th style="text-align: left;">value</th>
+<th style="text-align: right;">round_num</th>
+<th style="text-align: left;">perf</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Natasha</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">OUT 1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Peter</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">OUT 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Victoria</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">OUT 3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Stuart</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">OUT 4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Manisha</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">OUT 5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ryan</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">OUT 7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sarah-Jane</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">OUT 7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cathryn</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">OUT 8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Danny</td>
+<td style="text-align: left;">9</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">OUT 9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">John</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">WINNER</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">WINNER 10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Brendan</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">Runner-up</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Runner-up 10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">James</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">Runner-up</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Runner-up 10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now the more challenging part is to parse all of the results. I am going to use some loops and index variables because I can’t think of a more expediant way to do it.</p>
+<p>Importantly, each baker will appear for as many challenges in which they participated. This means someone who was eliminated after the first show will only have one record (enter measurement error) and those who participated in later rounds will appear multiple times.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>technicals <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="fu">seq_along</span>(tables)){</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> tables[[i]]</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  interesting <span class="ot">&lt;-</span> <span class="fu">grepl</span>(<span class="at">pattern =</span> <span class="st">"Baker|Technical"</span>, <span class="fu">names</span>(x))</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">sum</span>(interesting)<span class="sc">&lt;</span><span class="dv">2</span>){</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">next</span>()</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> x[,interesting]</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(y) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"baker"</span>, <span class="st">"technical"</span>)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  y<span class="sc">$</span>technical_no <span class="ot">&lt;-</span> z</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  technicals[[i]] <span class="ot">&lt;-</span> y</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  z <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">+</span>z</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>out_long<span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, technicals)</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="fu">setDT</span>(out_long)</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(out_long,<span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">baker</th>
+<th style="text-align: left;">technical</th>
+<th style="text-align: right;">technical_no</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Brendan</td>
+<td style="text-align: left;">10th</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cathryn</td>
+<td style="text-align: left;">5th</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Danny</td>
+<td style="text-align: left;">7th</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">James</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">John</td>
+<td style="text-align: left;">11th</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Manisha</td>
+<td style="text-align: left;">6th</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Natasha</td>
+<td style="text-align: left;">12th</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Peter</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ryan</td>
+<td style="text-align: left;">8th</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sarah-Jane</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now with a little nore parsing we can extract the result and associated rank of the bakers.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>out_long[,rank <span class="sc">:</span><span class="er">=</span> <span class="fu">as.numeric</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(technical, <span class="st">"</span><span class="sc">\\</span><span class="st">d+"</span>))]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>out_long[,rank_ordered<span class="sc">:</span><span class="er">=</span><span class="dv">12</span> <span class="sc">-</span> rank]</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>out_long[,baker_id <span class="sc">:</span><span class="er">=</span> <span class="fu">as.integer</span>(<span class="fu">as.factor</span>(baker))]</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(out_long,<span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">baker</th>
+<th style="text-align: left;">technical</th>
+<th style="text-align: right;">technical_no</th>
+<th style="text-align: right;">rank</th>
+<th style="text-align: right;">rank_ordered</th>
+<th style="text-align: right;">baker_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Brendan</td>
+<td style="text-align: left;">10th</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cathryn</td>
+<td style="text-align: left;">5th</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Danny</td>
+<td style="text-align: left;">7th</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">James</td>
+<td style="text-align: left;">2nd</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">John</td>
+<td style="text-align: left;">11th</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Manisha</td>
+<td style="text-align: left;">6th</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Natasha</td>
+<td style="text-align: left;">12th</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Peter</td>
+<td style="text-align: left;">3rd</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ryan</td>
+<td style="text-align: left;">8th</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sarah-Jane</td>
+<td style="text-align: left;">1st</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="modelling-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="modelling-the-data">Modelling the Data</h2>
+<p>In completely transparency, I utilized code from <a href="https://cengiz.me/posts/crm-stan/" class="uri">https://cengiz.me/posts/crm-stan/</a> which provided an excellent starting point for the analysis.</p>
+<p>The code is lightly modified (just to tighten some priors) because of the</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="fu">readLines</span>(<span class="st">"irt.stan"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> // From https://cengiz.me/posts/crm-stan/
+ data{
+    int  J;                    //  number of items
+    int  I;                    //  number of individuals
+    int  N;                //  number of observed responses
+  int  item[N];          //  item id
+  int  id[N];            //  person id
+  real Y[N];             //  vector of transformed outcome
+ }
+
+  parameters {
+
+    vector[J] b;                 // vector of b parameters forJ items
+      real mu_b;                 // mean of the b parameters
+      real&lt;lower=0&gt; sigma_b;     // standard dev. of the b parameters
+
+    vector&lt;lower=0&gt;[J] a;       // vector of a parameters for J items
+      real mu_a;                 // mean of the a parameters
+      real&lt;lower=0&gt; sigma_a;     // standard deviation of the a parameters
+
+    vector&lt;lower=0&gt;[J] alpha;   // vector of alpha parameters for J items
+      real mu_alpha;             // mean of alpha parameters
+      real&lt;lower=0&gt; sigma_alpha; // standard deviation of alpha parameters
+
+    vector[I] theta;             // vector of theta parameters for I individuals
+  }
+
+  model{
+
+     mu_b     ~ normal(0,5);
+     sigma_b  ~ normal(0,1);
+         b    ~ normal(mu_b,sigma_b);
+
+     mu_a    ~ normal(0,5);
+     sigma_a ~ normal(0,2.5);
+         a   ~ normal(mu_a,sigma_a);
+
+     mu_alpha ~ normal(0,5);
+     sigma_alpha ~ cauchy(0,2.5);
+         alpha   ~ normal(mu_alpha,sigma_alpha);
+
+     theta   ~ normal(0,1);      // The mean and variance of theta is fixed to 0 and 1
+                                 // for model identification
+
+      for(i in 1:N) {
+        Y[i] ~ normal(alpha[item[i]]*(theta[id[i]]-b[item[i]]),alpha[item[i]]/a[item[i]]);
+       }
+   }</code></pre>
+</div>
+</div>
+<p>Now we just compile the model and format our data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="st">"irt.stan"</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>dat_stan <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">J =</span> <span class="fu">length</span>(<span class="fu">unique</span>(out_long<span class="sc">$</span>technical_no)),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> <span class="fu">length</span>(<span class="fu">unique</span>(out_long<span class="sc">$</span>baker_id)),</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="fu">nrow</span>(out_long),</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">item =</span> out_long<span class="sc">$</span>technical_no,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> out_long<span class="sc">$</span>baker_id,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> out_long<span class="sc">$</span>rank_ordered</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>baker_list <span class="ot">&lt;-</span> out_long <span class="sc">%&gt;%</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(baker_id,baker) <span class="sc">%&gt;%</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can then fit the model with our data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> mod<span class="sc">$</span><span class="fu">sample</span>(dat_stan,</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">max_treedepth =</span> <span class="dv">15</span>, <span class="at">adapt_delta =</span> .<span class="dv">99</span>, <span class="at">refresh =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 1 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Exception: normal_lpdf: Scale parameter is 0, but must be positive! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 32, column 9 to column 37)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Exception: normal_lpdf: Scale parameter is 0, but must be positive! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 32, column 9 to column 37)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Exception: normal_lpdf: Location parameter is inf, but must be finite! (in '/var/folders/0x/6bnjy4n15kz8nbfbbwbyk3pr0000gn/T/RtmprGJfRZ/model-a9ba72708057.stan', line 46, column 8 to column 90)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain 4 finished in 29.5 seconds.
+Chain 1 finished in 69.6 seconds.
+Chain 3 finished in 105.3 seconds.
+Chain 2 finished in 164.6 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 92.3 seconds.
+Total execution time: 164.8 seconds.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Warning: 40 of 4000 (1.0%) transitions ended with a divergence.
+This may indicate insufficient exploration of the posterior distribution.
+Possible remedies include: 
+  * Increasing adapt_delta closer to 1 (default is 0.8) 
+  * Reparameterizing the model (e.g. using a non-centered parameterization)
+  * Using informative or weakly informative prior distributions </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>5 of 4000 (0.0%) transitions hit the maximum treedepth limit of 15 or 2^15-1 leapfrog steps.
+Trajectories that are prematurely terminated due to this limit will result in slow exploration.
+Increasing the max_treedepth limit can avoid this at the expense of more computation.
+If increasing max_treedepth does not remove warnings, try to reparameterize the model.</code></pre>
+</div>
+</div>
+<p>We’re interested here in <code>theta</code> which represents the ability of the bakers.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb147"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true" tabindex="-1"></a>combined_out <span class="ot">&lt;-</span> fit<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="st">"theta"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb147-2"><a href="#cb147-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">baker_id =</span> <span class="fu">as.numeric</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(variable, <span class="st">"</span><span class="sc">\\</span><span class="st">d+"</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb147-3"><a href="#cb147-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(baker_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining, by = "baker_id"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb160"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a>out_come_with_rank  <span class="ot">&lt;-</span> combined_out <span class="sc">%&gt;%</span></span>
+<span id="cb160-2"><a href="#cb160-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(median)) <span class="sc">%&gt;%</span></span>
+<span id="cb160-3"><a href="#cb160-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">outcome_modelled =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb160-4"><a href="#cb160-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(outcome_modelled, baker) <span class="sc">%&gt;%</span></span>
+<span id="cb160-5"><a href="#cb160-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(performance) <span class="sc">%&gt;%</span></span>
+<span id="cb160-6"><a href="#cb160-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">outcome_realized =</span> <span class="fu">case_when</span>(</span>
+<span id="cb160-7"><a href="#cb160-7" aria-hidden="true" tabindex="-1"></a>    value <span class="sc">==</span> <span class="st">"Runner-up"</span><span class="sc">~</span><span class="dv">2</span>,</span>
+<span id="cb160-8"><a href="#cb160-8" aria-hidden="true" tabindex="-1"></a>    value <span class="sc">==</span> <span class="st">"WINNER"</span><span class="sc">~</span><span class="dv">1</span>,</span>
+<span id="cb160-9"><a href="#cb160-9" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span><span class="sc">~</span><span class="dv">13</span><span class="sc">-</span>round_num</span>
+<span id="cb160-10"><a href="#cb160-10" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining, by = "baker"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb162"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(out_come_with_rank)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 12%">
+<col style="width: 10%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 14%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">outcome_modelled</th>
+<th style="text-align: left;">baker</th>
+<th style="text-align: left;">variable</th>
+<th style="text-align: left;">value</th>
+<th style="text-align: right;">round_num</th>
+<th style="text-align: left;">perf</th>
+<th style="text-align: right;">outcome_realized</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">James</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">Runner-up</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Runner-up 10</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">Brendan</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">Runner-up</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Runner-up 10</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">Danny</td>
+<td style="text-align: left;">9</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">OUT 9</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">John</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">WINNER</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">WINNER 10</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">Cathryn</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">OUT 8</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">Victoria</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">OUT 3</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">Sarah-Jane</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">OUT 7</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">Ryan</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">OUT 7</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">Peter</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">OUT 2</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Manisha</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">OUT 5</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">11</td>
+<td style="text-align: left;">Natasha</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">OUT 1</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">12</td>
+<td style="text-align: left;">Stuart</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">OUT</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">OUT 4</td>
+<td style="text-align: right;">9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now we can see what the correlation of ability performance is:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb163"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb163-1"><a href="#cb163-1" aria-hidden="true" tabindex="-1"></a>(correlation_analysis <span class="ot">&lt;-</span>out_come_with_rank <span class="sc">%&gt;%</span></span>
+<span id="cb163-2"><a href="#cb163-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb163-3"><a href="#cb163-3" aria-hidden="true" tabindex="-1"></a>    outcome_modelled,outcome_realized</span>
+<span id="cb163-4"><a href="#cb163-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb163-5"><a href="#cb163-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb163-6"><a href="#cb163-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cor</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb163-7"><a href="#cb163-7" aria-hidden="true" tabindex="-1"></a>  .[<span class="dv">1</span>,<span class="dv">2</span>] <span class="sc">%&gt;%</span></span>
+<span id="cb163-8"><a href="#cb163-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(.,<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.83</code></pre>
+</div>
+</div>
+<p>Not too bad! It would seem that there is evidence that the performance in the technical is correlated with the final result (thank goodness).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb165"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb165-1"><a href="#cb165-1" aria-hidden="true" tabindex="-1"></a>combined_out <span class="sc">%&gt;%</span></span>
+<span id="cb165-2"><a href="#cb165-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">reorder</span>(baker,median), median))<span class="sc">+</span></span>
+<span id="cb165-3"><a href="#cb165-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> q5, <span class="at">ymax =</span>q95))<span class="sc">+</span></span>
+<span id="cb165-4"><a href="#cb165-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb165-5"><a href="#cb165-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()<span class="sc">+</span></span>
+<span id="cb165-6"><a href="#cb165-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb165-7"><a href="#cb165-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> performance,</span>
+<span id="cb165-8"><a href="#cb165-8" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> baker, <span class="at">y =</span> <span class="dv">0</span>,</span>
+<span id="cb165-9"><a href="#cb165-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> perf), <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb165-10"><a href="#cb165-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="dv">0</span>,<span class="at">nudge_x =</span> .<span class="dv">2</span> , <span class="at">size =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb165-11"><a href="#cb165-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb165-12"><a href="#cb165-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Who Was the Most Skilled Baker in Season 3?"</span>,</span>
+<span id="cb165-13"><a href="#cb165-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"Using Samejima’s Continuous Response Model (CRM)</span><span class="sc">\n</span><span class="st">Based on Technical Round Performance</span><span class="sc">\n</span><span class="st">Technical Performance Correlation to Final Results {correlation_analysis}"</span>),</span>
+<span id="cb165-14"><a href="#cb165-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"Data: Wikipedia</span><span class="sc">\n</span><span class="st"> See {url}"</span>),</span>
+<span id="cb165-15"><a href="#cb165-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb165-16"><a href="#cb165-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Skill"</span></span>
+<span id="cb165-17"><a href="#cb165-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="ot">-&gt;</span>p</span>
+<span id="cb165-18"><a href="#cb165-18" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb166"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb166-1"><a href="#cb166-1" aria-hidden="true" tabindex="-1"></a>out_come_with_rank <span class="sc">%&gt;%</span></span>
+<span id="cb166-2"><a href="#cb166-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(baker,outcome_modelled,outcome_realized) <span class="sc">%&gt;%</span></span>
+<span id="cb166-3"><a href="#cb166-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">color_use=</span> <span class="fu">ifelse</span>(outcome_modelled <span class="sc">&gt;</span>outcome_realized,</span>
+<span id="cb166-4"><a href="#cb166-4" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Better than Skill"</span>, <span class="st">"Worse than Skill"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb166-5"><a href="#cb166-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">reorder</span>(baker, outcome_modelled)))<span class="sc">+</span></span>
+<span id="cb166-6"><a href="#cb166-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> outcome_modelled), <span class="at">color =</span> <span class="st">"orange"</span>)<span class="sc">+</span></span>
+<span id="cb166-7"><a href="#cb166-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> outcome_realized), <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span></span>
+<span id="cb166-8"><a href="#cb166-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> outcome_modelled,</span>
+<span id="cb166-9"><a href="#cb166-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">xend =</span> outcome_realized, <span class="at">yend =</span> baker,</span>
+<span id="cb166-10"><a href="#cb166-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">color =</span> color_use))<span class="sc">+</span></span>
+<span id="cb166-11"><a href="#cb166-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
+<span id="cb166-12"><a href="#cb166-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb166-13"><a href="#cb166-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Comparison Between Outcome and Modelled Skill"</span>,</span>
+<span id="cb166-14"><a href="#cb166-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Outcome"</span>,</span>
+<span id="cb166-15"><a href="#cb166-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span>,</span>
+<span id="cb166-16"><a href="#cb166-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Rank"</span></span>
+<span id="cb166-17"><a href="#cb166-17" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb166-18"><a href="#cb166-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"green"</span>, <span class="st">"red"</span>))<span class="sc">+</span></span>
+<span id="cb166-19"><a href="#cb166-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">12</span>,<span class="dv">1</span>))<span class="ot">-&gt;</span>p2</span>
+<span id="cb166-20"><a href="#cb166-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb166-21"><a href="#cb166-21" aria-hidden="true" tabindex="-1"></a>p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps">Next Steps</h2>
+<p>This analysis only covers one season. It would be neat to come back and do all of the seasons to get a feel for the level of difficulty of the different rounds (i.e., was the technical in round 3 of similar difficulty in each season). Additionally it would be neat to see if this relationship between the technical score and final outcome held up in each season.</p>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2021,
+  author = {Michael DeWitt},
+  title = {How {Discerning} Is the {Technical} {Challenge} in {GBBO?}},
+  date = {2021-09-23},
+  url = {https://michaeldewittjr.com/programming/2021-09-23-how-discerning-is-the-technical-challenge-in-gbbo},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2021" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2021. <span>“How Discerning Is the Technical Challenge
+in GBBO?”</span> September 23, 2021. <a href="https://michaeldewittjr.com/programming/2021-09-23-how-discerning-is-the-technical-challenge-in-gbbo">https://michaeldewittjr.com/programming/2021-09-23-how-discerning-is-the-technical-challenge-in-gbbo</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

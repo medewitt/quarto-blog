@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2022-01-01">
+<meta name="description" content="Thinking about the differences between research and engineering and this difference in Public Health. Specifically the idea of a PE stamp.">
+
+<title>Insufficient Statistics - An Engineering Mindset to Public Health</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - An Engineering Mindset to Public Health">
+<meta property="og:description" content="Thinking about the differences between research and engineering and this difference in Public Health. Specifically the idea of a PE stamp.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - An Engineering Mindset to Public Health">
+<meta name="twitter:description" content="Thinking about the differences between research and engineering and this difference in Public Health. Specifically the idea of a PE stamp.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">An Engineering Mindset to Public Health</h1>
+                  <div>
+        <div class="description">
+          <p>Thinking about the differences between research and engineering and this difference in Public Health. Specifically the idea of a PE stamp.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">musings</div>
+                <div class="quarto-category">covid-19</div>
+                <div class="quarto-category">public health</div>
+                <div class="quarto-category">CDC</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Michael DeWitt <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 1, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#engineering-and-public-health" id="toc-engineering-and-public-health" class="nav-link active" data-scroll-target="#engineering-and-public-health">Engineering and Public Health</a>
+  <ul class="collapse">
+  <li><a href="#where-engineering-thinking-comes-in" id="toc-where-engineering-thinking-comes-in" class="nav-link" data-scroll-target="#where-engineering-thinking-comes-in">Where Engineering Thinking Comes in</a></li>
+  <li><a href="#its-all-about-trade-offs" id="toc-its-all-about-trade-offs" class="nav-link" data-scroll-target="#its-all-about-trade-offs">It’s All About Trade-Offs</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="engineering-and-public-health" class="level1">
+<h1>Engineering and Public Health</h1>
+<p>The Centers for Disease Control and Prevention updated their COVID-19 guidelines for isolation and quarantine<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> on December 27, 2021 and received some strong backlash. The updates were certainly needed as the prior guidelines were last updated in December 2020 or so when a vaccine was not available and there were many additional unknowns. In the meantime the United States is in the midst of a Delta wave of infections and growing presence of the Omicron variant, the latter appearing to be more fit and better at escaping vaccine or infection derived immunity. This means that many people are in quarantine and isolation at all levels which is causing issues to basic services (e.g., hospitals down critical staff, flights canceled due to crews in quarantine/isolation, day care centers, schools, other commerce activities, end even college football bowl games). While generally there is agreement that the guidelines needed to be updated based on availability of vaccines and boosters, there is some disagreement on the language and the lack of a testing component.</p>
+<p>The key phrase that is causing consternation is below:</p>
+<blockquote class="blockquote">
+<p>The change is motivated by science demonstrating that the majority of SARS-CoV-2 transmission occurs early in the course of illness, generally in the 1-2 days prior to onset of symptoms and the 2-3 days after. Therefore, people who test positive should isolate for 5 days and, if asymptomatic at that time, they may leave isolation if they can continue to mask for 5 days to minimize the risk of infecting others. –<a href="https://www.cdc.gov/media/releases/2021/s1227-isolation-quarantine-guidance.html">full text available here</a></p>
+</blockquote>
+<p>What you might notice in that sentence is that there are no links to the “science.” The United Kingdom Health Security Agency (UKHSA) puts out 40+ pages of <a href="https://www.gov.uk/government/publications/investigation-of-sars-cov-2-variants-technical-briefings">technical reports</a> and easy to read threat matrices each week. This is in addition to a beautiful website with a clean and well functioning and documented API to pull the data. While the structure is different in the United States (e.g., no national health service), a few sources linked to the “science” would have been helpful. Just mentioning “the facts and the science” is not super helpful and this appeal to the unknown “research” is often an approach that misinformation trolls use.</p>
+<p>Dr <a href="https://www.niaid.nih.gov/about/anthony-s-fauci-md-bio">Tony Fauci</a>, President Biden’s Chief Medical Officer, clarified a little further on one of the morning talk shows:</p>
+<blockquote class="blockquote">
+<p>The reason is that with the sheer volume of new cases that we are having and that we expect to continue with omicron, one of the things we want to be careful of is that we don’t have so many people out, <a href="https://www.cnbc.com/2021/12/28/dr-fauci-cdcs-reduced-isolation-time-will-get-people-back-to-jobs.html">Fauci told CNN’s Jim, Acosta</a></p>
+</blockquote>
+<p>This strikes a more nuanced tone than the statement in the CDC media release. There needs to be a balance between the risks of onward transmission and the harms of having basic services fail or operate in a degraded mode. This is a health <em>policy</em> decision.</p>
+<blockquote class="blockquote">
+<p>On Wednesday, Walensky acknowledged that the CDC’s decision to alter the recommended isolation period “really had a lot to do with what we thought people would be able to tolerate.”<a href="https://www.politico.com/news/2021/12/29/cdc-defends-new-covid-guidelines-526234">Dr Walensky on CNN</a></p>
+</blockquote>
+<p>And on NPR</p>
+<blockquote class="blockquote">
+<p>Yeah, I really am glad you asked that question. So of course, we can’t take science into a vacuum. We have to put science in the context of how it can be implemented in a functional society, so we always do that. Your question, though, is really important. And that is, you know, the vast majority of transmission happens in that first five days. And there’s probably a little bit that might happen after those five days, which is why we’ve really put in the strong recommendation to mask those last five days. <a href="https://www.npr.org/2021/12/28/1068587852/cdc-director-on-new-isolation-rules?s=03">Dr Walenksy on NPR</a></p>
+</blockquote>
+<p>And on the question of testing:</p>
+<blockquote class="blockquote">
+<p>The antigen test is another question that has arrived, and interestingly, we actually do not know the predictive value of the antigen test later in the course of disease with regard to transmissibility.</p>
+</blockquote>
+<p>It’s a bit unfortunate that they didn’t do the research or commission the research on viral cultures, antigen tests, PCR tests, etc over time in even a small number of partcipants. I know that this will vary amongst different populations due to different levels of immunity and immune systems, but directionaly this could have been informative. It seems like this kind of basic epidemiology research fits the bill for something sponsored by the NIH and importantly was going to be a natural question in response to the policy shift.</p>
+<section id="where-engineering-thinking-comes-in" class="level2">
+<h2 class="anchored" data-anchor-id="where-engineering-thinking-comes-in">Where Engineering Thinking Comes in</h2>
+<p>My training in engineering has come to shape the way that I view the world in unexpected ways. One component of my engineering education that seems salient to today is the idea of balancing risks and being clear about assumptions. For example, in chemical engineering one of the common acts is to design a chemical reactor (or some kind of chemical driven process). You are given a budget and an end goal and you design away. You could make all of the pipes out of titanium which could be very safe, but very expensive and you won’t have the budget to build the process. Because of this you design the process, maybe make a few sensitivity analysis on materials or design changes. Eventually, you present the design and make clear the operating parameters and sensitivities (and in some aspects you stamp it with your Professional Engineer stamp if you have earned this designation (as a result of testing and years of apprenticing)).</p>
+<p>I think this last moment is what is critical–that you make a design choice and make that choice (and repercussion) known. You do the math, but then make a decision and make it clear that is was decision under constraints. I think that’s where the CDC is learning (as news evolves) that they have to make these decisions very clear.</p>
+<p>The risk of not making all of the assumptions and decision points clear is that the CDC is accused of being arbitrary in guidance. That is not good. We do not want to think of our public health agencies as making guidance that is politically expediant, but what that takes is putting the facts out there and the trade offs.</p>
+<p>For instance in the paper below we can see what the risk of positive contacts leaving isolation early could be (or quarantine depending). Then the CDC can say that given these probabilities we recommend this policy (nicely sourced).</p>
+<p>https://www.medrxiv.org/content/10.1101/2021.06.11.21258735v1</p>
+<p>To put it into engineering design terms, in order to have the public health at the maximal level, we recommend this guidance. Then for those for whom a risk tolerance is lower or there is higher risk, they can adjust with the CDC guidance functioning as the floor.</p>
+</section>
+<section id="its-all-about-trade-offs" class="level2">
+<h2 class="anchored" data-anchor-id="its-all-about-trade-offs">It’s All About Trade-Offs</h2>
+<p>The hard part about policy is that everything is about trade-offs. We just have to be clear where the science ends (e.g.&nbsp;what is known, what is unknown, and what our confidence is in these data) and where policy and trade-offs are being made.</p>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1" role="doc-endnote"><p>Remember, isolate if you are positive, quarantine if you are a contact.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2022,
+  author = {Michael DeWitt and Michael DeWitt},
+  title = {An {Engineering} {Mindset} to {Public} {Health}},
+  date = {2022-01-01},
+  url = {https://michaeldewittjr.com/posts/2022-01-01-an-engineering-mindset-to-public-health/an-engineering-mindset-to-public-health.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2022" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt, and Michael DeWitt. 2022. <span>“An Engineering Mindset
+to Public Health.”</span> January 1, 2022. <a href="https://michaeldewittjr.com/posts/2022-01-01-an-engineering-mindset-to-public-health/an-engineering-mindset-to-public-health.html">https://michaeldewittjr.com/posts/2022-01-01-an-engineering-mindset-to-public-health/an-engineering-mindset-to-public-health.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

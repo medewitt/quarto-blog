@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2021-05-08">
+<meta name="description" content="Why attributing to success to luck undermines hard work.">
+
+<title>Insufficient Statistics - The Myth of Luck and the Lone Scientist</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - The Myth of Luck and the Lone Scientist">
+<meta property="og:description" content="Why attributing to success to luck undermines hard work.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - The Myth of Luck and the Lone Scientist">
+<meta name="twitter:description" content="Why attributing to success to luck undermines hard work.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">The Myth of Luck and the Lone Scientist</h1>
+                  <div>
+        <div class="description">
+          <p>Why attributing to success to luck undermines hard work.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">musings</div>
+                <div class="quarto-category">luck</div>
+                <div class="quarto-category">hard work</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Michael DeWitt <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">May 8, 2021</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#we-got-lucky" id="toc-we-got-lucky" class="nav-link active" data-scroll-target="#we-got-lucky">We Got Lucky</a></li>
+  <li><a href="#counterfactual---failures-are-just-bad-luck" id="toc-counterfactual---failures-are-just-bad-luck" class="nav-link" data-scroll-target="#counterfactual---failures-are-just-bad-luck">Counterfactual - Failures are Just Bad Luck</a></li>
+  <li><a href="#hard-work-and-success" id="toc-hard-work-and-success" class="nav-link" data-scroll-target="#hard-work-and-success">Hard Work and Success</a>
+  <ul class="collapse">
+  <li><a href="#well-defined-problems" id="toc-well-defined-problems" class="nav-link" data-scroll-target="#well-defined-problems">Well Defined Problems</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content">
+
+
+
+
+<section id="we-got-lucky" class="level2">
+<h2 class="anchored" data-anchor-id="we-got-lucky">We Got Lucky</h2>
+<p>This post was spurred by the following tweet and response.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="topol-luck.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure from <span class="citation" data-cites="EricTopol">@EricTopol</span></figcaption><p></p>
+</figure>
+</div>
+<p>Did we get lucky with great vaccines? Some would say yes, we got results that far exceeded expectations in a very accelerated timeline. Is that the definition of luck?</p>
+<p>From OED the first definition of luck is:</p>
+<blockquote class="blockquote">
+<p>Success or failure apparently brought by chance rather than through one’s own actions.</p>
+</blockquote>
+<p>So developing sophisticated science that is safe and effective right when the world needs it defined as “apparently bought about by chance rather than through one’s own actions.” I think, paraphrasing Aaron Eckhert’s “Harvey Dent”, we make our own luck. That is not to discount that there is some degree of stochasticicity in some our actions and results. Additionally, there is the effect of being at the right place at the right time, but I would call this more serendipity than luck.</p>
+<p>The rest of this post will basically center on the idea that saying something is lucky undermines the hard work and efforts of all of those involved in any kind of achievement. What appears to be luck is often experience and education preparing a group of people to better solve problems. Plus a “lucky” solution can be found by leveraging experience and knowledge to better define the problem so that the solution just seems to “appear.” Additionally, the idea of luck is inconsistent because no one believes all failures are due to bad luck. Finally the idea that things are lucky seems to lead one to the hero scientist narrative when in reality science and discoveries tend.</p>
+</section>
+<section id="counterfactual---failures-are-just-bad-luck" class="level2">
+<h2 class="anchored" data-anchor-id="counterfactual---failures-are-just-bad-luck">Counterfactual - Failures are Just Bad Luck</h2>
+<p>When making a claim it is useful to carry it to its logical extremes and examine all of its properties. If making a reliable product is luck, then failing to do so is bad luck. If that isn’t true, then making a useful product is sometimes luck, the what qualifies as luck? It’s luck only when there isn’t a legacy of research, a big well of money to fund current research, a relatively well defined problem, some of the most brilliant minds in the world working with singular passion day and night to develop a solution? Yeah, so you get where I’m going. I like the quote spuriously attributed to Thomas Jefferson, that the harder one works the more luck one seems to have.</p>
+</section>
+<section id="hard-work-and-success" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="hard-work-and-success">Hard Work and Success</h2>
+<p>The point of this post is to say that telling someone that they were lucky is undermining their hard work and the work upon which they relied. This view tacitly embraces the scientist as lucky hero, Flemming style, in the lab and stumbles upon some great discovery that works marvelously. Maybe that happens, but that undermines the fact that the scientist (or more likely group of scientists) with years of training were in the lab in the first place doing experiments and had the foresight to recognize a discovery. Serendipity has a roll perhaps, but I wouldn’t say it’s all luck. Kind of like the Apollo 13 crew was lucky, but lucky that the had some brilliant minds working the problems, engineering solutions, and communicating with them to get home.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Important to mention that most of the engineers at NASA were white men.</p>
+</div></div><section id="well-defined-problems" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="well-defined-problems">Well Defined Problems</h3>
+<p>Finding the solution to a well defined problems is one of the easier tasks in my opinion. The narrower the scope, the more one can leverage knowledge and experience. A lifetime ago I worked in manufacturing. One thing I learned is that working with rubber is challenging, especially when you want it to go where you tell it to. Rubber has varying “tack” or the coefficient of friction changes over time as different chemicals migrate to the surface (e.g., how sticky it is changes with time). Worse this property can vary depending on storage conditions and where it is in the storage unit. Plus, you have all the normal manufacturing variation from upstream processes (like the calendering process where sheets are made).</p>
+<p>All of this is context for a project of which I was the leader. My colleagues and I had done many studies on the material properties and on the manufacturing processes upstream and downstream in order to generate a process improvement.</p>
+<p>We working with the engineering teams in order to specify a modification that would solve a particular issue given all of our studies. When the time came to put in the modification, it didn’t work. The reason we were doing this performance improvement modification was to improve quality and output in a capacity constrained shop. Finding that the modification didn’t work during a shutdown in which the shop would need to start the next day was alarming. But we started to work the problem with all the operators, mechanics, engineering, methods–everyone. We started to lay out everything we knew, what the facts were, what studies had shown up. Eventually we defined the problem we needed to solve in a smaller box. Once we did that, one of the mechanics, an old Polish emigre, said, “I know what we can do, I did something to solve this years ago.” We mocked up what he told us, and bam, it worked! Not only did it work, it worked better than we had hoped. With the engineers in the room, we made the mock-up even better. Were we lucky? Well, we had done all of the research, we had all the experts around the table, we discussed the problems and defined exactly the issue and what we needed to happen, and once we did that, we had a guy who was a real expert remember something related to exactly that problem come up with a solution. Was that luck?</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Which if you want to be a data scientist is an exceptional opportunity. Getting involved in experimental design, data collection, and propagation of errors, you really get to understand the entire process. After doing all this you get to do the statistics and communicate them to a variety of audiences in order to first show understanding of the problem and then design something to improve.</p>
+</div></div><p>I think everything that we did made us successful. Because we had done the studies, we knew what we were working with and what performance criteria we needed to achieve. Because we had experience around the table, we had histories of machine modifications and years of observation on what might work (and also importantly what wouldn’t). Because we all discussed together exactly what we knew, what we didn’t, what problem we needed to solve, we had half of the solution defined in our new problem definition. Take away any of the hard work or any one member of the team who contributed something along the lines during solution development and it wouldn’t work. Why didn’t the first solution, the original modification not work. Bad luck? Nope, it was a prototype. It was a solution that failed, but in its failure gave us more data on what wouldn’t work and thus limited the solution space further. Hard work and perseverance led to a solution.</p>
+<p>This is also why when people take away hard luck from the solution, the lone scientist hero comes up. Anyone can be lucky. However, hard work requires dedication, effort, and practice. Science is rarely done in a vacuum. You stand on the shoulders of the greats and learn from first principles, reading the literature, exploring what was done and what the next steps could be. Science and engineering are team sports.</p>
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2021,
+  author = {Michael DeWitt and Michael DeWitt},
+  title = {The {Myth} of {Luck} and the {Lone} {Scientist}},
+  date = {2021-05-08},
+  url = {https://michaeldewittjr.com/posts/2021-05-08-the-myth-of-luck-and-the-lone-scientist/the-myth-of-luck-and-the-lone-scientist.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2021" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt, and Michael DeWitt. 2021. <span>“The Myth of Luck and
+the Lone Scientist.”</span> May 8, 2021. <a href="https://michaeldewittjr.com/posts/2021-05-08-the-myth-of-luck-and-the-lone-scientist/the-myth-of-luck-and-the-lone-scientist.html">https://michaeldewittjr.com/posts/2021-05-08-the-myth-of-luck-and-the-lone-scientist/the-myth-of-luck-and-the-lone-scientist.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

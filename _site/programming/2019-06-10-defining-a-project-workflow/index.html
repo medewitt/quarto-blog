@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2019-06-10">
+<meta name="description" content="Having a defined project workflow is important for many reasons. Consistency of design allows for easier sharing (you or other collaborators don’t have to look for things) and reduces some cognitive load by allowing you to focus on content and less on form. This is my lightly opinionated project structure. Of course these fews are ever evolving.">
+
+<title>Insufficient Statistics - Defining a Project Workflow</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - Defining a Project Workflow">
+<meta property="og:description" content="Having a defined project workflow is important for many reasons. Consistency of design allows for easier sharing (you or other collaborators  don't have to look for things) and reduces some cognitive load by allowing you to focus on content and less on form. This is my lightly opinionated project structure. Of course these fews are ever evolving.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - Defining a Project Workflow">
+<meta name="twitter:description" content="Having a defined project workflow is important for many reasons. Consistency of design allows for easier sharing (you or other collaborators  don't have to look for things) and reduces some cognitive load by allowing you to focus on content and less on form. This is my lightly opinionated project structure. Of course these fews are ever evolving.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Defining a Project Workflow</h1>
+                  <div>
+        <div class="description">
+          <p>Having a defined project workflow is important for many reasons. Consistency of design allows for easier sharing (you or other collaborators don’t have to look for things) and reduces some cognitive load by allowing you to focus on content and less on form. This is my lightly opinionated project structure. Of course these fews are ever evolving.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Tooling</div>
+                <div class="quarto-category">GPP</div>
+                <div class="quarto-category">Workflow</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 10, 2019</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#a-motivating-example" id="toc-a-motivating-example" class="nav-link active" data-scroll-target="#a-motivating-example">A motivating example</a></li>
+  <li><a href="#the-set-up" id="toc-the-set-up" class="nav-link" data-scroll-target="#the-set-up">The Set Up</a>
+  <ul class="collapse">
+  <li><a href="#data-data-raw" id="toc-data-data-raw" class="nav-link" data-scroll-target="#data-data-raw">data/ data-raw</a></li>
+  <li><a href="#libs" id="toc-libs" class="nav-link" data-scroll-target="#libs">libs</a></li>
+  <li><a href="#munge" id="toc-munge" class="nav-link" data-scroll-target="#munge">munge</a></li>
+  <li><a href="#src" id="toc-src" class="nav-link" data-scroll-target="#src">src</a></li>
+  <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">outputs</a></li>
+  <li><a href="#reports" id="toc-reports" class="nav-link" data-scroll-target="#reports">reports</a></li>
+  <li><a href="#readmes" id="toc-readmes" class="nav-link" data-scroll-target="#readmes">readme’s</a></li>
+  <li><a href="#makefile" id="toc-makefile" class="nav-link" data-scroll-target="#makefile">makefile</a></li>
+  </ul></li>
+  <li><a href="#alternative-approachs" id="toc-alternative-approachs" class="nav-link" data-scroll-target="#alternative-approachs">Alternative Approachs</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.tree)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>acme <span class="ot">&lt;-</span> Node<span class="sc">$</span><span class="fu">new</span>(<span class="at">name =</span> <span class="st">"data analysis project"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"data"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  data_raw <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"data-raw"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  libs <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"libs"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  munge <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"munge"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  src <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"src"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  output <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"outputs"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  reports <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"reports"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  readme <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"README.Rmd"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  makefile <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"makefile"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  rproject <span class="ot">&lt;-</span> acme<span class="sc">$</span><span class="fu">AddChild</span>(<span class="st">"project.Rproj"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="a-motivating-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-motivating-example">A motivating example</h2>
+<p>A consistent workflow is very powerful for several key reasons:<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<ul>
+<li>Removes the mental burden of structuring a project<br>
+</li>
+<li>Makes sharing easier by establishing a common understanding of what does what and definitions (e.g.&nbsp;certain files and certain directories always do certain things)<br>
+</li>
+<li>Makes project hand-offs easier (e.g.&nbsp;no one stays in the same job forever, so it is nice when things can transition between owners easier)</li>
+</ul>
+</section>
+<section id="the-set-up" class="level2">
+<h2 class="anchored" data-anchor-id="the-set-up">The Set Up</h2>
+<p>I typically try to create a basic structure for each project. The basic structure takes the form of the following directory tree:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(acme)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               levelName
+1  data analysis project
+2   ¦--data             
+3   ¦--data-raw         
+4   ¦--libs             
+5   ¦--munge            
+6   ¦--src              
+7   ¦--outputs          
+8   ¦--reports          
+9   ¦--README.Rmd       
+10  ¦--makefile         
+11  °--project.Rproj    </code></pre>
+</div>
+</div>
+<p>The next logical questions is what is going on in each of these different directories.</p>
+<section id="data-data-raw" class="level3">
+<h3 class="anchored" data-anchor-id="data-data-raw">data/ data-raw</h3>
+<p>All analysis projects start with data. Well technically they start with a research question, but the data really are what allow any kind of analysis to continue. In these two folders I will put the raw data (e.g.&nbsp;the data received from someone, or from a data source, scraped from the web, etc). These primary sources will typically go into the the <code>data-raw</code> folder. Any data where manipulations have been done will go into the <code>data</code> folder. These are typically the outputs from the <code>munge</code> operations which will be discussed earlier. I used to be more tyrannical and would only put raw data in the <code>data</code> folder, but I have come to realise that it is nice to have a folder for pure raw data and a folder for the munged data.</p>
+</section>
+<section id="libs" class="level3">
+<h3 class="anchored" data-anchor-id="libs">libs</h3>
+<p>This is a folder for the project specific helper functions that you find yourself developing for a project. Perhaps you need a little helper function to clean up information from a website or something for some weird regular expression challenge–here’s where they go.</p>
+</section>
+<section id="munge" class="level3">
+<h3 class="anchored" data-anchor-id="munge">munge</h3>
+<p>Munging is as it sounds, where the code you write to ingest and digest the data lies. I typically will number the the files for each step of the operation such that it looks like:</p>
+<pre><code>|-munge
+|--01-import.R
+|--02-clean.R
+|--03-matching.R</code></pre>
+<p>Or something to this effect. Regardless files <code>01</code> and <code>02</code> are nearly always present and named as above. Breaking the munging operation into steps also helps with the debugging processes.</p>
+</section>
+<section id="src" class="level3">
+<h3 class="anchored" data-anchor-id="src">src</h3>
+<p>Our source files are really the analysis files that we run. I try to name these as descriptive as possible with the first section indicating what my output is, the second a number for the order of operations I want it processed, and then something descriptive. For example if I were generating some summary crosstabs, a few figures,and some regressions it might look like the following:</p>
+<pre><code>|-src
+|--figs-1-summary_choices.R
+|--reg-1-salary_vs_voting.R
+|--reg-2-education_vs_income.R
+|--xtabs-1-overall_participation.R
+|--xtabs-2-part_by_demogs.R</code></pre>
+<p>Of course this changes by the need, but at least this is my general naming convention.</p>
+</section>
+<section id="outputs" class="level3">
+<h3 class="anchored" data-anchor-id="outputs">outputs</h3>
+<p>This is the folder where outputted figures, fitted models, and summary tables generated during the analysis goes. Ideally anything in this folder could be deleted and could be reproduced from the code found in the above folders.</p>
+</section>
+<section id="reports" class="level3">
+<h3 class="anchored" data-anchor-id="reports">reports</h3>
+<p>This one is relatively self explanatory–the final report or series of summary reports goes in this folder. Ideally everything is an <code>Rmd</code>. Here you will also often find a <code>my_bib.bib</code> file which contains the <code>bibtex</code> citations for the bibliography. Also of note that for single summary documents I prefer the <code>bookdown::pdf_document2</code> engine rather than the standard <code>rmarkdown::pdf_document</code> because the former supports all of the great features available in <code>bookdown</code> including chunk references a la <code>\@ref(tab:my-tab-name)</code>.</p>
+</section>
+<section id="readmes" class="level3">
+<h3 class="anchored" data-anchor-id="readmes">readme’s</h3>
+<p>Readme files are incredibly important. They provide the ability to provide long-form comments about the project, about the data sets, about the context of the analysis etc. Anything too long to belong in a comment should be in a readme. Additionally, this is a note to orient others new to the project to your work. Decisions you made about your approach or analysis can be included in here. At a minimum, include one file in the root directory that describes what the origin of the request was, where the data came from, the primary research question, and the overall approach of the project. As needed add readmes to the <code>data-raw</code> folder and others where needed.</p>
+</section>
+<section id="makefile" class="level3">
+<h3 class="anchored" data-anchor-id="makefile">makefile</h3>
+<p>This is one of the most important files in a project and I honestly have not been using it for long. Makefiles have been around a long time, and as all good things do, it came out of Bell Labs.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> With the makefile you can set a series of targets that allows you to build your entire project with a single command <code>make</code>. Similarly as things change <code>make</code> will look for target items (“targets”) or items that depend on earlier items. If an upstream item changes, all downstream dependencies will be run on the <code>make</code> command. Make can do a ton more, such as clean up all outputs files and allow you to re-run the entire project. It also can run shell commands as specified. Just a generally powerful language. My standard makefile looks like that below:<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<pre><code># Usually, only these lines need changing
+RDIR= .
+MUNGEDIR= ./munge
+SRCDIR= ./src
+REPORTDIR= ./report
+
+# List files for dependencies
+MUNGE_RFILES := $(wildcard $(MUNGEDIR)/*.R)
+SRC_RFILES := $(wildcard $(SRCDIR)/*.R)
+REPORT_RFILES := $(wildcard $(REPORTDIR)/*.Rmd)
+
+# Indicator files to show R file has run
+MUNGE_OUT_FILES:= $(MUNGE_RFILES:.R=.Rout)
+SRC_OUT_FILES:= $(SRC_RFILES:.R=.Rout)
+REPORT_OUT_FILES:= $(REPORT_RFILES:.R=.pdf)
+
+# Run everything
+all: $(SRC_OUT_FILES) $(MUNGE_OUT_FILES)
+
+# Run Munging Operation
+$(MUNGEDIR)/%.Rout: $(MUNGEDIR)/%.R
+    @echo starting muninging
+     R CMD BATCH --vanilla $&lt;
+     @echo finished munging
+
+# Run Analysis Operation
+$(SRCDIR)/%.Rout: $(SRCDIR)/%.R
+    @echo starting analysis
+     R CMD BATCH --vanilla $&lt;
+
+# Compile Report
+$(REPORTDIR)/%.pdf: $(REPORTDIR)/%.Rmd
+    @echo compiling report
+     Rscript -e "rmarkdown::render('$&lt;')"
+
+# Clean up
+clean:
+    rm -fv $(MUNGE_OUT_FILES)
+    rm -fv $(SRC_OUT_FILES)
+    rm -fv $(REPORT_OUT_FILES)
+
+.PHONY: all clean
+</code></pre>
+<p>Of course, this is a general approach, but this is my every evolving attempt to document my approach.</p>
+</section>
+</section>
+<section id="alternative-approachs" class="level2">
+<h2 class="anchored" data-anchor-id="alternative-approachs">Alternative Approachs</h2>
+<p>Just to mention a few alternative approachs:</p>
+<ul>
+<li><p><a href="http://projecttemplate.net/">ProjectTemplate</a> which in many ways inspired my own view on templating projects</p></li>
+<li><p><a href="https://github.com/benmarwick/rrtools">rrtools</a> which structures analysis projects in the form of an R project. It offers some nice components regarding use of continuous integration and allows the default components of R to ensure dependencies are loaded. I might try to integrate this into my own work at some point for these features.</p></li>
+</ul>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1" role="doc-endnote"><p>I have detailed these further in my <a href="https://github.com/medewitt/introduction_to_r//blob/master/gpp/gpp.pdf">slides</a> on Good Programming Practices, but it cannot be understated how powerful having a consistent project template or approach is.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>See <a href="https://www.gnu.org/software/make/" class="uri">https://www.gnu.org/software/make/</a> for more details about the program and the associated wikipedia page at <a href="https://en.wikipedia.org/wiki/Makefile" class="uri">https://en.wikipedia.org/wiki/Makefile</a> for details about its origin<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p>Inspired by Rob Hyndman at <a href="https://robjhyndman.com/hyndsight/makefiles/" class="uri">https://robjhyndman.com/hyndsight/makefiles/</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2019,
+  author = {Michael DeWitt},
+  title = {Defining a {Project} {Workflow}},
+  date = {2019-06-10},
+  url = {https://michaeldewittjr.com/programming/2019-06-10-defining-a-project-workflow},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2019" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2019. <span>“Defining a Project Workflow.”</span> June
+10, 2019. <a href="https://michaeldewittjr.com/programming/2019-06-10-defining-a-project-workflow">https://michaeldewittjr.com/programming/2019-06-10-defining-a-project-workflow</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

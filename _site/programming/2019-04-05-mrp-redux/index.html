@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2019-04-05">
+<meta name="description" content="Using fake data simulations to understand the our MRP model.">
+
+<title>Insufficient Statistics - MRP Redux</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - MRP Redux">
+<meta property="og:description" content="Using fake data simulations to understand the our MRP model.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - MRP Redux">
+<meta name="twitter:description" content="Using fake data simulations to understand the our MRP model.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">MRP Redux</h1>
+                  <div>
+        <div class="description">
+          <p>Using fake data simulations to understand the our MRP model.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Bayes</div>
+                <div class="quarto-category">MRP</div>
+                <div class="quarto-category">brms</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 5, 2019</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#population-data" id="toc-population-data" class="nav-link" data-scroll-target="#population-data">Population Data</a></li>
+  <li><a href="#multi-level-regression" id="toc-multi-level-regression" class="nav-link" data-scroll-target="#multi-level-regression">Multi-Level Regression</a></li>
+  <li><a href="#create-the-census-data" id="toc-create-the-census-data" class="nav-link" data-scroll-target="#create-the-census-data">Create the Census Data</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>I recently got a question about using MRP and I thought it would be worthwhile to share some of the additional explanation of using this approach with a simulated data set. Simulating your data and testing your method is a really good way to understand if your model is sensitive enough to detect differences. This kind of fake data simulation will allow you to see if your model fails, before using it production or in the field where the cost of failure is high.</p>
+</section>
+<section id="population-data" class="level2">
+<h2 class="anchored" data-anchor-id="population-data">Population Data</h2>
+<p>I’m going to generate some synthetic data for this example. This will represent our population and provide a benchmark for “truth.” The data are completely made up and don’t represent anything in particular.</p>
+<p>These data represent a population of 1 million persons, of binary gender, four different races, living in the US. Again, the proportions are made up.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✓ ggplot2 3.3.5.9000     ✓ purrr   0.3.4.9000
+✓ tibble  3.1.6.9001     ✓ dplyr   1.0.8.9000
+✓ tidyr   1.1.4.9000     ✓ stringr 1.4.0.9000
+✓ readr   2.1.2          ✓ forcats 0.5.1     </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+</div>
+<p>Let’s imagine that each person has a probability , <span class="math inline">\(\theta\)</span> of supporting a given opinion. Again, let’s suppose that the probability of support is partially determined by some combination of gender, race, location, and of course some random noise.</p>
+<div class="cell">
+
+</div>
+<p>Now I’m going to draw my sample for my analysis. This would represent a completely random sample of my population.</p>
+<div class="cell">
+
+</div>
+</section>
+<section id="multi-level-regression" class="level2">
+<h2 class="anchored" data-anchor-id="multi-level-regression">Multi-Level Regression</h2>
+<p>Now we can step into the first component of MRP, the multi-level or hierarchical regression modeling. Here based on literature and inference that race, gender, state, and census division may be important, or help me make inference on the probability of supporting the given option. Additionally, I will use partial pooling to help make inferences for some of the small cell sizes that exist in my survey. I can build that given equation using <code>brms</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Rcpp</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading 'brms' package (version 2.16.1). Useful instructions
+can be found by typing help('brms'). A more detailed introduction
+to the package is available through vignette('brms_overview').</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'brms'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:stats':
+
+    ar</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>my_equation <span class="ot">&lt;-</span> <span class="fu">bf</span>(true_opinion <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> race <span class="sc">*</span> gender) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> state) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> division))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now to see what priors I have to set. This step is important as building the above model with lots of variables may have difficulty converging.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_prior</span>(my_equation, <span class="at">data =</span> survey)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                prior     class      coef       group resp dpar nlpar bound
+ student_t(3, 0, 2.5) Intercept                                            
+ student_t(3, 0, 2.5)        sd                                            
+ student_t(3, 0, 2.5)        sd              division                      
+ student_t(3, 0, 2.5)        sd Intercept    division                      
+ student_t(3, 0, 2.5)        sd                gender                      
+ student_t(3, 0, 2.5)        sd Intercept      gender                      
+ student_t(3, 0, 2.5)        sd                  race                      
+ student_t(3, 0, 2.5)        sd Intercept        race                      
+ student_t(3, 0, 2.5)        sd           race:gender                      
+ student_t(3, 0, 2.5)        sd Intercept race:gender                      
+ student_t(3, 0, 2.5)        sd                 state                      
+ student_t(3, 0, 2.5)        sd Intercept       state                      
+ student_t(3, 0, 2.5)     sigma                                            
+       source
+      default
+      default
+ (vectorized)
+ (vectorized)
+ (vectorized)
+ (vectorized)
+ (vectorized)
+ (vectorized)
+ (vectorized)
+ (vectorized)
+ (vectorized)
+ (vectorized)
+      default</code></pre>
+</div>
+</div>
+<p>Now I can set my priors for the different coefficients in my model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>my_priors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">set_prior</span>(<span class="st">"normal(0,0.2)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"race:gender"</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">set_prior</span>(<span class="st">"normal(0,0.2)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"race"</span>),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">set_prior</span>(<span class="st">"normal(0,0.2)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"gender"</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">set_prior</span>(<span class="st">"normal(0,0.2)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"state"</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">set_prior</span>(<span class="st">"normal(0,0.2)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>, <span class="at">group =</span> <span class="st">"division"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can run the model in <code>brms</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(my_equation, survey, <span class="at">prior =</span> my_priors, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">chains =</span> <span class="dv">2</span>, <span class="at">iter =</span> <span class="dv">1000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">family =</span> <span class="fu">bernoulli</span>(),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">silent =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /usr/local/Cellar/r/4.1.2/lib/R/bin/R CMD SHLIB foo.c
+/usr/local/opt/llvm/bin/clang  -I"/usr/local/Cellar/r/4.1.2/lib/R/include" -DNDEBUG   -I"/usr/local/lib/R/4.1/site-library/Rcpp/include/"  -I"/usr/local/lib/R/4.1/site-library/RcppEigen/include/"  -I"/usr/local/lib/R/4.1/site-library/RcppEigen/include/unsupported"  -I"/usr/local/lib/R/4.1/site-library/BH/include" -I"/usr/local/lib/R/4.1/site-library/StanHeaders/include/src/"  -I"/usr/local/lib/R/4.1/site-library/StanHeaders/include/"  -I"/usr/local/lib/R/4.1/site-library/RcppParallel/include/"  -I"/usr/local/lib/R/4.1/site-library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -DBOOST_NO_AUTO_PTR  -include '/usr/local/lib/R/4.1/site-library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/opt/gettext/include -I/usr/local/opt/readline/include -I/usr/local/opt/xz/include -I/usr/local/include   -fPIC  -g -O3 -Wall -pedantic -std=gnu99 -mtune=native -pipe -c foo.c -o foo.o
+In file included from &lt;built-in&gt;:1:
+In file included from /usr/local/lib/R/4.1/site-library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+In file included from /usr/local/lib/R/4.1/site-library/RcppEigen/include/Eigen/Dense:1:
+In file included from /usr/local/lib/R/4.1/site-library/RcppEigen/include/Eigen/Core:88:
+/usr/local/lib/R/4.1/site-library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:1: error: unknown type name 'namespace'
+namespace Eigen {
+^
+/usr/local/lib/R/4.1/site-library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:16: error: expected ';' after top level declarator
+namespace Eigen {
+               ^
+               ;
+In file included from &lt;built-in&gt;:1:
+In file included from /usr/local/lib/R/4.1/site-library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+In file included from /usr/local/lib/R/4.1/site-library/RcppEigen/include/Eigen/Dense:1:
+/usr/local/lib/R/4.1/site-library/RcppEigen/include/Eigen/Core:96:10: fatal error: 'complex' file not found
+#include &lt;complex&gt;
+         ^~~~~~~~~
+3 errors generated.
+make: *** [foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+</div>
+<p>Now we can visualise the outputs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'tidybayes'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:brms':
+
+    dstudent_t, pstudent_t, qstudent_t, rstudent_t</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fit <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(<span class="st">`</span><span class="at">sd_.*</span><span class="st">`</span>, <span class="at">regex=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(.variable, <span class="fu">c</span>(<span class="st">"sd_"</span> <span class="ot">=</span> <span class="st">""</span>,<span class="st">"__Intercept"</span><span class="ot">=</span><span class="st">""</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y=</span>group, <span class="at">x =</span> .value)) <span class="sc">+</span> </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  ggridges<span class="sc">::</span><span class="fu">geom_density_ridges</span>(<span class="fu">aes</span>(<span class="at">height=</span>..density..),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                                <span class="at">rel_min_height =</span> <span class="fl">0.01</span>, <span class="at">stat =</span> <span class="st">"density"</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>                                <span class="at">scale=</span><span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: as.mcmc.brmsfit is deprecated and will eventually be removed.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Additionally, we should do some additional posterior checks which includes checking our Rhat values for convervenges and our effective sample size. Additionally, some posterior predictive checks would also be helpful to ensure that our model is performing well. I won’t do that here, but it is a good practice to do those things.</p>
+<p>We can also check some of the intercepts to see if the model detected some of the changes that we introduced.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is bayesplot version 1.8.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- Online documentation and vignettes at mc-stan.org/bayesplot</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- bayesplot theme set to bayesplot::theme_default()</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>   * Does _not_ affect other ggplot2 plots</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>   * See ?bayesplot_theme_set for details on theme setting</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(fit)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dimnames</span>(posterior)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$draw
+   [1] "1"    "2"    "3"    "4"    "5"    "6"    "7"    "8"    "9"    "10"  
+  [11] "11"   "12"   "13"   "14"   "15"   "16"   "17"   "18"   "19"   "20"  
+  [21] "21"   "22"   "23"   "24"   "25"   "26"   "27"   "28"   "29"   "30"  
+  [31] "31"   "32"   "33"   "34"   "35"   "36"   "37"   "38"   "39"   "40"  
+  [41] "41"   "42"   "43"   "44"   "45"   "46"   "47"   "48"   "49"   "50"  
+  [51] "51"   "52"   "53"   "54"   "55"   "56"   "57"   "58"   "59"   "60"  
+  [61] "61"   "62"   "63"   "64"   "65"   "66"   "67"   "68"   "69"   "70"  
+  [71] "71"   "72"   "73"   "74"   "75"   "76"   "77"   "78"   "79"   "80"  
+  [81] "81"   "82"   "83"   "84"   "85"   "86"   "87"   "88"   "89"   "90"  
+  [91] "91"   "92"   "93"   "94"   "95"   "96"   "97"   "98"   "99"   "100" 
+ [101] "101"  "102"  "103"  "104"  "105"  "106"  "107"  "108"  "109"  "110" 
+ [111] "111"  "112"  "113"  "114"  "115"  "116"  "117"  "118"  "119"  "120" 
+ [121] "121"  "122"  "123"  "124"  "125"  "126"  "127"  "128"  "129"  "130" 
+ [131] "131"  "132"  "133"  "134"  "135"  "136"  "137"  "138"  "139"  "140" 
+ [141] "141"  "142"  "143"  "144"  "145"  "146"  "147"  "148"  "149"  "150" 
+ [151] "151"  "152"  "153"  "154"  "155"  "156"  "157"  "158"  "159"  "160" 
+ [161] "161"  "162"  "163"  "164"  "165"  "166"  "167"  "168"  "169"  "170" 
+ [171] "171"  "172"  "173"  "174"  "175"  "176"  "177"  "178"  "179"  "180" 
+ [181] "181"  "182"  "183"  "184"  "185"  "186"  "187"  "188"  "189"  "190" 
+ [191] "191"  "192"  "193"  "194"  "195"  "196"  "197"  "198"  "199"  "200" 
+ [201] "201"  "202"  "203"  "204"  "205"  "206"  "207"  "208"  "209"  "210" 
+ [211] "211"  "212"  "213"  "214"  "215"  "216"  "217"  "218"  "219"  "220" 
+ [221] "221"  "222"  "223"  "224"  "225"  "226"  "227"  "228"  "229"  "230" 
+ [231] "231"  "232"  "233"  "234"  "235"  "236"  "237"  "238"  "239"  "240" 
+ [241] "241"  "242"  "243"  "244"  "245"  "246"  "247"  "248"  "249"  "250" 
+ [251] "251"  "252"  "253"  "254"  "255"  "256"  "257"  "258"  "259"  "260" 
+ [261] "261"  "262"  "263"  "264"  "265"  "266"  "267"  "268"  "269"  "270" 
+ [271] "271"  "272"  "273"  "274"  "275"  "276"  "277"  "278"  "279"  "280" 
+ [281] "281"  "282"  "283"  "284"  "285"  "286"  "287"  "288"  "289"  "290" 
+ [291] "291"  "292"  "293"  "294"  "295"  "296"  "297"  "298"  "299"  "300" 
+ [301] "301"  "302"  "303"  "304"  "305"  "306"  "307"  "308"  "309"  "310" 
+ [311] "311"  "312"  "313"  "314"  "315"  "316"  "317"  "318"  "319"  "320" 
+ [321] "321"  "322"  "323"  "324"  "325"  "326"  "327"  "328"  "329"  "330" 
+ [331] "331"  "332"  "333"  "334"  "335"  "336"  "337"  "338"  "339"  "340" 
+ [341] "341"  "342"  "343"  "344"  "345"  "346"  "347"  "348"  "349"  "350" 
+ [351] "351"  "352"  "353"  "354"  "355"  "356"  "357"  "358"  "359"  "360" 
+ [361] "361"  "362"  "363"  "364"  "365"  "366"  "367"  "368"  "369"  "370" 
+ [371] "371"  "372"  "373"  "374"  "375"  "376"  "377"  "378"  "379"  "380" 
+ [381] "381"  "382"  "383"  "384"  "385"  "386"  "387"  "388"  "389"  "390" 
+ [391] "391"  "392"  "393"  "394"  "395"  "396"  "397"  "398"  "399"  "400" 
+ [401] "401"  "402"  "403"  "404"  "405"  "406"  "407"  "408"  "409"  "410" 
+ [411] "411"  "412"  "413"  "414"  "415"  "416"  "417"  "418"  "419"  "420" 
+ [421] "421"  "422"  "423"  "424"  "425"  "426"  "427"  "428"  "429"  "430" 
+ [431] "431"  "432"  "433"  "434"  "435"  "436"  "437"  "438"  "439"  "440" 
+ [441] "441"  "442"  "443"  "444"  "445"  "446"  "447"  "448"  "449"  "450" 
+ [451] "451"  "452"  "453"  "454"  "455"  "456"  "457"  "458"  "459"  "460" 
+ [461] "461"  "462"  "463"  "464"  "465"  "466"  "467"  "468"  "469"  "470" 
+ [471] "471"  "472"  "473"  "474"  "475"  "476"  "477"  "478"  "479"  "480" 
+ [481] "481"  "482"  "483"  "484"  "485"  "486"  "487"  "488"  "489"  "490" 
+ [491] "491"  "492"  "493"  "494"  "495"  "496"  "497"  "498"  "499"  "500" 
+ [501] "501"  "502"  "503"  "504"  "505"  "506"  "507"  "508"  "509"  "510" 
+ [511] "511"  "512"  "513"  "514"  "515"  "516"  "517"  "518"  "519"  "520" 
+ [521] "521"  "522"  "523"  "524"  "525"  "526"  "527"  "528"  "529"  "530" 
+ [531] "531"  "532"  "533"  "534"  "535"  "536"  "537"  "538"  "539"  "540" 
+ [541] "541"  "542"  "543"  "544"  "545"  "546"  "547"  "548"  "549"  "550" 
+ [551] "551"  "552"  "553"  "554"  "555"  "556"  "557"  "558"  "559"  "560" 
+ [561] "561"  "562"  "563"  "564"  "565"  "566"  "567"  "568"  "569"  "570" 
+ [571] "571"  "572"  "573"  "574"  "575"  "576"  "577"  "578"  "579"  "580" 
+ [581] "581"  "582"  "583"  "584"  "585"  "586"  "587"  "588"  "589"  "590" 
+ [591] "591"  "592"  "593"  "594"  "595"  "596"  "597"  "598"  "599"  "600" 
+ [601] "601"  "602"  "603"  "604"  "605"  "606"  "607"  "608"  "609"  "610" 
+ [611] "611"  "612"  "613"  "614"  "615"  "616"  "617"  "618"  "619"  "620" 
+ [621] "621"  "622"  "623"  "624"  "625"  "626"  "627"  "628"  "629"  "630" 
+ [631] "631"  "632"  "633"  "634"  "635"  "636"  "637"  "638"  "639"  "640" 
+ [641] "641"  "642"  "643"  "644"  "645"  "646"  "647"  "648"  "649"  "650" 
+ [651] "651"  "652"  "653"  "654"  "655"  "656"  "657"  "658"  "659"  "660" 
+ [661] "661"  "662"  "663"  "664"  "665"  "666"  "667"  "668"  "669"  "670" 
+ [671] "671"  "672"  "673"  "674"  "675"  "676"  "677"  "678"  "679"  "680" 
+ [681] "681"  "682"  "683"  "684"  "685"  "686"  "687"  "688"  "689"  "690" 
+ [691] "691"  "692"  "693"  "694"  "695"  "696"  "697"  "698"  "699"  "700" 
+ [701] "701"  "702"  "703"  "704"  "705"  "706"  "707"  "708"  "709"  "710" 
+ [711] "711"  "712"  "713"  "714"  "715"  "716"  "717"  "718"  "719"  "720" 
+ [721] "721"  "722"  "723"  "724"  "725"  "726"  "727"  "728"  "729"  "730" 
+ [731] "731"  "732"  "733"  "734"  "735"  "736"  "737"  "738"  "739"  "740" 
+ [741] "741"  "742"  "743"  "744"  "745"  "746"  "747"  "748"  "749"  "750" 
+ [751] "751"  "752"  "753"  "754"  "755"  "756"  "757"  "758"  "759"  "760" 
+ [761] "761"  "762"  "763"  "764"  "765"  "766"  "767"  "768"  "769"  "770" 
+ [771] "771"  "772"  "773"  "774"  "775"  "776"  "777"  "778"  "779"  "780" 
+ [781] "781"  "782"  "783"  "784"  "785"  "786"  "787"  "788"  "789"  "790" 
+ [791] "791"  "792"  "793"  "794"  "795"  "796"  "797"  "798"  "799"  "800" 
+ [801] "801"  "802"  "803"  "804"  "805"  "806"  "807"  "808"  "809"  "810" 
+ [811] "811"  "812"  "813"  "814"  "815"  "816"  "817"  "818"  "819"  "820" 
+ [821] "821"  "822"  "823"  "824"  "825"  "826"  "827"  "828"  "829"  "830" 
+ [831] "831"  "832"  "833"  "834"  "835"  "836"  "837"  "838"  "839"  "840" 
+ [841] "841"  "842"  "843"  "844"  "845"  "846"  "847"  "848"  "849"  "850" 
+ [851] "851"  "852"  "853"  "854"  "855"  "856"  "857"  "858"  "859"  "860" 
+ [861] "861"  "862"  "863"  "864"  "865"  "866"  "867"  "868"  "869"  "870" 
+ [871] "871"  "872"  "873"  "874"  "875"  "876"  "877"  "878"  "879"  "880" 
+ [881] "881"  "882"  "883"  "884"  "885"  "886"  "887"  "888"  "889"  "890" 
+ [891] "891"  "892"  "893"  "894"  "895"  "896"  "897"  "898"  "899"  "900" 
+ [901] "901"  "902"  "903"  "904"  "905"  "906"  "907"  "908"  "909"  "910" 
+ [911] "911"  "912"  "913"  "914"  "915"  "916"  "917"  "918"  "919"  "920" 
+ [921] "921"  "922"  "923"  "924"  "925"  "926"  "927"  "928"  "929"  "930" 
+ [931] "931"  "932"  "933"  "934"  "935"  "936"  "937"  "938"  "939"  "940" 
+ [941] "941"  "942"  "943"  "944"  "945"  "946"  "947"  "948"  "949"  "950" 
+ [951] "951"  "952"  "953"  "954"  "955"  "956"  "957"  "958"  "959"  "960" 
+ [961] "961"  "962"  "963"  "964"  "965"  "966"  "967"  "968"  "969"  "970" 
+ [971] "971"  "972"  "973"  "974"  "975"  "976"  "977"  "978"  "979"  "980" 
+ [981] "981"  "982"  "983"  "984"  "985"  "986"  "987"  "988"  "989"  "990" 
+ [991] "991"  "992"  "993"  "994"  "995"  "996"  "997"  "998"  "999"  "1000"
+
+$variable
+ [1] "b_Intercept"                             
+ [2] "sd_division__Intercept"                  
+ [3] "sd_gender__Intercept"                    
+ [4] "sd_race__Intercept"                      
+ [5] "sd_race:gender__Intercept"               
+ [6] "sd_state__Intercept"                     
+ [7] "r_division[New.England,Intercept]"       
+ [8] "r_division[Middle.Atlantic,Intercept]"   
+ [9] "r_division[South.Atlantic,Intercept]"    
+[10] "r_division[East.South.Central,Intercept]"
+[11] "r_division[West.South.Central,Intercept]"
+[12] "r_division[East.North.Central,Intercept]"
+[13] "r_division[West.North.Central,Intercept]"
+[14] "r_division[Mountain,Intercept]"          
+[15] "r_division[Pacific,Intercept]"           
+[16] "r_gender[Female,Intercept]"              
+[17] "r_gender[Male,Intercept]"                
+[18] "r_race[Asian,Intercept]"                 
+[19] "r_race[Black,Intercept]"                 
+[20] "r_race[Hispanic,Intercept]"              
+[21] "r_race[White,Intercept]"                 
+[22] "r_race:gender[Asian_Female,Intercept]"   
+[23] "r_race:gender[Asian_Male,Intercept]"     
+[24] "r_race:gender[Black_Female,Intercept]"   
+[25] "r_race:gender[Black_Male,Intercept]"     
+[26] "r_race:gender[Hispanic_Female,Intercept]"
+[27] "r_race:gender[Hispanic_Male,Intercept]"  
+[28] "r_race:gender[White_Female,Intercept]"   
+[29] "r_race:gender[White_Male,Intercept]"     
+[30] "r_state[AK,Intercept]"                   
+[31] "r_state[AL,Intercept]"                   
+[32] "r_state[AR,Intercept]"                   
+[33] "r_state[AZ,Intercept]"                   
+[34] "r_state[CA,Intercept]"                   
+[35] "r_state[CO,Intercept]"                   
+[36] "r_state[CT,Intercept]"                   
+[37] "r_state[DE,Intercept]"                   
+[38] "r_state[FL,Intercept]"                   
+[39] "r_state[GA,Intercept]"                   
+[40] "r_state[HI,Intercept]"                   
+[41] "r_state[IA,Intercept]"                   
+[42] "r_state[ID,Intercept]"                   
+[43] "r_state[IL,Intercept]"                   
+[44] "r_state[IN,Intercept]"                   
+[45] "r_state[KS,Intercept]"                   
+[46] "r_state[KY,Intercept]"                   
+[47] "r_state[LA,Intercept]"                   
+[48] "r_state[MA,Intercept]"                   
+[49] "r_state[MD,Intercept]"                   
+[50] "r_state[ME,Intercept]"                   
+[51] "r_state[MI,Intercept]"                   
+[52] "r_state[MN,Intercept]"                   
+[53] "r_state[MO,Intercept]"                   
+[54] "r_state[MS,Intercept]"                   
+[55] "r_state[MT,Intercept]"                   
+[56] "r_state[NC,Intercept]"                   
+[57] "r_state[ND,Intercept]"                   
+[58] "r_state[NE,Intercept]"                   
+[59] "r_state[NH,Intercept]"                   
+[60] "r_state[NJ,Intercept]"                   
+[61] "r_state[NM,Intercept]"                   
+[62] "r_state[NV,Intercept]"                   
+[63] "r_state[NY,Intercept]"                   
+[64] "r_state[OH,Intercept]"                   
+[65] "r_state[OK,Intercept]"                   
+[66] "r_state[OR,Intercept]"                   
+[67] "r_state[PA,Intercept]"                   
+[68] "r_state[RI,Intercept]"                   
+[69] "r_state[SC,Intercept]"                   
+[70] "r_state[SD,Intercept]"                   
+[71] "r_state[TN,Intercept]"                   
+[72] "r_state[TX,Intercept]"                   
+[73] "r_state[UT,Intercept]"                   
+[74] "r_state[VA,Intercept]"                   
+[75] "r_state[VT,Intercept]"                   
+[76] "r_state[WA,Intercept]"                   
+[77] "r_state[WI,Intercept]"                   
+[78] "r_state[WV,Intercept]"                   
+[79] "r_state[WY,Intercept]"                   
+[80] "lp__"                                    </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(posterior,</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"r_race[Asian,Intercept]"</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"r_gender[Female,Intercept]"</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"r_state[SC,Intercept]"</span>),</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob =</span> <span class="fl">0.8</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>It looks like the model picked up the gender differences as well as the specific difference for Asians. However, it looks like the model did not do a great job discriminating on differences for South Carolina. We could explore this further, but it is important to check that our model is performing as expected.</p>
+</section>
+<section id="create-the-census-data" class="level2">
+<h2 class="anchored" data-anchor-id="create-the-census-data">Create the Census Data</h2>
+<p>Now we step into the post-stratification step. Here we have the population values from our fake data. In reality you would probably use estimates from a census. Here we are interested in predicting state level opinion, so we we want to stratify at that level. If we wanted to make inferences about a different level we would stratify to that given level. I’m going to do both state level overall and race within state for this example.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  post_strat_values <span class="ot">&lt;-</span> population_data <span class="sc">%&gt;%</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(division, state, race, gender) <span class="sc">%&gt;%</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span> <span class="co"># The level at which you want to measure support</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">perc =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(state, race) <span class="sc">%&gt;%</span> </span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">perc_2 =</span> n<span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span> </span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'division', 'state', 'race'. You can
+override using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 400 × 7
+   division    state race     gender     n   perc perc_2
+   &lt;fct&gt;       &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+ 1 New England CT    Asian    Female   958 0.0475  0.478
+ 2 New England CT    Asian    Male    1047 0.0519  0.522
+ 3 New England CT    Black    Female  2061 0.102   0.509
+ 4 New England CT    Black    Male    1989 0.0986  0.491
+ 5 New England CT    Hispanic Female  3053 0.151   0.499
+ 6 New England CT    Hispanic Male    3060 0.152   0.501
+ 7 New England CT    White    Female  3997 0.198   0.499
+ 8 New England CT    White    Male    4009 0.199   0.501
+ 9 New England MA    Asian    Female   999 0.0493  0.493
+10 New England MA    Asian    Male    1026 0.0506  0.507
+# … with 390 more rows</code></pre>
+</div>
+</div>
+<p>Now we can add some draws from the posterior distribution to our dataset and then make inferences on them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>pred<span class="ot">&lt;-</span>fit <span class="sc">%&gt;%</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_predicted_draws</span>(<span class="at">newdata=</span>post_strat_values, <span class="at">allow_new_levels=</span><span class="cn">TRUE</span>, <span class="at">n =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">individual_support =</span> .prediction) <span class="sc">%&gt;%</span> </span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">rename</span>(<span class="at">support =</span> .prediction) <span class="sc">%&gt;%</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">state_support =</span> support <span class="sc">*</span> perc) <span class="sc">%&gt;%</span> <span class="co"># Post-stratified by state</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">state_race =</span> support <span class="sc">*</span>perc_2) <span class="co"># Post-stratified by gender within state</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: 
+In add_predicted_draws(): The `n` argument is a deprecated alias for `ndraws`.
+Use the `ndraws` argument instead.
+See help("tidybayes-deprecated").</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Argument 'nsamples' is deprecated. Please use argument 'ndraws'
+instead.</code></pre>
+</div>
+</div>
+<p>Now we can do whatever we want to do with regard to inferences:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>by_state_estimated <span class="ot">&lt;-</span> pred <span class="sc">%&gt;%</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">estimated_support =</span> <span class="fu">sum</span>(state_support)) <span class="sc">%&gt;%</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(population_data <span class="sc">%&gt;%</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">summarise</span>(<span class="at">true_support =</span> <span class="fu">mean</span>(true_opinion)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining, by = "state"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>by_state_estimated_2 <span class="ot">&lt;-</span> pred <span class="sc">%&gt;%</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">estimated_support =</span> <span class="fu">sum</span>(state_support)) <span class="sc">%&gt;%</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(population_data <span class="sc">%&gt;%</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">summarise</span>(<span class="at">true_support =</span> <span class="fu">mean</span>(true_opinion))) <span class="sc">%&gt;%</span> </span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(survey <span class="sc">%&gt;%</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>              <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>              <span class="fu">summarise</span>(<span class="at">survey_support =</span> <span class="fu">mean</span>(true_opinion))) <span class="sc">%&gt;%</span> </span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(method, prediction, <span class="sc">-</span>true_support, <span class="sc">-</span> state)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining, by = "state"
+Joining, by = "state"</code></pre>
+</div>
+</div>
+<p>Now we can look to see how our prediction did for the population, though we missed the Southern states. Probably because our decision to partial pool on division was a bad one given the effects we introduced at the state level did not necessarily coincide with the census division.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>by_state_estimated <span class="sc">%&gt;%</span> </span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(true_support, estimated_support, <span class="at">label =</span> state))<span class="sc">+</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>()<span class="sc">+</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(.<span class="dv">35</span>,.<span class="dv">55</span>)<span class="sc">+</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(.<span class="dv">35</span>,.<span class="dv">55</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>But we can at least be calmed by the fact that if we made direct prediction from our survey we would have been way wrong!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>by_state_estimated_2 <span class="sc">%&gt;%</span> </span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(prediction, true_support, <span class="at">color =</span> method, <span class="at">label =</span> state))<span class="sc">+</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>()<span class="sc">+</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(.<span class="dv">35</span>,.<span class="dv">55</span>)<span class="sc">+</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(.<span class="dv">35</span>,.<span class="dv">55</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 24 rows containing missing values (geom_label).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Looking at support by Race within a given community requires that we use a different post-stratification variable which we created earlier.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>(by_state_race_estimated <span class="ot">&lt;-</span> pred <span class="sc">%&gt;%</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state, race) <span class="sc">%&gt;%</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">estimated_support =</span> <span class="fu">sum</span>(state_race)) <span class="sc">%&gt;%</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(population_data <span class="sc">%&gt;%</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">group_by</span>(state, race) <span class="sc">%&gt;%</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">summarise</span>(<span class="at">true_support =</span> <span class="fu">mean</span>(true_opinion))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'state'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'state'. You can override using the
+`.groups` argument.
+Joining, by = c("state", "race")</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 200 × 4
+# Groups:   state [50]
+   state race     estimated_support true_support
+   &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;        &lt;dbl&gt;
+ 1 AK    Asian                0.471        0.396
+ 2 AK    Black                0.510        0.494
+ 3 AK    Hispanic             0.490        0.496
+ 4 AK    White                0.465        0.508
+ 5 AL    Asian                0.518        0.388
+ 6 AL    Black                0.451        0.500
+ 7 AL    Hispanic             0.510        0.492
+ 8 AL    White                0.474        0.498
+ 9 AR    Asian                0.462        0.395
+10 AR    Black                0.463        0.496
+# … with 190 more rows</code></pre>
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2019,
+  author = {Michael DeWitt},
+  title = {MRP {Redux}},
+  date = {2019-04-05},
+  url = {https://michaeldewittjr.com/programming/2019-04-05-mrp-redux},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2019" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2019. <span>“MRP Redux.”</span> April 5, 2019. <a href="https://michaeldewittjr.com/programming/2019-04-05-mrp-redux">https://michaeldewittjr.com/programming/2019-04-05-mrp-redux</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

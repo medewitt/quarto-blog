@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2019-09-26">
+<meta name="description" content="Given the current controversy regarding President Trump, let’s use a state-space Bayesian model to see what his approval rating currently is. As more surveys go into the field this will change, but let’s just look now.">
+
+<title>Insufficient Statistics - Approval Rating Now?</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - Approval Rating Now?">
+<meta property="og:description" content="Given the current controversy regarding President Trump, let's use a state-space Bayesian model to see what his approval rating currently is. As more surveys go into the field this will change, but let's just look now.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - Approval Rating Now?">
+<meta name="twitter:description" content="Given the current controversy regarding President Trump, let's use a state-space Bayesian model to see what his approval rating currently is. As more surveys go into the field this will change, but let's just look now.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Approval Rating Now?</h1>
+                  <div>
+        <div class="description">
+          <p>Given the current controversy regarding President Trump, let’s use a state-space Bayesian model to see what his approval rating currently is. As more surveys go into the field this will change, but let’s just look now.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Political</div>
+                <div class="quarto-category">Bayes</div>
+                <div class="quarto-category">State Space</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 26, 2019</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-data" id="toc-the-data" class="nav-link active" data-scroll-target="#the-data">The Data</a></li>
+  <li><a href="#multiple-polls-on-multiple-days" id="toc-multiple-polls-on-multiple-days" class="nav-link" data-scroll-target="#multiple-polls-on-multiple-days">Multiple Polls on Multiple Days?</a></li>
+  <li><a href="#our-model" id="toc-our-model" class="nav-link" data-scroll-target="#our-model">Our Model</a></li>
+  <li><a href="#prep-the-data" id="toc-prep-the-data" class="nav-link" data-scroll-target="#prep-the-data">Prep the Data</a></li>
+  <li><a href="#run-the-model" id="toc-run-the-model" class="nav-link" data-scroll-target="#run-the-model">Run the Model</a></li>
+  <li><a href="#did-it-converge" id="toc-did-it-converge" class="nav-link" data-scroll-target="#did-it-converge">Did It Converge?</a></li>
+  <li><a href="#now-lets-see" id="toc-now-lets-see" class="nav-link" data-scroll-target="#now-lets-see">Now Let’s see…</a></li>
+  <li><a href="#partisanship" id="toc-partisanship" class="nav-link" data-scroll-target="#partisanship">Partisanship…</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>This one is a quick one and based on some work that I have already done. Given the ongoing controversy about President Trump potentially using publically held funds to strong arm a foreign entity for personal and political gain, I figured it was time to do some state-space modeling on approval polls. This will be a quick one just because I want an answer.</p>
+<section id="the-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-data">The Data</h2>
+<p>I am going to get some approval polling data from <a href="https://github.com/fivethirtyeight/data/tree/master/polls">fivethirtyeight</a>. I sincerely appreciate that they put this data out for others to use. Do I wish it had some weights and more data cooked into it? Absolutely. Do I have the resources to do something better? No, I do not. But anyways, thanks fivethirtyeight!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(tidyverse))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>())</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://projects.fivethirtyeight.com/polls-page/president_approval_polls.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="multiple-polls-on-multiple-days" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-polls-on-multiple-days">Multiple Polls on Multiple Days?</h2>
+<p>In order to build the data for Stan, it is necessary to make some wide data frame. Additionally, I need to calculate some standard errors. Just a reminder for those at home, the standard error for a binomial distribution is:</p>
+<p><span class="math display">\[SE = \sqrt\frac{p(1-p)}{n}\]</span></p>
+<p>I’m also going to use some of the new <code>pivot_*</code> functions from {tidyr}. They are great! These tools bring back some of the functionality that was missing when {tidyr} emerged from {reshape2}.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'lubridate'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dat_range <span class="ot">&lt;-</span> <span class="fu">crossing</span>(<span class="fu">seq</span>(<span class="fu">min</span>(<span class="fu">mdy</span>(dat<span class="sc">$</span>end_date)),</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">max</span>(<span class="fu">mdy</span>(<span class="st">"11/1/2019"</span>)),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"1 day"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">enframe</span>(<span class="at">name =</span> <span class="cn">NULL</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(<span class="st">"date_range"</span>), <span class="at">pollster =</span> <span class="fu">unique</span>(dat<span class="sc">$</span>pollster))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>formatted_data <span class="ot">&lt;-</span> dat <span class="sc">%&gt;%</span> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">my_end =</span> lubridate<span class="sc">::</span><span class="fu">mdy</span>(end_date)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(my_end, yes, sample_size, pollster) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">polling_var =</span> <span class="fu">sqrt</span>(.<span class="dv">5</span> <span class="sc">*</span> (<span class="dv">1</span><span class="fl">-.5</span>)<span class="sc">/</span>sample_size)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">right_join</span>(dat_range, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"my_end"</span> <span class="ot">=</span> <span class="st">"date_range"</span>, <span class="st">"pollster"</span>)) </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>formatted_data[<span class="fu">is.na</span>(formatted_data)] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">9</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> formatted_data <span class="sc">%&gt;%</span> </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(my_end, pollster, polling_var) <span class="sc">%&gt;%</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> pollster, </span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">values_from =</span> polling_var,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>              <span class="at">values_fn =</span> <span class="fu">list</span>(<span class="at">polling_var =</span> max)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>my_end) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> formatted_data <span class="sc">%&gt;%</span> </span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(my_end, pollster, yes) <span class="sc">%&gt;%</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> pollster, </span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">values_from =</span> yes,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">values_fn =</span> <span class="fu">list</span>(<span class="at">yes =</span> max)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>my_end) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="our-model" class="level2">
+<h2 class="anchored" data-anchor-id="our-model">Our Model</h2>
+<p>This is the same model from <a href="https://michaeldewittjr.com/dewitt_blog/posts/2019-05-18-state-space-models-for-poll-prediction/">this blog post</a> courtesy of James Savage and Peter Ellis.</p>
+<pre><code>// Base Syntax from James Savage at https://github.com/khakieconomics/stanecon_short_course/blob/80263f84ebe95be3247e591515ea1ead84f26e3f/03-fun_time_series_models.Rmd
+//and modification inspired by Peter Ellis at https://github.com/ellisp/ozfedelect/blob/master/model-2pp/model-2pp.R
+
+data {
+  int polls; // number of polls
+  int T; // number of days
+  matrix[T, polls] Y; // polls
+  matrix[T, polls] sigma; // polls standard deviations
+  real inflator;         // amount by which to multiply the standard error of polls
+  real initial_prior;
+  real random_walk_sd;
+  real mu_sigma;
+}
+parameters {
+  vector[T] mu; // the mean of the polls
+  real&lt;lower = 0&gt; tau; // the standard deviation of the random effects
+  matrix[T, polls] shrunken_polls;
+}
+model {
+  // prior on initial difference
+  mu[1] ~ normal(initial_prior, mu_sigma);
+  tau ~ student_t(4, 0, 5);
+  // state model
+  for(t in 2:T) {
+    mu[t] ~ normal(mu[t-1], random_walk_sd);
+  }
+  
+  // measurement model
+  for(t in 1:T) {
+    for(p in 1:polls) {
+      if(Y[t, p] != -9) {
+        Y[t,p]~ normal(shrunken_polls[t, p], sigma[t,p] * inflator);
+        shrunken_polls[t, p] ~ normal(mu[t], tau);
+      } else {
+        shrunken_polls[t, p] ~ normal(0, 1);
+      }
+    }
+  }
+}
+</code></pre>
+</section>
+<section id="prep-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="prep-the-data">Prep the Data</h2>
+<p>Now we can put the data in the proper format for Stan. I’m also going to supply the 2016 voteshare as the initial prior. This is probably a favourable place to start.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rstan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: StanHeaders</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+rstan version 2.26.3 (Stan version 2.26.1)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>For execution on a local, multicore CPU with excess RAM we recommend calling
+options(mc.cores = parallel::detectCores()).
+To avoid recompilation of unchanged Stan programs, we recommend calling
+rstan_options(auto_write = TRUE)
+For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,
+change `threads_per_chain` option:
+rstan_options(threads_per_chain = 1)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'rstan'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:tidyr':
+
+    extract</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rstan_options</span>(<span class="at">auto_write =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">mc.cores =</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>())</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>approval_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">T =</span> <span class="fu">nrow</span>(y),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">polls =</span> <span class="fu">ncol</span>(sigma),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> y,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">sigma =</span> sigma,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">initial_prior =</span> <span class="dv">46</span>, <span class="co"># 2016 Election Results</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">random_walk_sd =</span> <span class="fl">0.2</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu_sigma =</span> <span class="dv">1</span>,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">inflator =</span><span class="fu">sqrt</span>(<span class="dv">2</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="run-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="run-the-model">Run the Model</h2>
+<p>Now we can run the model. Caution, this takes a good while to run…oh how I miss having a cluster….</p>
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-6_12eec9d1a083178570afab24bbce3f04">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sstrump <span class="ot">&lt;-</span> <span class="fu">stan_model</span>(<span class="st">"sstrump.stan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>recompiling to avoid crashing R session</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>trump_model <span class="ot">&lt;-</span> <span class="fu">sampling</span>(sstrump, </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> approval_data, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">iter =</span> <span class="dv">1000</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">chains =</span> <span class="dv">2</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> .<span class="dv">95</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">max_treedepth =</span> <span class="dv">15</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+Running the chains for more iterations may help. See
+https://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+Running the chains for more iterations may help. See
+https://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
+</div>
+</div>
+</section>
+<section id="did-it-converge" class="level2">
+<h2 class="anchored" data-anchor-id="did-it-converge">Did It Converge?</h2>
+<p>I’m just going to look quickly at some of the Rhat values. I see that some of my ESS are a little lower than I would like. This isn’t completely surprising given the sparsity of data (57 different polls).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(trump_model, <span class="at">pars =</span> <span class="st">"mu"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Inference for Stan model: anon_model.
+2 chains, each with iter=1000; warmup=500; thin=1; 
+post-warmup draws per chain=500, total post-warmup draws=1000.
+
+          mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+mu[1]    43.38    0.02 0.45 42.50 43.08 43.38 43.69 44.23   425 1.01
+mu[2]    43.31    0.02 0.44 42.48 43.01 43.30 43.61 44.16   460 1.01
+mu[3]    43.22    0.02 0.42 42.41 42.95 43.22 43.52 44.03   415 1.01
+mu[4]    43.16    0.02 0.41 42.42 42.87 43.15 43.43 44.00   354 1.01
+mu[5]    43.12    0.02 0.42 42.35 42.83 43.12 43.39 43.94   321 1.01
+mu[6]    43.05    0.03 0.42 42.26 42.76 43.05 43.34 43.89   243 1.01
+mu[7]    42.99    0.02 0.41 42.23 42.71 42.98 43.26 43.82   299 1.01
+mu[8]    42.91    0.02 0.40 42.10 42.66 42.91 43.16 43.70   282 1.01
+mu[9]    42.86    0.02 0.39 42.08 42.60 42.85 43.11 43.65   274 1.01
+mu[10]   42.81    0.02 0.39 42.02 42.56 42.83 43.07 43.60   260 1.01
+mu[11]   42.79    0.02 0.39 41.97 42.53 42.78 43.05 43.54   265 1.01
+mu[12]   42.78    0.02 0.39 41.98 42.52 42.78 43.04 43.54   272 1.00
+mu[13]   42.78    0.02 0.39 41.98 42.54 42.79 43.04 43.55   312 1.00
+mu[14]   42.81    0.02 0.40 42.05 42.57 42.82 43.07 43.61   304 1.00
+mu[15]   42.85    0.02 0.39 42.07 42.58 42.86 43.12 43.58   301 1.01
+mu[16]   42.90    0.02 0.39 42.11 42.63 42.91 43.16 43.64   328 1.00
+mu[17]   42.93    0.02 0.38 42.14 42.67 42.94 43.19 43.64   332 1.00
+mu[18]   42.97    0.02 0.38 42.17 42.72 42.95 43.24 43.69   309 1.00
+mu[19]   43.02    0.02 0.38 42.24 42.77 43.02 43.29 43.74   318 1.00
+mu[20]   43.04    0.02 0.38 42.28 42.78 43.05 43.30 43.81   316 1.00
+mu[21]   43.08    0.02 0.38 42.36 42.82 43.08 43.33 43.86   317 1.00
+mu[22]   43.15    0.02 0.39 42.41 42.89 43.13 43.39 43.93   310 1.00
+mu[23]   43.22    0.02 0.38 42.50 42.97 43.22 43.47 43.97   297 1.00
+mu[24]   43.28    0.02 0.38 42.49 43.04 43.28 43.54 43.99   297 1.00
+mu[25]   43.32    0.02 0.36 42.60 43.08 43.32 43.57 43.99   270 1.00
+mu[26]   43.35    0.02 0.36 42.60 43.10 43.36 43.60 44.04   282 1.00
+mu[27]   43.38    0.02 0.36 42.66 43.14 43.40 43.62 44.06   276 1.00
+mu[28]   43.41    0.02 0.36 42.67 43.18 43.42 43.67 44.09   316 1.00
+mu[29]   43.45    0.02 0.37 42.70 43.22 43.46 43.71 44.16   304 1.00
+mu[30]   43.51    0.02 0.37 42.78 43.26 43.53 43.76 44.20   277 1.00
+mu[31]   43.53    0.02 0.37 42.83 43.26 43.52 43.79 44.20   304 1.00
+mu[32]   43.55    0.02 0.37 42.83 43.29 43.57 43.82 44.25   297 1.00
+mu[33]   43.58    0.02 0.38 42.86 43.31 43.59 43.85 44.30   304 1.00
+mu[34]   43.62    0.02 0.39 42.87 43.35 43.63 43.90 44.33   313 1.00
+mu[35]   43.65    0.02 0.40 42.87 43.36 43.65 43.92 44.39   315 1.00
+mu[36]   43.70    0.02 0.39 42.93 43.43 43.72 43.98 44.43   339 1.00
+mu[37]   43.77    0.02 0.40 43.04 43.50 43.79 44.05 44.53   324 1.00
+mu[38]   43.81    0.02 0.39 43.06 43.54 43.82 44.08 44.56   351 1.00
+mu[39]   43.85    0.02 0.39 43.11 43.57 43.86 44.12 44.59   349 1.00
+mu[40]   43.89    0.02 0.38 43.15 43.63 43.90 44.15 44.63   352 1.00
+mu[41]   43.91    0.02 0.39 43.14 43.66 43.90 44.19 44.65   330 1.00
+mu[42]   43.90    0.02 0.39 43.11 43.64 43.90 44.18 44.66   340 1.00
+mu[43]   43.91    0.02 0.39 43.15 43.65 43.91 44.18 44.64   333 1.01
+mu[44]   43.94    0.02 0.39 43.21 43.66 43.94 44.21 44.64   322 1.01
+mu[45]   43.96    0.02 0.38 43.24 43.70 43.97 44.24 44.67   312 1.01
+mu[46]   43.98    0.02 0.38 43.23 43.73 44.00 44.25 44.67   278 1.01
+mu[47]   43.96    0.02 0.38 43.20 43.69 43.98 44.24 44.67   256 1.01
+mu[48]   43.94    0.02 0.38 43.18 43.68 43.95 44.20 44.67   274 1.01
+mu[49]   43.96    0.02 0.38 43.23 43.70 43.94 44.22 44.67   303 1.01
+mu[50]   43.94    0.02 0.38 43.18 43.69 43.94 44.21 44.69   310 1.01
+mu[51]   43.96    0.02 0.39 43.16 43.69 43.96 44.23 44.67   272 1.01
+mu[52]   43.97    0.02 0.38 43.23 43.70 43.98 44.22 44.72   285 1.01
+mu[53]   43.96    0.02 0.38 43.22 43.69 43.96 44.22 44.65   273 1.01
+mu[54]   43.93    0.02 0.39 43.18 43.67 43.93 44.20 44.70   277 1.01
+mu[55]   43.91    0.03 0.39 43.18 43.64 43.90 44.18 44.72   237 1.01
+mu[56]   43.89    0.03 0.40 43.12 43.61 43.88 44.16 44.70   254 1.01
+mu[57]   43.85    0.03 0.40 43.08 43.57 43.84 44.12 44.61   168 1.02
+mu[58]   43.81    0.03 0.40 43.04 43.52 43.82 44.10 44.54   233 1.01
+mu[59]   43.80    0.03 0.40 43.03 43.51 43.79 44.08 44.56   229 1.01
+mu[60]   43.77    0.02 0.39 43.03 43.49 43.77 44.04 44.55   293 1.01
+mu[61]   43.74    0.02 0.39 43.01 43.48 43.73 44.00 44.49   307 1.01
+mu[62]   43.72    0.02 0.39 42.97 43.45 43.71 43.97 44.47   313 1.01
+mu[63]   43.68    0.02 0.38 42.94 43.42 43.68 43.93 44.44   306 1.01
+mu[64]   43.63    0.02 0.38 42.85 43.38 43.63 43.87 44.35   307 1.01
+mu[65]   43.66    0.02 0.38 42.94 43.41 43.66 43.91 44.42   303 1.01
+mu[66]   43.67    0.02 0.37 42.95 43.40 43.66 43.92 44.38   301 1.01
+mu[67]   43.68    0.02 0.37 42.97 43.42 43.68 43.95 44.42   301 1.01
+mu[68]   43.68    0.02 0.37 42.96 43.44 43.67 43.94 44.42   319 1.01
+mu[69]   43.71    0.02 0.37 42.99 43.44 43.71 43.97 44.43   301 1.00
+mu[70]   43.71    0.02 0.38 43.01 43.44 43.69 43.96 44.47   293 1.00
+mu[71]   43.72    0.02 0.39 43.02 43.45 43.70 43.98 44.49   300 1.00
+mu[72]   43.71    0.02 0.37 43.02 43.45 43.70 43.96 44.47   310 1.00
+mu[73]   43.70    0.02 0.37 42.98 43.45 43.70 43.94 44.45   315 1.01
+mu[74]   43.67    0.02 0.37 42.94 43.41 43.65 43.92 44.40   326 1.01
+mu[75]   43.67    0.02 0.37 42.93 43.42 43.67 43.92 44.41   305 1.01
+mu[76]   43.67    0.02 0.38 42.93 43.41 43.67 43.93 44.40   338 1.01
+mu[77]   43.69    0.02 0.37 42.99 43.44 43.68 43.94 44.46   369 1.01
+mu[78]   43.72    0.02 0.36 43.03 43.48 43.71 43.98 44.40   376 1.01
+mu[79]   43.77    0.02 0.37 43.02 43.52 43.77 44.02 44.50   409 1.01
+mu[80]   43.81    0.02 0.38 43.07 43.55 43.79 44.07 44.56   393 1.01
+mu[81]   43.86    0.02 0.38 43.06 43.62 43.86 44.11 44.61   378 1.00
+mu[82]   43.93    0.02 0.39 43.10 43.68 43.93 44.18 44.66   391 1.00
+mu[83]   43.97    0.02 0.39 43.16 43.72 43.97 44.25 44.71   414 1.01
+mu[84]   44.02    0.02 0.39 43.23 43.77 44.01 44.28 44.76   367 1.01
+mu[85]   44.08    0.02 0.39 43.30 43.84 44.10 44.34 44.84   334 1.01
+mu[86]   44.16    0.02 0.39 43.37 43.92 44.17 44.42 44.91   284 1.00
+mu[87]   44.22    0.02 0.39 43.41 43.98 44.23 44.48 44.95   308 1.00
+mu[88]   44.27    0.02 0.39 43.49 44.01 44.26 44.55 44.98   306 1.00
+mu[89]   44.34    0.02 0.39 43.57 44.08 44.35 44.61 45.10   302 1.00
+mu[90]   44.41    0.02 0.39 43.63 44.16 44.42 44.68 45.19   292 1.01
+mu[91]   44.48    0.02 0.39 43.71 44.22 44.48 44.74 45.22   271 1.00
+mu[92]   44.52    0.03 0.40 43.78 44.25 44.51 44.80 45.34   248 1.00
+mu[93]   44.57    0.02 0.40 43.84 44.28 44.56 44.83 45.38   265 1.00
+mu[94]   44.60    0.03 0.39 43.89 44.31 44.59 44.86 45.42   235 1.00
+mu[95]   44.66    0.03 0.40 43.89 44.38 44.65 44.94 45.41   211 1.00
+mu[96]   44.72    0.03 0.41 43.97 44.43 44.72 45.01 45.55   189 1.00
+mu[97]   44.76    0.03 0.41 43.94 44.46 44.75 45.04 45.48   190 1.00
+mu[98]   44.82    0.03 0.42 44.01 44.52 44.80 45.12 45.65   184 1.01
+mu[99]   44.87    0.03 0.43 44.06 44.58 44.86 45.17 45.72   190 1.01
+mu[100]  44.93    0.03 0.42 44.10 44.64 44.93 45.22 45.73   184 1.01
+mu[101]  44.99    0.03 0.42 44.18 44.70 44.99 45.28 45.80   182 1.00
+mu[102]  45.05    0.03 0.41 44.29 44.77 45.06 45.33 45.87   176 1.01
+mu[103]  45.10    0.03 0.42 44.33 44.81 45.10 45.38 45.90   195 1.01
+mu[104]  45.15    0.03 0.42 44.37 44.85 45.14 45.43 45.96   202 1.01
+mu[105]  45.18    0.03 0.42 44.39 44.90 45.18 45.47 46.02   187 1.01
+mu[106]  45.24    0.03 0.42 44.46 44.95 45.23 45.50 46.09   195 1.01
+mu[107]  45.27    0.03 0.43 44.41 44.99 45.26 45.55 46.13   184 1.01
+mu[108]  45.29    0.03 0.42 44.46 45.03 45.29 45.56 46.12   162 1.01
+mu[109]  45.31    0.03 0.42 44.46 45.04 45.30 45.58 46.17   174 1.01
+mu[110]  45.30    0.03 0.43 44.44 45.02 45.30 45.59 46.15   209 1.01
+mu[111]  45.26    0.03 0.43 44.36 44.98 45.28 45.56 46.04   208 1.01
+mu[112]  45.27    0.03 0.44 44.35 44.96 45.28 45.57 46.13   197 1.01
+mu[113]  45.26    0.03 0.44 44.32 44.97 45.28 45.55 46.06   207 1.01
+mu[114]  45.28    0.03 0.43 44.36 44.99 45.31 45.57 46.07   197 1.01
+mu[115]  45.28    0.03 0.43 44.37 45.00 45.29 45.57 46.10   221 1.01
+mu[116]  45.29    0.03 0.43 44.43 45.01 45.31 45.57 46.10   260 1.01
+mu[117]  45.28    0.03 0.43 44.34 45.02 45.29 45.57 46.10   247 1.01
+mu[118]  45.28    0.03 0.43 44.42 44.99 45.29 45.56 46.12   219 1.01
+mu[119]  45.26    0.03 0.43 44.35 44.98 45.25 45.56 46.10   222 1.01
+mu[120]  45.25    0.03 0.43 44.42 44.97 45.24 45.53 46.08   241 1.01
+mu[121]  45.24    0.03 0.43 44.42 44.95 45.24 45.51 46.06   249 1.01
+mu[122]  45.22    0.03 0.44 44.34 44.94 45.21 45.49 46.11   261 1.01
+mu[123]  45.19    0.03 0.44 44.37 44.89 45.18 45.48 46.10   272 1.01
+mu[124]  45.17    0.02 0.42 44.34 44.89 45.17 45.47 46.00   291 1.01
+mu[125]  45.15    0.02 0.42 44.31 44.86 45.14 45.42 45.99   303 1.01
+mu[126]  45.15    0.02 0.43 44.29 44.86 45.14 45.44 45.97   311 1.01
+mu[127]  45.14    0.03 0.43 44.32 44.84 45.13 45.43 45.97   283 1.01
+mu[128]  45.13    0.02 0.42 44.30 44.86 45.12 45.42 45.94   299 1.01
+mu[129]  45.12    0.02 0.41 44.35 44.83 45.11 45.41 45.93   320 1.01
+mu[130]  45.10    0.02 0.41 44.32 44.81 45.10 45.40 45.92   319 1.00
+mu[131]  45.06    0.02 0.40 44.25 44.77 45.07 45.35 45.80   305 1.01
+mu[132]  45.02    0.02 0.41 44.23 44.74 45.04 45.30 45.80   306 1.00
+mu[133]  44.98    0.02 0.41 44.19 44.71 44.98 45.26 45.78   308 1.00
+mu[134]  44.99    0.02 0.40 44.21 44.72 44.99 45.26 45.74   291 1.00
+mu[135]  44.98    0.02 0.40 44.20 44.71 44.99 45.27 45.73   276 1.00
+mu[136]  44.98    0.02 0.40 44.17 44.71 44.98 45.26 45.77   280 1.00
+mu[137]  44.95    0.02 0.40 44.08 44.69 44.97 45.23 45.69   271 1.01
+mu[138]  44.93    0.03 0.40 44.10 44.66 44.96 45.23 45.67   233 1.01
+mu[139]  44.96    0.02 0.41 44.14 44.69 44.96 45.25 45.71   291 1.01
+mu[140]  45.00    0.03 0.41 44.18 44.73 45.01 45.29 45.77   271 1.00
+mu[141]  45.02    0.03 0.41 44.20 44.73 45.05 45.30 45.82   259 1.01
+mu[142]  45.05    0.03 0.42 44.19 44.78 45.07 45.34 45.82   266 1.01
+mu[143]  45.04    0.03 0.41 44.17 44.77 45.07 45.32 45.79   266 1.00
+mu[144]  45.01    0.02 0.40 44.21 44.75 45.02 45.29 45.72   266 1.00
+mu[145]  44.99    0.02 0.40 44.16 44.71 45.00 45.26 45.76   308 1.00
+mu[146]  44.99    0.02 0.39 44.24 44.72 44.99 45.24 45.72   304 1.00
+mu[147]  44.97    0.02 0.40 44.17 44.70 44.95 45.24 45.74   303 1.00
+mu[148]  44.96    0.02 0.40 44.24 44.68 44.94 45.24 45.77   298 1.00
+mu[149]  44.95    0.02 0.39 44.19 44.70 44.94 45.21 45.71   301 1.00
+mu[150]  44.91    0.02 0.40 44.16 44.63 44.89 45.16 45.75   302 1.00
+mu[151]  44.88    0.02 0.40 44.13 44.61 44.86 45.13 45.71   287 1.00
+mu[152]  44.84    0.02 0.40 44.07 44.59 44.84 45.09 45.66   298 1.00
+mu[153]  44.79    0.02 0.41 44.01 44.51 44.79 45.07 45.60   294 1.00
+mu[154]  44.74    0.02 0.40 43.99 44.49 44.73 45.01 45.52   280 1.00
+mu[155]  44.69    0.02 0.40 43.90 44.43 44.69 44.97 45.46   262 1.00
+mu[156]  44.64    0.03 0.40 43.84 44.38 44.63 44.91 45.38   250 1.00
+mu[157]  44.60    0.03 0.40 43.76 44.34 44.59 44.86 45.38   250 1.00
+mu[158]  44.56    0.03 0.40 43.77 44.29 44.56 44.83 45.36   246 1.00
+mu[159]  44.49    0.03 0.41 43.71 44.22 44.49 44.76 45.29   260 1.00
+mu[160]  44.45    0.03 0.42 43.64 44.17 44.44 44.73 45.28   261 1.00
+mu[161]  44.40    0.03 0.42 43.61 44.11 44.39 44.67 45.27   243 1.00
+mu[162]  44.38    0.03 0.42 43.57 44.09 44.36 44.66 45.22   224 1.00
+mu[163]  44.36    0.03 0.41 43.56 44.08 44.36 44.65 45.14   219 1.00
+mu[164]  44.33    0.03 0.41 43.54 44.06 44.33 44.61 45.10   207 1.00
+mu[165]  44.29    0.03 0.40 43.47 44.00 44.29 44.58 45.04   222 1.00
+mu[166]  44.22    0.03 0.40 43.45 43.94 44.23 44.50 44.98   207 1.00
+mu[167]  44.25    0.03 0.41 43.39 43.99 44.25 44.53 45.02   201 1.00
+mu[168]  44.31    0.03 0.41 43.47 44.03 44.31 44.59 45.12   195 1.00
+mu[169]  44.37    0.03 0.41 43.61 44.10 44.35 44.64 45.15   209 1.00
+mu[170]  44.43    0.03 0.41 43.67 44.17 44.43 44.70 45.24   230 1.00
+mu[171]  44.49    0.03 0.40 43.72 44.20 44.49 44.76 45.29   249 1.00
+mu[172]  44.53    0.03 0.40 43.79 44.25 44.53 44.79 45.32   255 1.00
+mu[173]  44.57    0.02 0.39 43.78 44.32 44.57 44.85 45.34   268 1.00
+mu[174]  44.63    0.02 0.40 43.82 44.35 44.64 44.90 45.40   284 1.00
+mu[175]  44.70    0.02 0.41 43.94 44.42 44.70 44.97 45.46   305 1.00
+mu[176]  44.79    0.02 0.41 43.97 44.50 44.79 45.07 45.57   283 1.00
+mu[177]  44.86    0.02 0.41 44.06 44.58 44.84 45.14 45.67   280 1.00
+mu[178]  44.89    0.03 0.41 44.11 44.61 44.89 45.19 45.67   268 1.00
+mu[179]  44.90    0.03 0.41 44.11 44.62 44.90 45.18 45.72   267 1.00
+mu[180]  44.92    0.02 0.42 44.12 44.64 44.93 45.19 45.73   305 1.00
+mu[181]  44.92    0.02 0.43 44.11 44.63 44.92 45.22 45.76   303 1.00
+mu[182]  44.90    0.02 0.41 44.10 44.61 44.91 45.17 45.70   296 1.00
+mu[183]  44.87    0.02 0.41 44.07 44.60 44.86 45.13 45.73   306 1.00
+mu[184]  44.83    0.02 0.41 44.05 44.55 44.82 45.08 45.68   311 1.00
+mu[185]  44.79    0.02 0.40 44.05 44.52 44.79 45.06 45.58   302 1.00
+mu[186]  44.74    0.02 0.41 43.94 44.46 44.73 45.03 45.55   305 1.00
+mu[187]  44.68    0.02 0.39 43.95 44.41 44.67 44.95 45.44   279 1.01
+mu[188]  44.64    0.02 0.39 43.88 44.37 44.63 44.90 45.43   301 1.01
+mu[189]  44.58    0.02 0.40 43.82 44.31 44.57 44.85 45.37   309 1.00
+mu[190]  44.56    0.02 0.41 43.77 44.28 44.55 44.83 45.39   315 1.01
+mu[191]  44.54    0.02 0.40 43.75 44.26 44.53 44.81 45.30   290 1.01
+mu[192]  44.52    0.02 0.40 43.78 44.24 44.51 44.82 45.31   279 1.01
+mu[193]  44.50    0.02 0.41 43.75 44.21 44.49 44.78 45.27   287 1.01
+mu[194]  44.48    0.03 0.41 43.69 44.21 44.49 44.75 45.29   260 1.01
+mu[195]  44.44    0.03 0.41 43.62 44.16 44.45 44.71 45.22   266 1.01
+mu[196]  44.40    0.03 0.42 43.55 44.12 44.40 44.69 45.25   260 1.01
+mu[197]  44.41    0.03 0.41 43.59 44.12 44.40 44.69 45.21   251 1.01
+mu[198]  44.44    0.03 0.42 43.61 44.18 44.43 44.72 45.30   238 1.01
+mu[199]  44.46    0.03 0.42 43.61 44.20 44.45 44.76 45.29   267 1.01
+mu[200]  44.45    0.03 0.41 43.59 44.17 44.46 44.72 45.26   272 1.00
+mu[201]  44.43    0.02 0.41 43.61 44.16 44.43 44.70 45.26   271 1.00
+mu[202]  44.46    0.03 0.41 43.66 44.19 44.45 44.73 45.28   261 1.00
+mu[203]  44.49    0.03 0.41 43.69 44.21 44.49 44.78 45.29   268 1.00
+mu[204]  44.54    0.03 0.41 43.67 44.28 44.56 44.82 45.35   263 1.00
+mu[205]  44.60    0.02 0.41 43.80 44.33 44.60 44.88 45.39   275 1.00
+mu[206]  44.65    0.02 0.41 43.85 44.37 44.65 44.92 45.49   282 1.00
+mu[207]  44.68    0.02 0.41 43.91 44.41 44.69 44.96 45.45   274 1.00
+mu[208]  44.72    0.02 0.39 43.96 44.46 44.71 45.00 45.50   295 1.00
+mu[209]  44.73    0.02 0.38 43.96 44.49 44.73 44.99 45.47   282 1.00
+mu[210]  44.74    0.02 0.38 43.96 44.48 44.74 45.01 45.48   301 1.00
+mu[211]  44.74    0.02 0.39 43.95 44.49 44.75 45.00 45.47   307 1.00
+mu[212]  44.76    0.02 0.38 43.98 44.54 44.76 45.03 45.47   326 1.00
+mu[213]  44.78    0.02 0.38 44.00 44.52 44.78 45.03 45.56   354 1.00
+mu[214]  44.77    0.02 0.39 43.99 44.51 44.76 45.04 45.53   350 1.00
+mu[215]  44.75    0.02 0.38 44.00 44.49 44.74 44.99 45.55   366 1.00
+mu[216]  44.73    0.02 0.38 43.95 44.46 44.73 44.97 45.46   382 1.00
+mu[217]  44.68    0.02 0.39 43.92 44.43 44.68 44.96 45.45   397 1.00
+mu[218]  44.64    0.02 0.38 43.87 44.39 44.65 44.90 45.36   407 1.00
+mu[219]  44.61    0.02 0.38 43.91 44.35 44.60 44.87 45.36   377 1.00
+mu[220]  44.56    0.02 0.37 43.86 44.29 44.56 44.79 45.32   406 1.00
+mu[221]  44.49    0.02 0.37 43.76 44.24 44.48 44.71 45.26   383 1.00
+mu[222]  44.39    0.02 0.36 43.67 44.13 44.39 44.63 45.07   365 1.00
+mu[223]  44.33    0.02 0.36 43.60 44.09 44.35 44.56 45.02   390 1.00
+mu[224]  44.27    0.02 0.37 43.57 44.01 44.28 44.52 44.92   337 1.00
+mu[225]  44.22    0.02 0.37 43.48 43.96 44.22 44.48 44.90   338 1.00
+mu[226]  44.18    0.02 0.37 43.42 43.92 44.20 44.43 44.89   314 1.00
+mu[227]  44.18    0.02 0.37 43.47 43.92 44.18 44.42 44.88   313 1.00
+mu[228]  44.17    0.02 0.36 43.49 43.93 44.19 44.41 44.84   306 1.00
+mu[229]  44.16    0.02 0.35 43.45 43.93 44.16 44.40 44.85   348 1.00
+mu[230]  44.19    0.02 0.36 43.45 43.95 44.19 44.44 44.91   315 1.00
+mu[231]  44.21    0.02 0.37 43.48 43.97 44.22 44.47 44.95   277 1.00
+mu[232]  44.24    0.02 0.38 43.53 43.98 44.23 44.50 44.98   319 1.00
+mu[233]  44.29    0.02 0.38 43.56 44.03 44.30 44.53 45.05   341 1.00
+mu[234]  44.34    0.02 0.37 43.62 44.08 44.35 44.58 45.05   349 1.00
+mu[235]  44.35    0.02 0.38 43.62 44.09 44.35 44.60 45.10   341 1.00
+mu[236]  44.34    0.02 0.38 43.62 44.07 44.35 44.59 45.10   342 1.00
+mu[237]  44.33    0.02 0.37 43.64 44.07 44.32 44.57 45.10   333 1.00
+mu[238]  44.31    0.02 0.37 43.59 44.07 44.31 44.55 45.06   306 1.00
+mu[239]  44.28    0.02 0.36 43.59 44.04 44.28 44.52 44.99   362 1.00
+mu[240]  44.27    0.02 0.37 43.57 44.01 44.26 44.51 45.02   304 1.00
+mu[241]  44.23    0.02 0.37 43.53 43.96 44.24 44.47 44.97   309 1.00
+mu[242]  44.15    0.02 0.36 43.44 43.92 44.15 44.42 44.83   281 1.00
+mu[243]  44.08    0.02 0.36 43.41 43.83 44.10 44.33 44.77   317 1.00
+mu[244]  44.05    0.02 0.36 43.35 43.78 44.05 44.30 44.78   364 1.00
+mu[245]  44.04    0.02 0.36 43.37 43.79 44.04 44.30 44.76   311 1.00
+mu[246]  44.06    0.02 0.37 43.34 43.81 44.05 44.32 44.75   353 1.00
+mu[247]  44.10    0.02 0.37 43.35 43.84 44.10 44.36 44.82   389 1.00
+mu[248]  44.13    0.02 0.37 43.40 43.88 44.13 44.38 44.85   383 1.00
+mu[249]  44.14    0.02 0.37 43.43 43.89 44.14 44.38 44.90   379 1.00
+mu[250]  44.14    0.02 0.38 43.43 43.89 44.14 44.38 44.90   346 1.00
+mu[251]  44.13    0.02 0.37 43.44 43.88 44.12 44.39 44.88   319 1.01
+mu[252]  44.14    0.02 0.37 43.44 43.88 44.14 44.38 44.89   346 1.00
+mu[253]  44.16    0.02 0.37 43.42 43.91 44.14 44.40 44.89   344 1.01
+mu[254]  44.16    0.02 0.36 43.46 43.91 44.15 44.40 44.88   358 1.01
+mu[255]  44.17    0.02 0.36 43.50 43.92 44.16 44.41 44.88   331 1.01
+mu[256]  44.16    0.02 0.36 43.42 43.90 44.16 44.40 44.86   316 1.01
+mu[257]  44.16    0.02 0.36 43.47 43.91 44.16 44.41 44.88   318 1.00
+mu[258]  44.14    0.02 0.36 43.39 43.90 44.14 44.40 44.83   340 1.00
+mu[259]  44.13    0.02 0.37 43.39 43.88 44.14 44.40 44.87   333 1.00
+mu[260]  44.14    0.02 0.37 43.38 43.90 44.15 44.40 44.83   311 1.00
+mu[261]  44.15    0.02 0.38 43.40 43.89 44.16 44.41 44.89   281 1.00
+mu[262]  44.14    0.02 0.39 43.37 43.88 44.14 44.40 44.90   281 1.00
+mu[263]  44.10    0.02 0.39 43.31 43.86 44.10 44.35 44.84   264 1.00
+mu[264]  44.04    0.02 0.38 43.27 43.80 44.04 44.28 44.81   268 1.00
+mu[265]  43.96    0.02 0.39 43.21 43.71 43.96 44.22 44.75   273 1.00
+mu[266]  43.85    0.02 0.40 43.08 43.59 43.85 44.12 44.60   294 1.00
+mu[267]  43.77    0.03 0.39 42.99 43.49 43.79 44.02 44.54   239 1.00
+mu[268]  43.71    0.02 0.38 42.95 43.47 43.71 43.96 44.47   251 1.00
+mu[269]  43.63    0.03 0.39 42.85 43.38 43.64 43.87 44.42   209 1.01
+mu[270]  43.53    0.03 0.38 42.76 43.27 43.53 43.78 44.27   229 1.01
+mu[271]  43.42    0.02 0.38 42.70 43.16 43.42 43.67 44.17   239 1.01
+mu[272]  43.30    0.03 0.38 42.58 43.02 43.30 43.57 44.04   213 1.01
+mu[273]  43.18    0.02 0.38 42.41 42.93 43.17 43.44 43.93   259 1.01
+mu[274]  43.07    0.03 0.37 42.28 42.82 43.06 43.33 43.78   217 1.01
+mu[275]  42.97    0.02 0.38 42.23 42.71 42.98 43.24 43.68   311 1.01
+mu[276]  42.90    0.02 0.38 42.12 42.65 42.88 43.15 43.63   347 1.01
+mu[277]  42.81    0.02 0.38 42.03 42.56 42.81 43.06 43.54   370 1.01
+mu[278]  42.73    0.02 0.37 42.01 42.49 42.72 42.98 43.43   369 1.01
+mu[279]  42.67    0.02 0.36 42.00 42.42 42.66 42.92 43.34   376 1.01
+mu[280]  42.64    0.02 0.36 41.93 42.38 42.64 42.89 43.34   401 1.01
+mu[281]  42.59    0.02 0.36 41.85 42.34 42.59 42.84 43.29   370 1.01
+mu[282]  42.57    0.02 0.37 41.85 42.33 42.58 42.82 43.27   372 1.01
+mu[283]  42.56    0.02 0.38 41.80 42.31 42.56 42.82 43.28   391 1.01
+mu[284]  42.55    0.02 0.38 41.84 42.29 42.55 42.79 43.31   417 1.00
+mu[285]  42.52    0.02 0.36 41.79 42.28 42.52 42.77 43.22   397 1.00
+mu[286]  42.51    0.02 0.36 41.80 42.27 42.52 42.75 43.21   413 1.00
+mu[287]  42.55    0.02 0.37 41.84 42.31 42.55 42.78 43.24   446 1.00
+mu[288]  42.59    0.02 0.36 41.92 42.35 42.59 42.83 43.29   381 1.00
+mu[289]  42.63    0.02 0.37 41.89 42.38 42.61 42.85 43.36   359 1.00
+mu[290]  42.66    0.02 0.36 41.94 42.42 42.66 42.89 43.42   366 1.00
+mu[291]  42.70    0.02 0.36 41.96 42.47 42.69 42.94 43.42   372 1.01
+mu[292]  42.74    0.02 0.36 42.07 42.50 42.75 42.98 43.43   378 1.01
+mu[293]  42.83    0.02 0.37 42.12 42.58 42.84 43.08 43.51   350 1.01
+mu[294]  42.92    0.02 0.37 42.19 42.67 42.91 43.17 43.63   334 1.01
+mu[295]  43.00    0.02 0.36 42.30 42.75 43.00 43.24 43.70   305 1.01
+mu[296]  43.10    0.02 0.37 42.39 42.86 43.10 43.35 43.80   273 1.02
+mu[297]  43.21    0.02 0.36 42.50 42.95 43.20 43.47 43.90   214 1.02
+mu[298]  43.32    0.02 0.38 42.58 43.07 43.32 43.57 44.10   283 1.02
+mu[299]  43.41    0.02 0.38 42.64 43.16 43.40 43.64 44.20   303 1.02
+mu[300]  43.49    0.02 0.38 42.73 43.23 43.49 43.73 44.26   312 1.02
+mu[301]  43.56    0.02 0.39 42.81 43.29 43.55 43.82 44.33   282 1.02
+mu[302]  43.63    0.02 0.40 42.89 43.35 43.63 43.90 44.47   283 1.01
+mu[303]  43.71    0.02 0.41 42.94 43.44 43.69 43.96 44.55   268 1.02
+mu[304]  43.77    0.02 0.41 43.00 43.48 43.76 44.05 44.62   296 1.02
+mu[305]  43.80    0.03 0.43 42.98 43.51 43.81 44.08 44.68   282 1.02
+mu[306]  43.85    0.03 0.43 43.04 43.55 43.85 44.15 44.70   287 1.01
+mu[307]  43.89    0.03 0.44 43.06 43.58 43.88 44.19 44.77   277 1.01
+mu[308]  43.96    0.03 0.44 43.16 43.67 43.95 44.26 44.87   266 1.01
+mu[309]  44.05    0.03 0.43 43.23 43.76 44.04 44.33 44.90   289 1.01
+mu[310]  44.13    0.03 0.43 43.26 43.84 44.13 44.40 45.01   275 1.01
+mu[311]  44.19    0.03 0.43 43.34 43.90 44.19 44.46 45.03   282 1.01
+mu[312]  44.25    0.03 0.43 43.41 43.96 44.27 44.52 45.13   273 1.01
+mu[313]  44.32    0.02 0.42 43.46 44.05 44.31 44.60 45.16   298 1.00
+mu[314]  44.38    0.02 0.42 43.51 44.09 44.38 44.64 45.19   303 1.00
+mu[315]  44.43    0.02 0.42 43.60 44.14 44.44 44.70 45.24   304 1.01
+mu[316]  44.51    0.02 0.40 43.72 44.23 44.50 44.78 45.29   323 1.00
+mu[317]  44.58    0.02 0.40 43.77 44.31 44.58 44.86 45.33   333 1.00
+mu[318]  44.62    0.02 0.39 43.82 44.37 44.64 44.89 45.36   335 1.00
+mu[319]  44.68    0.02 0.39 43.91 44.40 44.70 44.94 45.44   350 1.00
+mu[320]  44.72    0.02 0.38 43.96 44.47 44.72 44.97 45.48   379 1.00
+mu[321]  44.75    0.02 0.38 43.99 44.50 44.75 45.00 45.48   369 1.00
+mu[322]  44.84    0.02 0.38 44.10 44.58 44.83 45.07 45.60   342 1.00
+mu[323]  44.92    0.02 0.38 44.18 44.65 44.92 45.18 45.66   346 1.00
+mu[324]  44.99    0.02 0.38 44.22 44.74 44.97 45.24 45.72   373 1.00
+mu[325]  45.05    0.02 0.39 44.29 44.78 45.04 45.32 45.79   385 1.00
+mu[326]  45.07    0.02 0.39 44.32 44.80 45.06 45.35 45.83   404 1.00
+mu[327]  45.07    0.02 0.38 44.31 44.80 45.07 45.32 45.83   360 1.00
+mu[328]  45.07    0.02 0.39 44.32 44.79 45.06 45.34 45.82   354 1.00
+mu[329]  45.12    0.02 0.41 44.35 44.85 45.12 45.40 45.94   391 1.00
+mu[330]  45.19    0.02 0.41 44.40 44.92 45.19 45.46 45.96   407 1.00
+mu[331]  45.26    0.02 0.40 44.47 44.99 45.27 45.53 46.01   371 1.00
+mu[332]  45.29    0.02 0.42 44.49 45.01 45.30 45.56 46.06   372 1.00
+mu[333]  45.31    0.02 0.40 44.51 45.03 45.32 45.58 46.05   353 1.00
+mu[334]  45.29    0.02 0.40 44.51 45.01 45.29 45.56 46.07   385 1.00
+mu[335]  45.25    0.02 0.39 44.48 45.00 45.25 45.50 46.00   378 1.00
+mu[336]  45.29    0.02 0.40 44.50 45.03 45.28 45.56 46.08   344 1.00
+mu[337]  45.32    0.02 0.41 44.54 45.05 45.32 45.59 46.14   342 1.00
+mu[338]  45.38    0.02 0.41 44.61 45.11 45.38 45.66 46.16   355 1.00
+mu[339]  45.42    0.02 0.42 44.61 45.14 45.41 45.70 46.18   386 1.00
+mu[340]  45.45    0.02 0.42 44.62 45.16 45.45 45.74 46.26   360 1.00
+mu[341]  45.46    0.02 0.42 44.65 45.19 45.47 45.73 46.28   358 1.00
+mu[342]  45.44    0.02 0.42 44.63 45.16 45.45 45.70 46.28   329 1.00
+mu[343]  45.44    0.02 0.42 44.60 45.16 45.46 45.71 46.31   337 1.00
+mu[344]  45.46    0.02 0.42 44.66 45.17 45.46 45.73 46.30   334 1.00
+mu[345]  45.46    0.02 0.41 44.71 45.18 45.46 45.75 46.25   327 1.00
+mu[346]  45.45    0.02 0.41 44.60 45.18 45.45 45.73 46.27   337 1.00
+mu[347]  45.42    0.02 0.41 44.61 45.14 45.43 45.69 46.26   325 1.00
+mu[348]  45.39    0.02 0.41 44.56 45.11 45.38 45.66 46.22   321 1.01
+mu[349]  45.38    0.02 0.40 44.64 45.12 45.35 45.63 46.21   310 1.01
+mu[350]  45.39    0.02 0.40 44.66 45.12 45.37 45.63 46.26   315 1.01
+mu[351]  45.41    0.02 0.39 44.71 45.14 45.39 45.66 46.16   355 1.01
+mu[352]  45.41    0.02 0.38 44.69 45.15 45.39 45.65 46.21   334 1.01
+mu[353]  45.39    0.02 0.39 44.66 45.14 45.37 45.64 46.16   346 1.01
+mu[354]  45.36    0.02 0.38 44.67 45.10 45.34 45.60 46.16   316 1.01
+mu[355]  45.35    0.02 0.39 44.62 45.08 45.34 45.59 46.15   275 1.02
+mu[356]  45.38    0.02 0.39 44.67 45.13 45.37 45.62 46.17   260 1.03
+mu[357]  45.42    0.02 0.39 44.67 45.14 45.42 45.69 46.22   261 1.03
+mu[358]  45.48    0.02 0.39 44.73 45.23 45.48 45.76 46.22   260 1.03
+mu[359]  45.54    0.02 0.39 44.80 45.28 45.56 45.80 46.27   276 1.02
+mu[360]  45.56    0.02 0.39 44.76 45.31 45.57 45.83 46.27   265 1.02
+mu[361]  45.58    0.02 0.38 44.79 45.32 45.58 45.83 46.33   265 1.03
+mu[362]  45.57    0.02 0.38 44.79 45.33 45.56 45.83 46.33   291 1.02
+mu[363]  45.54    0.02 0.37 44.83 45.29 45.54 45.80 46.25   335 1.02
+mu[364]  45.53    0.02 0.37 44.74 45.29 45.53 45.78 46.24   325 1.01
+mu[365]  45.54    0.02 0.37 44.82 45.29 45.54 45.78 46.24   339 1.01
+mu[366]  45.55    0.02 0.36 44.82 45.30 45.54 45.78 46.26   315 1.01
+mu[367]  45.53    0.02 0.36 44.84 45.29 45.52 45.76 46.28   335 1.00
+mu[368]  45.49    0.02 0.37 44.80 45.24 45.48 45.72 46.24   311 1.00
+mu[369]  45.45    0.02 0.36 44.78 45.20 45.45 45.69 46.21   292 1.00
+mu[370]  45.43    0.02 0.38 44.75 45.16 45.41 45.67 46.17   312 1.00
+mu[371]  45.41    0.02 0.38 44.66 45.13 45.40 45.65 46.20   325 1.00
+mu[372]  45.42    0.02 0.40 44.65 45.15 45.41 45.68 46.21   332 1.00
+mu[373]  45.43    0.02 0.40 44.69 45.15 45.41 45.68 46.25   336 1.00
+mu[374]  45.43    0.02 0.39 44.68 45.16 45.43 45.69 46.21   341 1.00
+mu[375]  45.40    0.02 0.39 44.63 45.15 45.40 45.66 46.19   345 1.00
+mu[376]  45.37    0.02 0.40 44.58 45.09 45.38 45.63 46.13   336 1.00
+mu[377]  45.34    0.02 0.39 44.56 45.08 45.35 45.60 46.08   372 1.00
+mu[378]  45.29    0.02 0.38 44.53 45.04 45.30 45.56 46.02   403 1.00
+mu[379]  45.32    0.02 0.37 44.61 45.05 45.32 45.57 46.04   393 1.00
+mu[380]  45.32    0.02 0.37 44.57 45.06 45.33 45.58 46.05   401 1.00
+mu[381]  45.33    0.02 0.37 44.62 45.07 45.33 45.59 46.05   420 1.00
+mu[382]  45.30    0.02 0.38 44.57 45.03 45.33 45.56 46.03   419 1.00
+mu[383]  45.25    0.02 0.38 44.51 44.99 45.24 45.52 45.96   410 1.00
+mu[384]  45.17    0.02 0.39 44.43 44.90 45.16 45.45 45.94   435 1.00
+mu[385]  45.12    0.02 0.39 44.38 44.86 45.11 45.38 45.89   459 1.00
+mu[386]  45.08    0.02 0.39 44.30 44.82 45.08 45.35 45.83   451 1.00
+mu[387]  45.03    0.02 0.38 44.30 44.76 45.02 45.31 45.75   428 1.01
+mu[388]  44.99    0.02 0.38 44.23 44.71 44.98 45.25 45.76   452 1.01
+mu[389]  44.91    0.02 0.38 44.15 44.65 44.89 45.18 45.63   502 1.00
+mu[390]  44.83    0.02 0.38 44.09 44.57 44.82 45.09 45.58   555 1.01
+mu[391]  44.77    0.02 0.38 44.06 44.52 44.77 45.02 45.54   529 1.01
+mu[392]  44.75    0.02 0.37 44.06 44.48 44.75 45.01 45.47   525 1.00
+mu[393]  44.76    0.02 0.38 44.06 44.50 44.75 45.01 45.51   543 1.00
+mu[394]  44.74    0.02 0.38 44.02 44.48 44.72 44.99 45.52   438 1.00
+mu[395]  44.70    0.02 0.38 43.93 44.46 44.70 44.96 45.45   396 1.00
+mu[396]  44.63    0.02 0.39 43.84 44.39 44.63 44.89 45.41   425 1.00
+mu[397]  44.58    0.02 0.38 43.83 44.33 44.60 44.83 45.31   422 1.01
+mu[398]  44.55    0.02 0.38 43.81 44.32 44.55 44.81 45.28   426 1.01
+mu[399]  44.55    0.02 0.38 43.84 44.29 44.54 44.80 45.31   401 1.02
+mu[400]  44.55    0.02 0.39 43.84 44.29 44.55 44.78 45.37   387 1.01
+mu[401]  44.55    0.02 0.38 43.78 44.30 44.54 44.79 45.38   377 1.01
+mu[402]  44.54    0.02 0.38 43.78 44.28 44.55 44.78 45.29   314 1.01
+mu[403]  44.50    0.02 0.38 43.78 44.25 44.50 44.74 45.25   316 1.01
+mu[404]  44.45    0.02 0.38 43.70 44.20 44.44 44.70 45.19   322 1.00
+mu[405]  44.46    0.02 0.38 43.73 44.20 44.45 44.71 45.20   335 1.00
+mu[406]  44.50    0.02 0.39 43.79 44.22 44.48 44.77 45.29   333 1.00
+mu[407]  44.54    0.02 0.39 43.83 44.27 44.52 44.79 45.36   305 1.00
+mu[408]  44.54    0.02 0.40 43.77 44.26 44.53 44.82 45.34   283 1.00
+mu[409]  44.54    0.02 0.40 43.74 44.26 44.54 44.81 45.30   278 1.00
+mu[410]  44.53    0.02 0.41 43.73 44.23 44.53 44.80 45.36   274 1.00
+mu[411]  44.49    0.02 0.41 43.75 44.21 44.48 44.77 45.31   281 1.00
+mu[412]  44.42    0.02 0.42 43.62 44.13 44.44 44.70 45.23   315 1.00
+mu[413]  44.36    0.02 0.43 43.56 44.05 44.36 44.66 45.22   300 1.00
+mu[414]  44.30    0.02 0.43 43.44 44.01 44.29 44.57 45.11   339 1.00
+mu[415]  44.22    0.02 0.42 43.41 43.93 44.22 44.48 45.02   346 1.00
+mu[416]  44.12    0.02 0.43 43.28 43.85 44.13 44.40 44.95   329 1.00
+mu[417]  44.03    0.02 0.41 43.16 43.76 44.05 44.29 44.85   333 1.00
+mu[418]  43.93    0.02 0.41 43.12 43.67 43.95 44.19 44.73   349 1.00
+mu[419]  43.84    0.02 0.40 43.05 43.58 43.85 44.10 44.66   354 1.00
+mu[420]  43.83    0.02 0.40 43.07 43.56 43.82 44.09 44.63   352 1.00
+mu[421]  43.84    0.02 0.40 43.10 43.56 43.83 44.12 44.61   351 1.00
+mu[422]  43.85    0.02 0.39 43.09 43.58 43.84 44.10 44.61   361 1.00
+mu[423]  43.85    0.02 0.39 43.08 43.59 43.86 44.11 44.61   341 1.00
+mu[424]  43.84    0.02 0.39 43.05 43.59 43.86 44.10 44.56   349 1.00
+mu[425]  43.84    0.02 0.39 43.09 43.58 43.85 44.12 44.56   325 1.01
+mu[426]  43.84    0.02 0.38 43.08 43.57 43.84 44.11 44.55   302 1.01
+mu[427]  43.86    0.02 0.38 43.10 43.60 43.86 44.14 44.56   325 1.01
+mu[428]  43.87    0.02 0.37 43.14 43.62 43.88 44.13 44.58   310 1.01
+mu[429]  43.89    0.02 0.37 43.15 43.64 43.91 44.14 44.57   287 1.00
+mu[430]  43.91    0.02 0.39 43.19 43.64 43.92 44.18 44.64   302 1.00
+mu[431]  43.94    0.02 0.38 43.17 43.67 43.95 44.21 44.66   309 1.00
+mu[432]  44.02    0.02 0.39 43.25 43.75 44.02 44.30 44.78   322 1.00
+mu[433]  44.10    0.02 0.39 43.32 43.83 44.10 44.38 44.86   381 1.00
+mu[434]  44.21    0.02 0.40 43.38 43.95 44.21 44.48 44.98   405 1.00
+mu[435]  44.30    0.02 0.40 43.53 44.02 44.29 44.57 45.07   344 1.01
+mu[436]  44.39    0.02 0.40 43.57 44.11 44.38 44.67 45.13   331 1.01
+mu[437]  44.46    0.02 0.40 43.63 44.18 44.46 44.74 45.24   285 1.01
+mu[438]  44.49    0.02 0.40 43.64 44.24 44.49 44.76 45.25   318 1.01
+mu[439]  44.51    0.02 0.40 43.73 44.24 44.52 44.76 45.27   308 1.00
+mu[440]  44.55    0.02 0.39 43.78 44.31 44.56 44.80 45.31   329 1.00
+mu[441]  44.59    0.02 0.39 43.78 44.35 44.62 44.86 45.33   325 1.01
+mu[442]  44.64    0.02 0.40 43.82 44.37 44.65 44.92 45.40   321 1.00
+mu[443]  44.67    0.02 0.39 43.89 44.41 44.69 44.94 45.41   343 1.00
+mu[444]  44.67    0.02 0.39 43.90 44.41 44.67 44.93 45.39   333 1.01
+mu[445]  44.65    0.02 0.39 43.92 44.38 44.66 44.92 45.39   294 1.01
+mu[446]  44.61    0.02 0.39 43.86 44.36 44.62 44.89 45.38   275 1.01
+mu[447]  44.57    0.02 0.39 43.83 44.30 44.59 44.81 45.36   270 1.01
+mu[448]  44.59    0.03 0.40 43.81 44.32 44.59 44.82 45.37   211 1.01
+mu[449]  44.61    0.02 0.39 43.85 44.37 44.60 44.85 45.36   281 1.01
+mu[450]  44.63    0.02 0.39 43.87 44.37 44.63 44.89 45.38   281 1.01
+mu[451]  44.64    0.02 0.39 43.89 44.37 44.64 44.90 45.39   323 1.01
+mu[452]  44.62    0.02 0.39 43.84 44.34 44.62 44.89 45.39   323 1.01
+mu[453]  44.61    0.02 0.40 43.82 44.34 44.58 44.87 45.39   297 1.01
+mu[454]  44.58    0.02 0.40 43.79 44.31 44.57 44.85 45.39   272 1.01
+mu[455]  44.59    0.02 0.40 43.84 44.32 44.58 44.86 45.38   302 1.01
+mu[456]  44.59    0.02 0.40 43.80 44.30 44.59 44.87 45.39   295 1.01
+mu[457]  44.59    0.02 0.40 43.82 44.32 44.57 44.86 45.41   279 1.01
+mu[458]  44.58    0.02 0.40 43.80 44.31 44.57 44.85 45.39   279 1.01
+mu[459]  44.55    0.02 0.41 43.77 44.26 44.56 44.83 45.34   290 1.01
+mu[460]  44.52    0.02 0.42 43.68 44.22 44.53 44.80 45.33   295 1.00
+mu[461]  44.48    0.03 0.43 43.65 44.19 44.50 44.76 45.26   291 1.00
+mu[462]  44.45    0.03 0.43 43.60 44.16 44.46 44.75 45.26   278 1.00
+mu[463]  44.42    0.03 0.43 43.59 44.13 44.41 44.71 45.25   272 1.00
+mu[464]  44.37    0.03 0.43 43.51 44.11 44.37 44.66 45.20   264 1.00
+mu[465]  44.33    0.03 0.42 43.53 44.06 44.34 44.61 45.13   252 1.01
+mu[466]  44.27    0.03 0.43 43.44 43.98 44.27 44.55 45.08   259 1.00
+mu[467]  44.20    0.03 0.43 43.36 43.91 44.22 44.47 45.03   253 1.00
+mu[468]  44.15    0.03 0.42 43.33 43.88 44.17 44.43 44.97   248 1.00
+mu[469]  44.11    0.03 0.42 43.33 43.82 44.12 44.37 44.93   246 1.00
+mu[470]  44.07    0.03 0.42 43.25 43.80 44.06 44.35 44.90   219 1.00
+mu[471]  44.08    0.03 0.42 43.24 43.81 44.05 44.35 44.94   238 1.00
+mu[472]  44.09    0.03 0.41 43.26 43.81 44.08 44.35 44.97   208 1.00
+mu[473]  44.06    0.03 0.42 43.28 43.77 44.07 44.34 44.89   214 1.00
+mu[474]  44.05    0.03 0.42 43.20 43.75 44.06 44.32 44.85   216 1.00
+mu[475]  44.04    0.03 0.42 43.21 43.75 44.04 44.31 44.85   234 1.00
+mu[476]  44.04    0.03 0.42 43.21 43.76 44.04 44.32 44.87   214 1.00
+mu[477]  44.05    0.03 0.42 43.23 43.77 44.03 44.35 44.84   219 1.00
+mu[478]  44.06    0.03 0.42 43.22 43.76 44.06 44.34 44.86   231 1.00
+mu[479]  44.06    0.03 0.42 43.24 43.77 44.06 44.36 44.85   225 1.00
+mu[480]  44.06    0.03 0.42 43.23 43.77 44.06 44.37 44.89   246 1.00
+mu[481]  44.06    0.03 0.42 43.17 43.78 44.06 44.35 44.85   271 1.00
+mu[482]  44.07    0.02 0.41 43.27 43.80 44.07 44.37 44.88   287 1.00
+mu[483]  44.09    0.02 0.42 43.21 43.82 44.11 44.38 44.91   309 1.00
+mu[484]  44.12    0.02 0.41 43.24 43.84 44.12 44.41 44.92   281 1.00
+mu[485]  44.13    0.02 0.42 43.30 43.86 44.14 44.41 44.92   300 1.00
+mu[486]  44.12    0.02 0.41 43.25 43.85 44.13 44.40 44.91   290 1.00
+mu[487]  44.08    0.02 0.41 43.29 43.80 44.08 44.35 44.87   304 1.00
+mu[488]  44.05    0.02 0.40 43.26 43.78 44.04 44.33 44.81   315 1.00
+mu[489]  44.02    0.02 0.41 43.20 43.74 44.01 44.31 44.79   335 1.00
+mu[490]  43.98    0.02 0.40 43.24 43.69 43.99 44.25 44.75   278 1.00
+mu[491]  43.95    0.02 0.39 43.17 43.67 43.96 44.21 44.72   281 1.00
+mu[492]  43.95    0.02 0.40 43.16 43.68 43.95 44.21 44.71   293 1.00
+mu[493]  43.95    0.02 0.39 43.19 43.67 43.94 44.22 44.74   282 1.00
+mu[494]  43.92    0.02 0.40 43.19 43.65 43.93 44.19 44.70   287 1.00
+mu[495]  43.89    0.02 0.40 43.13 43.61 43.88 44.16 44.67   261 1.00
+mu[496]  43.87    0.03 0.39 43.15 43.60 43.85 44.16 44.64   246 1.00
+mu[497]  43.88    0.03 0.39 43.14 43.60 43.86 44.15 44.62   236 1.00
+mu[498]  43.87    0.03 0.38 43.16 43.59 43.86 44.13 44.59   225 1.00
+mu[499]  43.87    0.02 0.38 43.16 43.60 43.86 44.12 44.59   237 1.00
+mu[500]  43.89    0.03 0.38 43.19 43.62 43.89 44.15 44.65   223 1.00
+mu[501]  43.91    0.02 0.38 43.24 43.64 43.89 44.16 44.68   231 1.00
+mu[502]  43.89    0.02 0.38 43.20 43.62 43.87 44.15 44.62   227 1.01
+mu[503]  43.90    0.03 0.39 43.15 43.65 43.88 44.16 44.66   230 1.01
+mu[504]  43.91    0.03 0.38 43.19 43.65 43.89 44.19 44.64   213 1.01
+mu[505]  43.90    0.03 0.38 43.17 43.65 43.89 44.16 44.64   218 1.01
+mu[506]  43.92    0.03 0.39 43.16 43.66 43.90 44.18 44.73   211 1.01
+mu[507]  43.93    0.03 0.40 43.17 43.67 43.92 44.18 44.72   219 1.01
+mu[508]  43.89    0.03 0.40 43.14 43.62 43.88 44.13 44.69   225 1.01
+mu[509]  43.86    0.03 0.40 43.10 43.59 43.84 44.12 44.67   221 1.01
+mu[510]  43.82    0.03 0.40 43.04 43.55 43.81 44.09 44.62   218 1.01
+mu[511]  43.78    0.03 0.41 42.97 43.50 43.77 44.04 44.62   190 1.02
+mu[512]  43.75    0.03 0.41 42.98 43.48 43.73 44.02 44.57   221 1.01
+mu[513]  43.74    0.03 0.42 42.95 43.45 43.75 44.00 44.54   264 1.01
+mu[514]  43.74    0.02 0.41 42.95 43.48 43.74 44.01 44.58   279 1.00
+mu[515]  43.73    0.03 0.41 42.95 43.45 43.72 43.99 44.50   258 1.00
+mu[516]  43.73    0.03 0.41 42.89 43.45 43.73 44.00 44.52   224 1.00
+mu[517]  43.75    0.03 0.41 42.93 43.48 43.78 44.03 44.51   214 1.01
+mu[518]  43.79    0.03 0.41 42.96 43.50 43.83 44.07 44.52   181 1.01
+mu[519]  43.83    0.03 0.40 43.04 43.55 43.83 44.12 44.62   178 1.00
+mu[520]  43.89    0.03 0.40 43.13 43.61 43.88 44.16 44.65   186 1.00
+mu[521]  43.95    0.03 0.40 43.19 43.67 43.95 44.20 44.73   172 1.00
+mu[522]  44.00    0.03 0.41 43.20 43.73 44.00 44.28 44.77   163 1.00
+mu[523]  44.04    0.03 0.40 43.29 43.77 44.04 44.33 44.83   161 1.00
+mu[524]  44.10    0.03 0.40 43.31 43.83 44.10 44.37 44.88   156 1.00
+mu[525]  44.17    0.03 0.41 43.41 43.90 44.17 44.44 44.96   138 1.00
+mu[526]  44.23    0.03 0.41 43.44 43.94 44.22 44.50 45.05   145 1.01
+mu[527]  44.28    0.03 0.42 43.49 44.00 44.28 44.56 45.09   160 1.00
+mu[528]  44.31    0.03 0.40 43.56 44.04 44.30 44.59 45.12   159 1.01
+mu[529]  44.32    0.03 0.40 43.57 44.05 44.30 44.60 45.10   153 1.01
+mu[530]  44.31    0.03 0.39 43.56 44.06 44.30 44.58 45.07   144 1.01
+mu[531]  44.28    0.03 0.39 43.53 44.01 44.28 44.53 45.07   187 1.01
+mu[532]  44.30    0.03 0.40 43.52 44.03 44.29 44.57 45.10   232 1.00
+mu[533]  44.31    0.03 0.40 43.53 44.04 44.31 44.59 45.10   251 1.00
+mu[534]  44.33    0.03 0.41 43.54 44.03 44.33 44.61 45.13   240 1.00
+mu[535]  44.34    0.03 0.41 43.52 44.07 44.34 44.63 45.14   230 1.00
+mu[536]  44.38    0.03 0.42 43.60 44.11 44.35 44.67 45.23   253 1.00
+mu[537]  44.39    0.03 0.42 43.63 44.09 44.39 44.66 45.27   258 1.00
+mu[538]  44.40    0.03 0.42 43.59 44.12 44.42 44.68 45.24   259 1.00
+mu[539]  44.40    0.03 0.41 43.59 44.11 44.41 44.68 45.21   246 1.00
+mu[540]  44.40    0.03 0.42 43.61 44.12 44.40 44.69 45.19   270 1.00
+mu[541]  44.40    0.03 0.42 43.57 44.10 44.39 44.70 45.16   268 1.00
+mu[542]  44.39    0.03 0.41 43.63 44.10 44.39 44.68 45.19   248 1.00
+mu[543]  44.36    0.03 0.42 43.56 44.08 44.35 44.63 45.16   241 1.00
+mu[544]  44.30    0.03 0.40 43.52 44.03 44.29 44.54 45.12   247 1.00
+mu[545]  44.25    0.03 0.39 43.49 43.99 44.25 44.51 45.07   244 1.00
+mu[546]  44.22    0.03 0.40 43.44 43.96 44.23 44.49 45.00   208 1.01
+mu[547]  44.21    0.03 0.40 43.46 43.95 44.20 44.47 44.97   192 1.01
+mu[548]  44.19    0.03 0.40 43.42 43.94 44.21 44.45 44.98   189 1.01
+mu[549]  44.13    0.03 0.39 43.36 43.86 44.15 44.40 44.89   210 1.01
+mu[550]  44.05    0.03 0.40 43.27 43.78 44.08 44.33 44.84   204 1.01
+mu[551]  43.95    0.03 0.41 43.15 43.67 43.96 44.22 44.72   242 1.01
+mu[552]  43.86    0.03 0.41 42.98 43.58 43.87 44.14 44.63   272 1.00
+mu[553]  43.77    0.03 0.41 42.96 43.50 43.77 44.07 44.55   253 1.00
+mu[554]  43.71    0.03 0.42 42.87 43.42 43.73 43.99 44.51   223 1.00
+mu[555]  43.66    0.03 0.41 42.83 43.38 43.69 43.94 44.43   263 1.00
+mu[556]  43.62    0.02 0.41 42.76 43.37 43.64 43.91 44.38   272 1.00
+mu[557]  43.55    0.02 0.40 42.71 43.30 43.58 43.82 44.33   302 1.00
+mu[558]  43.49    0.03 0.40 42.67 43.23 43.49 43.75 44.27   245 1.00
+mu[559]  43.41    0.02 0.40 42.58 43.15 43.42 43.70 44.16   283 1.00
+mu[560]  43.36    0.02 0.41 42.58 43.10 43.35 43.63 44.16   302 1.00
+mu[561]  43.31    0.02 0.41 42.51 43.02 43.32 43.59 44.14   309 1.00
+mu[562]  43.29    0.02 0.40 42.50 43.01 43.29 43.55 44.09   326 1.00
+mu[563]  43.25    0.02 0.40 42.48 42.99 43.24 43.53 44.04   328 1.00
+mu[564]  43.19    0.02 0.40 42.43 42.92 43.18 43.45 44.01   305 1.00
+mu[565]  43.14    0.02 0.40 42.37 42.88 43.12 43.40 43.92   320 1.00
+mu[566]  43.15    0.02 0.39 42.43 42.87 43.15 43.41 43.93   352 1.00
+mu[567]  43.15    0.02 0.40 42.37 42.88 43.14 43.41 43.95   323 1.00
+mu[568]  43.15    0.02 0.40 42.36 42.88 43.14 43.42 43.91   352 1.00
+mu[569]  43.16    0.02 0.40 42.36 42.88 43.16 43.42 43.95   368 1.00
+mu[570]  43.13    0.02 0.41 42.30 42.87 43.13 43.40 43.94   349 1.00
+mu[571]  43.10    0.02 0.41 42.26 42.82 43.11 43.35 43.89   339 1.00
+mu[572]  43.06    0.02 0.42 42.20 42.79 43.06 43.35 43.86   334 1.00
+mu[573]  43.02    0.02 0.42 42.18 42.74 43.02 43.32 43.82   333 1.00
+mu[574]  43.00    0.02 0.42 42.17 42.73 43.00 43.29 43.82   348 1.00
+mu[575]  42.99    0.02 0.43 42.13 42.69 43.01 43.28 43.81   335 1.00
+mu[576]  42.97    0.02 0.43 42.15 42.67 42.97 43.28 43.82   325 1.01
+mu[577]  42.98    0.02 0.42 42.19 42.67 42.97 43.26 43.81   346 1.01
+mu[578]  42.99    0.02 0.43 42.20 42.69 42.98 43.27 43.76   334 1.01
+mu[579]  42.97    0.02 0.42 42.18 42.68 42.96 43.24 43.79   310 1.01
+mu[580]  42.94    0.03 0.43 42.11 42.66 42.93 43.23 43.76   279 1.01
+mu[581]  42.89    0.02 0.42 42.09 42.62 42.88 43.17 43.72   356 1.01
+mu[582]  42.88    0.02 0.42 42.10 42.59 42.89 43.16 43.71   360 1.01
+mu[583]  42.88    0.02 0.41 42.08 42.60 42.89 43.16 43.67   353 1.01
+mu[584]  42.86    0.02 0.41 42.01 42.60 42.87 43.14 43.65   366 1.01
+mu[585]  42.85    0.02 0.40 42.03 42.59 42.84 43.12 43.61   355 1.01
+mu[586]  42.83    0.02 0.40 42.03 42.57 42.84 43.10 43.62   334 1.01
+mu[587]  42.83    0.02 0.39 42.06 42.57 42.84 43.09 43.53   366 1.01
+mu[588]  42.85    0.02 0.39 42.12 42.58 42.86 43.11 43.59   368 1.01
+mu[589]  42.88    0.02 0.38 42.14 42.62 42.87 43.14 43.61   391 1.01
+mu[590]  42.91    0.02 0.38 42.16 42.64 42.90 43.16 43.66   395 1.01
+mu[591]  42.94    0.02 0.37 42.18 42.69 42.95 43.19 43.65   393 1.01
+mu[592]  42.93    0.02 0.37 42.22 42.68 42.93 43.17 43.70   393 1.01
+mu[593]  42.96    0.02 0.37 42.27 42.70 42.95 43.21 43.69   357 1.01
+mu[594]  42.96    0.02 0.37 42.28 42.70 42.94 43.21 43.72   331 1.00
+mu[595]  42.96    0.02 0.38 42.29 42.70 42.95 43.22 43.71   341 1.00
+mu[596]  42.98    0.02 0.38 42.25 42.71 42.97 43.22 43.77   330 1.00
+mu[597]  43.00    0.02 0.39 42.27 42.74 42.97 43.25 43.81   303 1.00
+mu[598]  43.01    0.02 0.37 42.35 42.76 42.99 43.23 43.79   276 1.00
+mu[599]  43.02    0.02 0.38 42.32 42.76 43.00 43.27 43.78   288 1.00
+mu[600]  43.04    0.02 0.38 42.36 42.78 43.01 43.27 43.85   270 1.00
+mu[601]  43.03    0.02 0.38 42.34 42.76 43.01 43.27 43.80   275 1.00
+mu[602]  43.04    0.02 0.38 42.38 42.78 43.04 43.28 43.81   244 1.00
+mu[603]  43.06    0.03 0.38 42.37 42.81 43.05 43.31 43.81   233 1.00
+mu[604]  43.12    0.02 0.38 42.41 42.86 43.11 43.35 43.90   267 1.00
+mu[605]  43.17    0.02 0.38 42.46 42.92 43.18 43.43 43.97   282 1.00
+mu[606]  43.20    0.02 0.38 42.47 42.94 43.18 43.45 44.00   267 1.00
+mu[607]  43.20    0.02 0.39 42.48 42.92 43.19 43.45 43.96   269 1.00
+mu[608]  43.22    0.03 0.40 42.46 42.94 43.22 43.50 44.02   244 1.00
+mu[609]  43.26    0.02 0.40 42.50 42.98 43.24 43.53 44.06   259 1.00
+mu[610]  43.28    0.02 0.40 42.52 43.00 43.28 43.54 44.14   272 1.00
+mu[611]  43.32    0.03 0.40 42.57 43.04 43.31 43.57 44.14   253 1.00
+mu[612]  43.37    0.03 0.40 42.60 43.10 43.35 43.63 44.20   237 1.00
+mu[613]  43.38    0.03 0.41 42.57 43.11 43.37 43.66 44.15   252 1.00
+mu[614]  43.38    0.03 0.41 42.61 43.10 43.41 43.66 44.16   218 1.01
+mu[615]  43.33    0.03 0.40 42.54 43.06 43.34 43.63 44.08   188 1.01
+mu[616]  43.29    0.03 0.40 42.47 43.02 43.31 43.57 44.02   181 1.01
+mu[617]  43.28    0.03 0.40 42.51 43.02 43.27 43.54 44.04   180 1.01
+mu[618]  43.27    0.03 0.39 42.49 42.99 43.27 43.52 44.05   193 1.01
+mu[619]  43.25    0.03 0.39 42.49 42.98 43.24 43.51 44.00   158 1.01
+mu[620]  43.20    0.03 0.38 42.47 42.93 43.22 43.46 43.96   150 1.00
+mu[621]  43.18    0.03 0.40 42.45 42.90 43.18 43.45 43.98   153 1.00
+mu[622]  43.19    0.03 0.39 42.44 42.94 43.19 43.44 43.98   205 1.01
+mu[623]  43.21    0.03 0.39 42.49 42.94 43.21 43.46 43.98   220 1.00
+mu[624]  43.23    0.02 0.38 42.55 42.96 43.22 43.49 43.98   266 1.00
+mu[625]  43.27    0.02 0.39 42.56 42.99 43.27 43.52 44.04   289 1.00
+mu[626]  43.31    0.02 0.38 42.61 43.06 43.30 43.56 44.10   313 1.00
+mu[627]  43.34    0.02 0.38 42.62 43.09 43.33 43.60 44.10   309 1.00
+mu[628]  43.37    0.02 0.39 42.63 43.10 43.36 43.65 44.14   293 1.00
+mu[629]  43.40    0.02 0.40 42.66 43.14 43.39 43.66 44.19   323 1.00
+mu[630]  43.43    0.02 0.40 42.60 43.18 43.41 43.70 44.20   365 1.00
+mu[631]  43.46    0.02 0.39 42.68 43.20 43.45 43.74 44.23   380 1.00
+mu[632]  43.47    0.02 0.39 42.75 43.20 43.48 43.74 44.22   358 1.00
+mu[633]  43.45    0.02 0.39 42.70 43.19 43.46 43.72 44.19   335 1.00
+mu[634]  43.41    0.02 0.39 42.67 43.15 43.42 43.67 44.18   346 1.00
+mu[635]  43.35    0.02 0.39 42.56 43.08 43.37 43.64 44.11   348 1.00
+mu[636]  43.29    0.02 0.40 42.49 43.02 43.29 43.57 44.05   324 1.00
+mu[637]  43.19    0.02 0.39 42.42 42.93 43.20 43.48 43.95   298 1.00
+mu[638]  43.13    0.02 0.39 42.34 42.87 43.14 43.40 43.88   294 1.00
+mu[639]  43.09    0.02 0.38 42.36 42.84 43.10 43.34 43.82   260 1.00
+mu[640]  42.98    0.03 0.39 42.22 42.72 42.99 43.23 43.77   235 1.01
+mu[641]  42.84    0.03 0.39 42.07 42.59 42.84 43.09 43.61   223 1.01
+mu[642]  42.70    0.03 0.40 41.89 42.45 42.70 42.98 43.50   226 1.01
+mu[643]  42.55    0.03 0.41 41.72 42.29 42.56 42.82 43.36   214 1.01
+mu[644]  42.43    0.03 0.40 41.66 42.15 42.42 42.72 43.25   228 1.01
+mu[645]  42.32    0.03 0.41 41.51 42.05 42.31 42.60 43.11   242 1.01
+mu[646]  42.20    0.03 0.40 41.38 41.93 42.21 42.47 42.97   221 1.02
+mu[647]  42.10    0.03 0.41 41.28 41.85 42.11 42.38 42.91   217 1.02
+mu[648]  42.01    0.03 0.41 41.18 41.73 42.03 42.28 42.83   216 1.02
+mu[649]  41.92    0.03 0.40 41.12 41.65 41.92 42.21 42.74   220 1.02
+mu[650]  41.85    0.03 0.39 41.07 41.59 41.84 42.10 42.61   223 1.02
+mu[651]  41.82    0.03 0.39 41.05 41.56 41.81 42.07 42.63   216 1.02
+mu[652]  41.82    0.03 0.39 41.09 41.55 41.83 42.09 42.63   225 1.02
+mu[653]  41.80    0.03 0.39 41.04 41.53 41.79 42.07 42.55   212 1.03
+mu[654]  41.79    0.02 0.38 41.07 41.55 41.79 42.03 42.53   249 1.02
+mu[655]  41.78    0.02 0.37 41.04 41.53 41.77 42.02 42.54   230 1.03
+mu[656]  41.75    0.02 0.38 41.03 41.50 41.74 42.00 42.53   248 1.03
+mu[657]  41.76    0.03 0.39 41.04 41.49 41.75 42.04 42.58   241 1.03
+mu[658]  41.76    0.03 0.40 41.03 41.48 41.75 42.04 42.56   235 1.03
+mu[659]  41.76    0.02 0.40 41.00 41.48 41.74 42.04 42.54   256 1.03
+mu[660]  41.74    0.02 0.38 40.99 41.50 41.73 42.00 42.50   301 1.02
+mu[661]  41.70    0.02 0.39 40.97 41.45 41.68 41.96 42.52   307 1.02
+mu[662]  41.65    0.02 0.39 40.90 41.41 41.66 41.90 42.49   286 1.02
+mu[663]  41.61    0.02 0.39 40.81 41.34 41.60 41.86 42.39   288 1.01
+mu[664]  41.59    0.02 0.39 40.84 41.31 41.60 41.86 42.39   316 1.01
+mu[665]  41.58    0.02 0.40 40.79 41.32 41.58 41.84 42.39   282 1.02
+mu[666]  41.58    0.02 0.40 40.80 41.32 41.57 41.84 42.38   327 1.02
+mu[667]  41.52    0.02 0.40 40.75 41.23 41.53 41.81 42.31   340 1.02
+mu[668]  41.47    0.02 0.40 40.68 41.21 41.46 41.72 42.26   364 1.02
+mu[669]  41.38    0.02 0.41 40.57 41.11 41.36 41.65 42.17   395 1.01
+mu[670]  41.27    0.02 0.41 40.44 41.00 41.27 41.55 42.03   375 1.02
+mu[671]  41.14    0.02 0.41 40.34 40.88 41.15 41.41 41.91   339 1.02
+mu[672]  41.00    0.02 0.41 40.21 40.72 41.00 41.28 41.83   328 1.02
+mu[673]  40.85    0.02 0.40 40.05 40.57 40.85 41.11 41.61   313 1.02
+mu[674]  40.72    0.02 0.40 39.90 40.45 40.72 40.99 41.53   343 1.02
+mu[675]  40.58    0.02 0.38 39.84 40.33 40.58 40.85 41.34   338 1.02
+mu[676]  40.48    0.02 0.38 39.72 40.25 40.49 40.73 41.23   343 1.02
+mu[677]  40.38    0.02 0.39 39.66 40.13 40.39 40.64 41.10   324 1.02
+mu[678]  40.28    0.02 0.39 39.48 40.02 40.28 40.54 40.96   333 1.02
+mu[679]  40.15    0.02 0.39 39.37 39.89 40.16 40.41 40.87   321 1.01
+mu[680]  40.02    0.02 0.38 39.28 39.76 40.04 40.29 40.73   346 1.01
+mu[681]  39.90    0.02 0.37 39.13 39.66 39.91 40.16 40.57   329 1.01
+mu[682]  39.76    0.02 0.38 38.99 39.51 39.77 40.01 40.46   287 1.01
+mu[683]  39.66    0.02 0.38 38.89 39.41 39.68 39.92 40.34   276 1.01
+mu[684]  39.58    0.02 0.38 38.84 39.31 39.59 39.84 40.26   285 1.00
+mu[685]  39.46    0.02 0.38 38.70 39.20 39.46 39.72 40.17   296 1.00
+mu[686]  39.36    0.02 0.38 38.58 39.09 39.35 39.62 40.11   280 1.00
+mu[687]  39.29    0.02 0.38 38.52 39.03 39.30 39.55 40.03   282 1.00
+mu[688]  39.22    0.02 0.38 38.43 38.98 39.23 39.47 39.96   256 1.00
+mu[689]  39.17    0.02 0.37 38.44 38.94 39.17 39.42 39.91   266 1.00
+mu[690]  39.15    0.02 0.37 38.43 38.91 39.14 39.39 39.92   277 1.00
+mu[691]  39.14    0.02 0.37 38.42 38.89 39.13 39.39 39.88   255 1.00
+mu[692]  39.14    0.02 0.39 38.39 38.87 39.13 39.41 39.89   256 1.00
+mu[693]  39.13    0.02 0.39 38.35 38.86 39.13 39.39 39.86   293 1.00
+mu[694]  39.14    0.02 0.39 38.40 38.88 39.15 39.41 39.88   320 1.00
+mu[695]  39.19    0.02 0.38 38.44 38.93 39.20 39.45 39.89   292 1.00
+mu[696]  39.25    0.02 0.37 38.54 38.99 39.27 39.50 40.03   300 1.00
+mu[697]  39.28    0.02 0.38 38.53 39.02 39.28 39.53 40.03   296 1.00
+mu[698]  39.31    0.02 0.37 38.57 39.05 39.31 39.54 40.05   301 1.00
+mu[699]  39.38    0.02 0.37 38.63 39.13 39.38 39.64 40.09   251 1.00
+mu[700]  39.40    0.02 0.37 38.69 39.15 39.42 39.65 40.11   254 1.00
+mu[701]  39.45    0.02 0.38 38.68 39.18 39.44 39.71 40.19   265 1.01
+mu[702]  39.49    0.02 0.39 38.74 39.23 39.49 39.74 40.28   261 1.01
+mu[703]  39.56    0.02 0.38 38.81 39.31 39.55 39.80 40.32   283 1.01
+mu[704]  39.62    0.02 0.38 38.87 39.36 39.62 39.86 40.37   295 1.01
+mu[705]  39.66    0.02 0.38 38.93 39.40 39.65 39.92 40.44   278 1.01
+mu[706]  39.71    0.02 0.39 39.00 39.45 39.70 39.97 40.48   305 1.01
+mu[707]  39.74    0.02 0.39 39.07 39.47 39.73 40.00 40.53   311 1.01
+mu[708]  39.75    0.02 0.39 39.02 39.49 39.73 40.00 40.54   318 1.01
+mu[709]  39.75    0.02 0.38 38.96 39.49 39.75 40.01 40.52   325 1.01
+mu[710]  39.75    0.02 0.38 39.01 39.50 39.75 40.00 40.50   344 1.01
+mu[711]  39.76    0.02 0.38 38.99 39.50 39.75 40.01 40.49   328 1.01
+mu[712]  39.77    0.02 0.37 39.05 39.51 39.76 40.01 40.48   311 1.01
+mu[713]  39.82    0.02 0.39 39.07 39.56 39.82 40.08 40.55   304 1.01
+mu[714]  39.84    0.02 0.39 39.11 39.56 39.86 40.11 40.62   316 1.01
+mu[715]  39.85    0.02 0.39 39.12 39.58 39.85 40.14 40.58   361 1.00
+mu[716]  39.87    0.02 0.38 39.14 39.61 39.88 40.13 40.61   358 1.00
+mu[717]  39.88    0.02 0.37 39.17 39.63 39.87 40.13 40.61   421 1.00
+mu[718]  39.87    0.02 0.37 39.15 39.62 39.88 40.13 40.58   385 1.00
+mu[719]  39.85    0.02 0.39 39.09 39.58 39.86 40.12 40.59   387 1.00
+mu[720]  39.85    0.02 0.40 39.13 39.57 39.85 40.12 40.61   376 1.00
+mu[721]  39.81    0.02 0.40 39.07 39.54 39.80 40.08 40.59   365 1.00
+mu[722]  39.76    0.02 0.39 39.03 39.51 39.75 40.03 40.54   360 1.00
+mu[723]  39.71    0.02 0.39 38.96 39.43 39.71 39.97 40.49   351 1.00
+mu[724]  39.66    0.02 0.38 38.92 39.40 39.68 39.92 40.43   320 1.00
+mu[725]  39.62    0.02 0.39 38.88 39.34 39.62 39.88 40.38   308 1.00
+mu[726]  39.58    0.02 0.38 38.85 39.31 39.57 39.86 40.30   332 1.00
+mu[727]  39.52    0.02 0.38 38.75 39.27 39.53 39.78 40.24   281 1.01
+mu[728]  39.47    0.02 0.38 38.75 39.20 39.48 39.72 40.25   292 1.01
+mu[729]  39.43    0.02 0.38 38.69 39.18 39.44 39.68 40.18   287 1.01
+mu[730]  39.41    0.02 0.38 38.66 39.16 39.41 39.67 40.14   259 1.01
+mu[731]  39.38    0.02 0.37 38.65 39.12 39.38 39.62 40.09   255 1.01
+mu[732]  39.34    0.02 0.37 38.57 39.09 39.34 39.59 40.08   283 1.01
+mu[733]  39.30    0.02 0.38 38.55 39.06 39.30 39.56 40.00   325 1.01
+mu[734]  39.25    0.02 0.38 38.47 39.02 39.27 39.51 39.96   281 1.01
+mu[735]  39.23    0.02 0.38 38.45 38.99 39.22 39.49 39.96   264 1.01
+mu[736]  39.20    0.02 0.39 38.41 38.97 39.22 39.46 39.94   260 1.02
+mu[737]  39.20    0.02 0.38 38.47 38.95 39.22 39.47 39.92   256 1.02
+mu[738]  39.22    0.02 0.37 38.47 38.97 39.22 39.48 39.89   309 1.02
+mu[739]  39.20    0.02 0.37 38.42 38.96 39.21 39.44 39.93   265 1.02
+mu[740]  39.21    0.02 0.38 38.44 38.96 39.22 39.46 39.92   235 1.02
+mu[741]  39.21    0.03 0.38 38.47 38.95 39.20 39.45 39.93   230 1.02
+mu[742]  39.22    0.03 0.39 38.46 38.96 39.21 39.50 39.96   187 1.02
+mu[743]  39.23    0.02 0.38 38.49 38.96 39.23 39.51 39.94   280 1.02
+mu[744]  39.27    0.02 0.38 38.55 39.00 39.29 39.55 39.98   278 1.02
+mu[745]  39.30    0.02 0.38 38.56 39.05 39.31 39.56 40.02   276 1.01
+mu[746]  39.38    0.02 0.38 38.65 39.12 39.38 39.64 40.10   275 1.01
+mu[747]  39.45    0.02 0.39 38.70 39.19 39.45 39.71 40.16   258 1.01
+mu[748]  39.49    0.02 0.39 38.73 39.22 39.49 39.74 40.25   270 1.01
+mu[749]  39.54    0.02 0.38 38.80 39.28 39.55 39.81 40.29   262 1.01
+mu[750]  39.57    0.02 0.38 38.81 39.33 39.57 39.82 40.28   243 1.01
+mu[751]  39.61    0.02 0.37 38.88 39.36 39.61 39.85 40.31   278 1.01
+mu[752]  39.64    0.02 0.37 38.91 39.41 39.64 39.87 40.35   282 1.00
+mu[753]  39.65    0.02 0.37 38.89 39.42 39.66 39.89 40.40   262 1.00
+mu[754]  39.68    0.02 0.38 38.92 39.44 39.68 39.92 40.43   290 1.01
+mu[755]  39.71    0.02 0.39 38.97 39.44 39.71 39.96 40.50   276 1.01
+mu[756]  39.75    0.02 0.38 39.03 39.50 39.74 40.00 40.57   315 1.01
+mu[757]  39.82    0.02 0.38 39.05 39.57 39.81 40.07 40.56   315 1.01
+mu[758]  39.87    0.02 0.38 39.14 39.61 39.87 40.13 40.58   305 1.00
+mu[759]  39.92    0.02 0.38 39.19 39.67 39.91 40.16 40.70   299 1.00
+mu[760]  39.95    0.02 0.38 39.22 39.69 39.95 40.20 40.73   293 1.01
+mu[761]  39.96    0.02 0.39 39.21 39.71 39.96 40.22 40.70   337 1.01
+mu[762]  39.98    0.02 0.39 39.20 39.73 39.99 40.25 40.75   335 1.01
+mu[763]  39.98    0.02 0.39 39.18 39.71 39.98 40.23 40.73   293 1.01
+mu[764]  40.00    0.02 0.39 39.18 39.73 40.02 40.27 40.75   243 1.01
+mu[765]  40.01    0.02 0.38 39.27 39.74 40.03 40.27 40.69   242 1.01
+mu[766]  40.03    0.02 0.37 39.25 39.78 40.04 40.28 40.75   234 1.01
+mu[767]  40.06    0.02 0.37 39.30 39.81 40.06 40.33 40.76   245 1.01
+mu[768]  40.13    0.03 0.38 39.39 39.88 40.14 40.39 40.84   224 1.01
+mu[769]  40.19    0.03 0.38 39.43 39.95 40.20 40.45 40.93   199 1.01
+mu[770]  40.25    0.03 0.39 39.48 39.99 40.25 40.52 41.03   214 1.01
+mu[771]  40.31    0.03 0.39 39.58 40.04 40.32 40.57 41.11   194 1.01
+mu[772]  40.38    0.03 0.38 39.60 40.14 40.39 40.65 41.13   219 1.00
+mu[773]  40.40    0.02 0.38 39.65 40.14 40.41 40.67 41.13   234 1.00
+mu[774]  40.42    0.02 0.38 39.67 40.16 40.41 40.67 41.17   242 1.00
+mu[775]  40.43    0.02 0.39 39.63 40.17 40.43 40.68 41.14   270 1.01
+mu[776]  40.42    0.02 0.38 39.68 40.17 40.42 40.69 41.12   254 1.01
+mu[777]  40.40    0.02 0.37 39.67 40.17 40.41 40.65 41.10   264 1.01
+mu[778]  40.37    0.02 0.38 39.65 40.11 40.37 40.63 41.09   304 1.01
+mu[779]  40.34    0.02 0.38 39.61 40.09 40.33 40.60 41.03   257 1.01
+mu[780]  40.29    0.02 0.38 39.55 40.03 40.30 40.55 41.01   257 1.01
+mu[781]  40.27    0.02 0.38 39.51 40.02 40.26 40.53 40.97   277 1.01
+mu[782]  40.28    0.02 0.39 39.50 40.03 40.29 40.54 40.99   273 1.01
+mu[783]  40.29    0.02 0.39 39.51 40.03 40.31 40.53 41.06   270 1.01
+mu[784]  40.28    0.02 0.39 39.47 40.04 40.29 40.53 41.07   277 1.01
+mu[785]  40.26    0.03 0.37 39.55 39.98 40.26 40.54 41.00   204 1.01
+mu[786]  40.21    0.02 0.38 39.45 39.96 40.22 40.45 40.94   242 1.01
+mu[787]  40.12    0.03 0.38 39.41 39.86 40.13 40.37 40.85   228 1.01
+mu[788]  40.01    0.02 0.39 39.24 39.75 40.00 40.27 40.77   266 1.01
+mu[789]  39.88    0.03 0.39 39.10 39.62 39.87 40.15 40.62   223 1.01
+mu[790]  39.74    0.03 0.39 38.97 39.46 39.74 40.00 40.48   219 1.01
+mu[791]  39.57    0.02 0.39 38.83 39.30 39.56 39.84 40.34   250 1.01
+mu[792]  39.40    0.02 0.39 38.69 39.13 39.39 39.66 40.18   279 1.01
+mu[793]  39.29    0.02 0.37 38.59 39.03 39.29 39.53 40.00   281 1.01
+mu[794]  39.17    0.02 0.38 38.42 38.93 39.18 39.42 39.93   314 1.01
+mu[795]  39.10    0.02 0.37 38.35 38.85 39.11 39.35 39.83   308 1.01
+mu[796]  39.02    0.02 0.37 38.32 38.79 39.04 39.26 39.74   446 1.00
+mu[797]  38.92    0.02 0.38 38.19 38.67 38.92 39.16 39.65   399 1.00
+mu[798]  38.83    0.02 0.38 38.09 38.57 38.82 39.08 39.58   422 1.00
+mu[799]  38.75    0.02 0.38 38.02 38.50 38.76 39.00 39.54   423 1.00
+mu[800]  38.72    0.02 0.37 38.01 38.48 38.72 38.97 39.45   443 1.00
+mu[801]  38.68    0.02 0.37 37.93 38.44 38.67 38.94 39.40   376 1.00
+mu[802]  38.66    0.02 0.37 37.96 38.42 38.68 38.91 39.35   378 1.00
+mu[803]  38.65    0.02 0.35 37.97 38.42 38.64 38.88 39.36   361 1.00
+mu[804]  38.67    0.02 0.36 37.99 38.42 38.66 38.90 39.38   415 1.00
+mu[805]  38.72    0.02 0.36 38.08 38.48 38.71 38.95 39.47   398 1.00
+mu[806]  38.76    0.02 0.36 38.05 38.54 38.75 38.98 39.51   343 1.00
+mu[807]  38.83    0.02 0.36 38.13 38.59 38.82 39.07 39.60   363 1.00
+mu[808]  38.84    0.02 0.37 38.13 38.61 38.82 39.08 39.59   366 1.00
+mu[809]  38.89    0.02 0.38 38.16 38.64 38.89 39.13 39.60   379 1.00
+mu[810]  38.94    0.02 0.38 38.22 38.68 38.94 39.18 39.68   375 1.00
+mu[811]  38.95    0.02 0.38 38.23 38.70 38.96 39.20 39.70   361 1.00
+mu[812]  38.96    0.02 0.37 38.20 38.71 38.97 39.21 39.64   408 1.00
+mu[813]  38.98    0.02 0.37 38.24 38.72 38.99 39.25 39.68   369 1.00
+mu[814]  39.00    0.02 0.39 38.24 38.75 39.01 39.27 39.75   354 1.00
+mu[815]  38.97    0.02 0.39 38.19 38.71 38.97 39.25 39.71   352 1.00
+mu[816]  38.97    0.02 0.38 38.24 38.70 38.96 39.24 39.65   368 1.00
+mu[817]  38.96    0.02 0.37 38.27 38.71 38.97 39.21 39.68   393 1.00
+mu[818]  38.95    0.02 0.36 38.23 38.71 38.95 39.20 39.60   363 1.00
+mu[819]  38.94    0.02 0.37 38.19 38.69 38.97 39.19 39.69   340 1.00
+mu[820]  38.98    0.02 0.38 38.23 38.74 38.98 39.25 39.74   290 1.00
+mu[821]  39.03    0.02 0.38 38.28 38.75 39.04 39.30 39.77   334 1.00
+mu[822]  39.07    0.02 0.37 38.35 38.81 39.07 39.34 39.76   334 1.00
+mu[823]  39.14    0.02 0.38 38.40 38.87 39.13 39.40 39.89   302 1.00
+mu[824]  39.22    0.02 0.39 38.51 38.94 39.20 39.48 39.98   287 1.00
+mu[825]  39.29    0.02 0.39 38.57 39.02 39.29 39.55 40.09   297 1.00
+mu[826]  39.39    0.02 0.39 38.67 39.13 39.38 39.67 40.19   249 1.01
+mu[827]  39.48    0.02 0.39 38.75 39.20 39.47 39.75 40.24   270 1.00
+mu[828]  39.59    0.02 0.39 38.85 39.33 39.57 39.85 40.33   262 1.00
+mu[829]  39.66    0.03 0.39 38.92 39.40 39.65 39.93 40.45   228 1.01
+mu[830]  39.78    0.03 0.40 39.05 39.50 39.76 40.06 40.60   202 1.01
+mu[831]  39.92    0.03 0.40 39.16 39.66 39.91 40.18 40.76   224 1.01
+mu[832]  40.01    0.03 0.40 39.22 39.73 40.01 40.29 40.78   248 1.01
+mu[833]  40.10    0.02 0.40 39.32 39.85 40.09 40.37 40.89   265 1.01
+mu[834]  40.20    0.02 0.40 39.42 39.93 40.20 40.46 40.99   281 1.00
+mu[835]  40.29    0.02 0.39 39.54 40.04 40.29 40.55 41.05   256 1.00
+mu[836]  40.39    0.02 0.39 39.63 40.13 40.38 40.65 41.15   252 1.00
+mu[837]  40.50    0.03 0.39 39.71 40.25 40.48 40.78 41.27   241 1.00
+mu[838]  40.62    0.03 0.40 39.83 40.35 40.62 40.89 41.39   241 1.00
+mu[839]  40.72    0.03 0.40 39.93 40.46 40.72 41.00 41.48   231 1.00
+mu[840]  40.80    0.03 0.39 40.03 40.53 40.80 41.07 41.55   216 1.00
+mu[841]  40.86    0.03 0.40 40.05 40.58 40.86 41.12 41.60   208 1.00
+mu[842]  40.91    0.03 0.40 40.13 40.64 40.91 41.18 41.73   186 1.01
+mu[843]  40.95    0.03 0.41 40.13 40.66 40.95 41.24 41.76   176 1.01
+mu[844]  40.98    0.03 0.41 40.19 40.70 40.97 41.26 41.77   166 1.01
+mu[845]  41.01    0.03 0.42 40.22 40.72 41.00 41.31 41.79   180 1.01
+mu[846]  41.04    0.03 0.43 40.24 40.73 41.04 41.34 41.87   185 1.01
+mu[847]  41.02    0.03 0.43 40.20 40.71 41.03 41.33 41.81   187 1.01
+mu[848]  41.00    0.03 0.43 40.20 40.71 40.99 41.29 41.80   199 1.01
+mu[849]  41.00    0.03 0.42 40.18 40.71 40.99 41.30 41.83   191 1.01
+mu[850]  40.97    0.03 0.43 40.09 40.69 40.98 41.26 41.80   191 1.01
+mu[851]  40.92    0.03 0.42 40.08 40.64 40.93 41.22 41.71   189 1.01
+mu[852]  40.89    0.03 0.42 40.04 40.61 40.91 41.18 41.70   203 1.01
+mu[853]  40.87    0.03 0.42 40.03 40.58 40.87 41.17 41.68   208 1.01
+mu[854]  40.89    0.03 0.41 40.07 40.60 40.90 41.17 41.72   199 1.01
+mu[855]  40.92    0.03 0.41 40.16 40.63 40.92 41.20 41.74   204 1.01
+mu[856]  40.96    0.03 0.41 40.24 40.67 40.96 41.22 41.76   210 1.01
+mu[857]  41.00    0.03 0.40 40.26 40.72 40.99 41.28 41.84   213 1.01
+mu[858]  41.04    0.02 0.39 40.34 40.77 41.03 41.31 41.80   262 1.01
+mu[859]  41.03    0.03 0.40 40.30 40.74 41.03 41.29 41.82   227 1.01
+mu[860]  41.07    0.02 0.39 40.33 40.80 41.07 41.33 41.84   246 1.01
+mu[861]  41.10    0.02 0.39 40.32 40.85 41.09 41.36 41.88   262 1.01
+mu[862]  41.13    0.02 0.39 40.39 40.86 41.14 41.39 41.89   299 1.01
+mu[863]  41.19    0.02 0.38 40.45 40.92 41.19 41.47 41.90   262 1.01
+mu[864]  41.17    0.02 0.38 40.49 40.90 41.17 41.45 41.92   266 1.01
+mu[865]  41.11    0.02 0.38 40.38 40.83 41.12 41.38 41.84   280 1.01
+mu[866]  41.06    0.02 0.38 40.34 40.80 41.07 41.32 41.78   283 1.01
+mu[867]  41.00    0.02 0.38 40.27 40.75 41.00 41.25 41.74   290 1.01
+mu[868]  41.01    0.02 0.39 40.28 40.73 41.02 41.27 41.77   273 1.01
+mu[869]  41.03    0.02 0.39 40.27 40.76 41.02 41.29 41.78   267 1.01
+mu[870]  41.04    0.02 0.39 40.28 40.77 41.04 41.30 41.80   298 1.01
+mu[871]  41.01    0.03 0.39 40.27 40.75 41.00 41.27 41.80   221 1.02
+mu[872]  40.97    0.03 0.40 40.20 40.71 40.97 41.22 41.76   231 1.02
+mu[873]  40.93    0.03 0.40 40.13 40.68 40.94 41.20 41.67   238 1.02
+mu[874]  40.89    0.03 0.39 40.12 40.63 40.88 41.16 41.68   220 1.02
+mu[875]  40.87    0.03 0.39 40.09 40.62 40.88 41.13 41.60   130 1.03
+mu[876]  40.91    0.03 0.40 40.12 40.65 40.91 41.18 41.67   134 1.03
+mu[877]  40.96    0.03 0.42 40.15 40.69 40.96 41.24 41.77   144 1.02
+mu[878]  40.99    0.04 0.41 40.17 40.71 40.99 41.27 41.77   117 1.03
+mu[879]  41.03    0.04 0.41 40.25 40.75 41.01 41.30 41.87   117 1.03
+mu[880]  41.10    0.03 0.40 40.30 40.83 41.09 41.39 41.88   161 1.02
+mu[881]  41.16    0.03 0.40 40.41 40.88 41.15 41.44 41.91   173 1.02
+mu[882]  41.21    0.03 0.40 40.44 40.93 41.19 41.47 42.06   176 1.02
+mu[883]  41.28    0.03 0.39 40.54 41.02 41.28 41.52 42.12   191 1.02
+mu[884]  41.36    0.03 0.38 40.66 41.10 41.36 41.61 42.15   208 1.02
+mu[885]  41.44    0.03 0.38 40.71 41.18 41.43 41.68 42.20   232 1.01
+mu[886]  41.48    0.02 0.38 40.77 41.23 41.46 41.73 42.25   250 1.01
+mu[887]  41.50    0.02 0.40 40.78 41.21 41.50 41.77 42.32   253 1.00
+mu[888]  41.51    0.03 0.40 40.75 41.24 41.51 41.77 42.33   244 1.00
+mu[889]  41.48    0.03 0.39 40.73 41.21 41.48 41.74 42.27   214 1.01
+mu[890]  41.44    0.03 0.40 40.64 41.16 41.43 41.74 42.25   218 1.01
+mu[891]  41.42    0.03 0.39 40.65 41.15 41.42 41.68 42.22   210 1.00
+mu[892]  41.42    0.03 0.39 40.70 41.16 41.42 41.69 42.17   211 1.00
+mu[893]  41.40    0.03 0.39 40.65 41.13 41.40 41.67 42.20   199 1.00
+mu[894]  41.42    0.03 0.39 40.69 41.13 41.41 41.69 42.18   219 1.00
+mu[895]  41.44    0.03 0.39 40.70 41.16 41.43 41.68 42.23   218 1.00
+mu[896]  41.47    0.02 0.39 40.76 41.20 41.45 41.72 42.20   245 1.00
+mu[897]  41.49    0.02 0.39 40.75 41.22 41.49 41.75 42.33   259 1.00
+mu[898]  41.55    0.02 0.40 40.78 41.26 41.54 41.83 42.35   264 1.00
+mu[899]  41.67    0.03 0.40 40.91 41.39 41.67 41.94 42.49   248 1.00
+mu[900]  41.80    0.03 0.40 41.02 41.54 41.81 42.06 42.58   250 1.00
+mu[901]  41.95    0.02 0.39 41.16 41.70 41.96 42.19 42.72   255 1.00
+mu[902]  42.11    0.03 0.39 41.33 41.85 42.11 42.38 42.92   242 1.00
+mu[903]  42.27    0.03 0.40 41.48 42.01 42.27 42.52 43.05   219 1.01
+mu[904]  42.46    0.03 0.40 41.65 42.18 42.44 42.73 43.27   237 1.01
+mu[905]  42.64    0.03 0.41 41.86 42.37 42.64 42.90 43.49   232 1.00
+mu[906]  42.77    0.03 0.41 41.97 42.50 42.77 43.03 43.64   225 1.01
+mu[907]  42.91    0.03 0.40 42.14 42.65 42.91 43.16 43.75   222 1.01
+mu[908]  43.05    0.03 0.40 42.30 42.77 43.03 43.30 43.86   210 1.00
+mu[909]  43.16    0.03 0.40 42.43 42.90 43.15 43.43 43.99   241 1.00
+mu[910]  43.27    0.02 0.40 42.50 43.02 43.25 43.53 44.09   283 1.00
+mu[911]  43.38    0.02 0.40 42.63 43.10 43.38 43.65 44.22   277 1.00
+mu[912]  43.49    0.02 0.40 42.70 43.23 43.49 43.74 44.29   264 1.00
+mu[913]  43.58    0.03 0.40 42.82 43.30 43.58 43.83 44.38   252 1.00
+mu[914]  43.65    0.03 0.40 42.89 43.39 43.65 43.90 44.46   249 1.00
+mu[915]  43.68    0.03 0.40 42.90 43.43 43.68 43.94 44.44   242 1.00
+mu[916]  43.70    0.03 0.40 42.85 43.42 43.70 43.96 44.49   254 1.00
+mu[917]  43.69    0.03 0.40 42.91 43.42 43.70 43.96 44.45   252 1.00
+mu[918]  43.68    0.03 0.39 42.91 43.41 43.67 43.94 44.46   238 1.00
+mu[919]  43.69    0.02 0.38 42.98 43.43 43.68 43.94 44.44   232 1.00
+mu[920]  43.70    0.02 0.39 42.99 43.43 43.70 43.97 44.47   256 1.00
+mu[921]  43.74    0.02 0.38 43.02 43.47 43.73 43.99 44.45   237 1.00
+mu[922]  43.79    0.03 0.37 43.06 43.52 43.79 44.04 44.55   222 1.00
+mu[923]  43.79    0.03 0.39 43.08 43.52 43.79 44.04 44.58   227 1.00
+mu[924]  43.77    0.03 0.39 43.01 43.51 43.78 44.04 44.55   228 1.00
+mu[925]  43.78    0.02 0.39 43.04 43.52 43.77 44.06 44.58   242 1.00
+mu[926]  43.77    0.02 0.37 43.06 43.52 43.76 44.00 44.53   273 1.00
+mu[927]  43.78    0.02 0.39 43.03 43.51 43.77 44.05 44.53   277 1.00
+mu[928]  43.78    0.02 0.39 43.05 43.52 43.77 44.06 44.51   279 1.00
+mu[929]  43.82    0.02 0.39 43.10 43.57 43.80 44.10 44.58   303 1.00
+mu[930]  43.82    0.02 0.39 43.08 43.57 43.80 44.09 44.59   315 1.00
+mu[931]  43.78    0.02 0.39 43.04 43.53 43.77 44.04 44.56   296 1.00
+mu[932]  43.73    0.02 0.39 42.96 43.49 43.73 44.00 44.52   303 1.00
+mu[933]  43.68    0.02 0.39 42.91 43.41 43.69 43.96 44.43   309 1.01
+mu[934]  43.61    0.02 0.39 42.82 43.34 43.62 43.88 44.33   303 1.01
+mu[935]  43.55    0.02 0.38 42.77 43.29 43.56 43.81 44.27   329 1.01
+mu[936]  43.49    0.02 0.40 42.70 43.23 43.48 43.76 44.23   316 1.01
+mu[937]  43.39    0.02 0.38 42.63 43.13 43.40 43.66 44.15   324 1.01
+mu[938]  43.28    0.02 0.39 42.49 43.01 43.29 43.55 44.00   264 1.02
+mu[939]  43.17    0.02 0.39 42.40 42.91 43.17 43.43 43.97   273 1.01
+mu[940]  43.07    0.02 0.39 42.30 42.82 43.06 43.31 43.89   246 1.02
+mu[941]  42.98    0.02 0.38 42.21 42.72 42.99 43.24 43.74   265 1.02
+mu[942]  42.91    0.02 0.38 42.16 42.66 42.93 43.16 43.67   259 1.02
+mu[943]  42.83    0.02 0.39 42.12 42.55 42.82 43.10 43.61   282 1.02
+mu[944]  42.78    0.02 0.38 42.06 42.50 42.79 43.03 43.54   266 1.02
+mu[945]  42.75    0.02 0.38 41.99 42.47 42.74 43.00 43.49   249 1.01
+mu[946]  42.69    0.02 0.38 41.96 42.43 42.70 42.96 43.43   245 1.01
+mu[947]  42.66    0.03 0.38 41.92 42.41 42.65 42.93 43.41   231 1.01
+mu[948]  42.64    0.02 0.37 41.93 42.39 42.63 42.89 43.39   280 1.01
+mu[949]  42.71    0.02 0.37 41.96 42.45 42.71 42.94 43.47   298 1.01
+mu[950]  42.79    0.02 0.38 42.01 42.54 42.80 43.05 43.54   306 1.01
+mu[951]  42.92    0.02 0.38 42.16 42.66 42.93 43.18 43.68   282 1.01
+mu[952]  43.08    0.02 0.39 42.29 42.84 43.07 43.33 43.89   289 1.01
+mu[953]  43.23    0.02 0.38 42.47 42.98 43.21 43.48 43.98   300 1.01
+mu[954]  43.38    0.02 0.39 42.60 43.12 43.38 43.63 44.14   319 1.00
+mu[955]  43.54    0.02 0.40 42.77 43.29 43.54 43.80 44.32   305 1.00
+mu[956]  43.68    0.02 0.38 42.94 43.44 43.68 43.94 44.42   299 1.00
+mu[957]  43.85    0.02 0.39 43.09 43.60 43.84 44.11 44.64   270 1.00
+mu[958]  43.98    0.02 0.39 43.23 43.71 43.98 44.24 44.75   247 1.01
+mu[959]  44.08    0.03 0.39 43.34 43.81 44.07 44.32 44.89   237 1.01
+mu[960]  44.20    0.03 0.40 43.43 43.93 44.20 44.47 45.02   218 1.01
+mu[961]  44.35    0.02 0.41 43.58 44.07 44.34 44.63 45.15   275 1.00
+mu[962]  44.47    0.02 0.40 43.73 44.16 44.45 44.73 45.24   274 1.00
+mu[963]  44.58    0.02 0.39 43.88 44.30 44.59 44.86 45.37   254 1.01
+mu[964]  44.71    0.02 0.39 43.99 44.45 44.70 44.98 45.45   244 1.00
+mu[965]  44.80    0.02 0.39 44.01 44.54 44.79 45.06 45.57   250 1.00
+mu[966]  44.95    0.02 0.38 44.18 44.70 44.95 45.21 45.66   236 1.00
+mu[967]  45.09    0.02 0.37 44.31 44.85 45.10 45.35 45.77   256 1.01
+mu[968]  45.22    0.02 0.37 44.50 44.96 45.23 45.46 45.91   238 1.01
+mu[969]  45.33    0.02 0.38 44.59 45.05 45.34 45.58 46.06   248 1.01
+mu[970]  45.42    0.02 0.37 44.65 45.17 45.42 45.67 46.16   271 1.01
+mu[971]  45.51    0.02 0.36 44.78 45.26 45.51 45.76 46.21   294 1.01
+mu[972]  45.57    0.02 0.36 44.85 45.33 45.58 45.80 46.29   277 1.01
+mu[973]  45.61    0.02 0.36 44.84 45.38 45.60 45.85 46.31   299 1.01
+mu[974]  45.66    0.02 0.37 44.93 45.41 45.66 45.90 46.42   260 1.01
+mu[975]  45.71    0.02 0.38 44.99 45.46 45.72 45.95 46.49   237 1.02
+mu[976]  45.71    0.02 0.38 45.01 45.46 45.72 45.95 46.49   288 1.02
+mu[977]  45.70    0.03 0.40 44.96 45.43 45.68 45.95 46.47   250 1.02
+mu[978]  45.67    0.02 0.40 44.92 45.39 45.67 45.92 46.48   290 1.02
+mu[979]  45.64    0.02 0.40 44.89 45.35 45.65 45.90 46.47   299 1.02
+mu[980]  45.60    0.03 0.41 44.81 45.31 45.60 45.89 46.43   267 1.02
+mu[981]  45.57    0.02 0.42 44.79 45.27 45.57 45.85 46.43   325 1.02
+mu[982]  45.57    0.02 0.41 44.82 45.29 45.56 45.85 46.42   326 1.02
+mu[983]  45.56    0.02 0.41 44.79 45.27 45.56 45.83 46.34   315 1.02
+mu[984]  45.52    0.02 0.39 44.76 45.25 45.52 45.81 46.22   317 1.02
+mu[985]  45.53    0.02 0.39 44.81 45.26 45.53 45.80 46.28   262 1.02
+mu[986]  45.52    0.02 0.38 44.76 45.25 45.51 45.77 46.27   280 1.02
+mu[987]  45.55    0.02 0.38 44.78 45.30 45.55 45.82 46.30   291 1.02
+mu[988]  45.61    0.02 0.38 44.87 45.35 45.61 45.85 46.36   311 1.01
+mu[989]  45.67    0.02 0.38 44.93 45.41 45.66 45.93 46.45   322 1.01
+mu[990]  45.76    0.02 0.38 45.03 45.50 45.77 46.01 46.50   323 1.01
+mu[991]  45.82    0.02 0.38 45.07 45.58 45.83 46.06 46.56   326 1.01
+mu[992]  45.86    0.02 0.38 45.09 45.62 45.87 46.12 46.63   321 1.01
+mu[993]  45.91    0.02 0.39 45.08 45.65 45.91 46.15 46.69   337 1.01
+mu[994]  45.98    0.02 0.38 45.23 45.73 45.99 46.24 46.75   381 1.01
+mu[995]  46.07    0.02 0.38 45.31 45.83 46.06 46.31 46.85   385 1.01
+mu[996]  46.15    0.02 0.38 45.41 45.89 46.14 46.41 46.94   385 1.00
+mu[997]  46.23    0.02 0.38 45.49 45.97 46.23 46.50 46.99   389 1.00
+mu[998]  46.31    0.02 0.37 45.61 46.07 46.31 46.57 47.00   371 1.00
+mu[999]  46.38    0.02 0.38 45.65 46.13 46.37 46.64 47.16   356 1.00
+mu[1000] 46.43    0.02 0.39 45.68 46.18 46.40 46.68 47.21   336 1.00
+mu[1001] 46.45    0.02 0.39 45.68 46.19 46.44 46.70 47.20   329 1.00
+mu[1002] 46.50    0.02 0.40 45.70 46.23 46.49 46.76 47.32   313 1.01
+mu[1003] 46.55    0.02 0.42 45.78 46.26 46.55 46.83 47.42   332 1.00
+mu[1004] 46.63    0.02 0.42 45.84 46.35 46.61 46.90 47.48   319 1.00
+mu[1005] 46.69    0.03 0.45 45.79 46.38 46.70 46.97 47.59   315 1.00
+mu[1006] 46.72    0.03 0.46 45.84 46.40 46.72 47.03 47.62   295 1.00
+mu[1007] 46.72    0.03 0.47 45.85 46.42 46.71 47.02 47.64   292 1.00
+mu[1008] 46.71    0.03 0.49 45.74 46.39 46.70 47.02 47.66   289 1.00
+mu[1009] 46.70    0.03 0.51 45.70 46.37 46.70 47.03 47.75   299 1.00
+mu[1010] 46.71    0.03 0.53 45.67 46.36 46.69 47.06 47.79   314 1.00
+mu[1011] 46.71    0.03 0.55 45.66 46.34 46.68 47.06 47.89   334 1.00
+mu[1012] 46.72    0.03 0.57 45.62 46.36 46.71 47.09 47.92   352 1.00
+mu[1013] 46.70    0.03 0.60 45.52 46.31 46.71 47.08 47.90   386 1.00
+mu[1014] 46.69    0.03 0.63 45.46 46.26 46.69 47.11 48.00   427 1.00
+
+Samples were drawn using NUTS(diag_e) at Wed Jun  1 19:32:10 2022.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+</div>
+</section>
+<section id="now-lets-see" class="level2">
+<h2 class="anchored" data-anchor-id="now-lets-see">Now Let’s see…</h2>
+<p>Now we can extract the model fit and see how it looks!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mu_trump <span class="ot">&lt;-</span> <span class="fu">extract</span>(trump_model, <span class="at">pars =</span> <span class="st">"mu"</span>, <span class="at">permuted =</span> T)[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(mu_trump) <span class="ot">&lt;-</span> <span class="fu">unique</span>(dat_range<span class="sc">$</span>date_range)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>mu_ts_trump <span class="ot">&lt;-</span> mu_trump <span class="sc">%&gt;%</span> reshape2<span class="sc">::</span><span class="fu">melt</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as.Date</span>(variable)) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(date) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">median =</span> <span class="fu">median</span>(value),</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">lower =</span> <span class="fu">quantile</span>(value, <span class="fl">0.025</span>),</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">upper =</span> <span class="fu">quantile</span>(value, <span class="fl">0.975</span>),</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">candidate =</span> <span class="st">"Trump"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>No id variables; using all as measure variables</code></pre>
+</div>
+</div>
+</section>
+<section id="partisanship" class="level2">
+<h2 class="anchored" data-anchor-id="partisanship">Partisanship…</h2>
+<p>Looks like despite a dip in late 2017, Mr.&nbsp;Trump’s approval rating is remarkably stable (as a reminder, it looks like the lowest ever was 25% for President G.W. Bush). It will be curious to see how this changes as more information comes out regarding Mr.&nbsp;Trumps actions with Ukraine.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>mu_ts_trump <span class="sc">%&gt;%</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(date, median))<span class="sc">+</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#E91D0E"</span>)<span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper), <span class="at">alpha =</span> .<span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"President Trump's Approval Rating"</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Based on State-Space Modeling</span><span class="sc">\n</span><span class="st">Initial Prior: 46%"</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Data: https://github.com/fivethirtyeight/data/tree/master/polls"</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Approval"</span>,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">as.Date</span>(<span class="fu">Sys.Date</span>()), <span class="at">color =</span> <span class="st">"orange"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2019,
+  author = {Michael DeWitt},
+  title = {Approval {Rating} {Now?}},
+  date = {2019-09-26},
+  url = {https://michaeldewittjr.com/programming/2019-09-26-approval-rating-now},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2019" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2019. <span>“Approval Rating Now?”</span> September 26,
+2019. <a href="https://michaeldewittjr.com/programming/2019-09-26-approval-rating-now">https://michaeldewittjr.com/programming/2019-09-26-approval-rating-now</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

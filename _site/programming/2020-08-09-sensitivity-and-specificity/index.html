@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2020-08-09">
+<meta name="description" content="Here I explore the implications of different levels of sensitivity and specificity in a Bayesian framework. All of this work is based on Gelman and Carpenter.">
+
+<title>Insufficient Statistics - Sensitivity and Specificity</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - Sensitivity and Specificity">
+<meta property="og:description" content="Here I explore the implications of different levels of sensitivity and specificity in a Bayesian framework. All of this work is based on Gelman and Carpenter.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - Sensitivity and Specificity">
+<meta name="twitter:description" content="Here I explore the implications of different levels of sensitivity and specificity in a Bayesian framework. All of this work is based on Gelman and Carpenter.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">(<a href="#ref-medewittjr" role="doc-biblioref"><strong>medewittjr?</strong></a>)</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Sensitivity and Specificity</h1>
+                  <div>
+        <div class="description">
+          <p>Here I explore the implications of different levels of sensitivity and specificity in a Bayesian framework. All of this work is based on Gelman and Carpenter.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">pandemic</div>
+                <div class="quarto-category">bayes</div>
+                <div class="quarto-category">sensitivity</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">August 9, 2020</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#running-through-scenarios" id="toc-running-through-scenarios" class="nav-link active" data-scroll-target="#running-through-scenarios">Running Through Scenarios</a></li>
+  <li><a href="#specificity" id="toc-specificity" class="nav-link" data-scroll-target="#specificity">Specificity?</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>One important concept that is discuss often is the role of sensitivity and specificity in testing. Here we are looking at the ability of a given diagnostic test to correctly identify true positives and correctly identify false positives. If you always forget which one is sensitivity and which one is specifity, no worries, I feel like everyone googles it.</p>
+<p>There has been a lot written already about this topic, and I certainly won’t add anymore than has already been written. Regardless, I would like to just do some</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rstan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: StanHeaders</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+rstan version 2.26.3 (Stan version 2.26.1)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>For execution on a local, multicore CPU with excess RAM we recommend calling
+options(mc.cores = parallel::detectCores()).
+To avoid recompilation of unchanged Stan programs, we recommend calling
+rstan_options(auto_write = TRUE)
+For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,
+change `threads_per_chain` option:
+rstan_options(threads_per_chain = 1)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is cmdstanr version 0.4.0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- Online documentation and vignettes at mc-stan.org/cmdstanr</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- CmdStan path set to: /Users/michael/.cmdstanr/cmdstan-2.28.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- Use set_cmdstan_path() to change the path</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+A newer version of CmdStan is available. See ?install_cmdstan() to install it.
+To disable this check set option or environment variable CMDSTANR_NO_VER_CHECK=TRUE.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>First, I’ll start with the model from <a href="http://www.stat.columbia.edu/~gelman/research/published/specificity.pdf">Gelman and Carpenter</a> and make a few tweaks, and then explore the results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="fu">readLines</span>(<span class="st">"seroprevalence.stan"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>// The input data is a vector 'y' of length 'N'.
+data {
+  int&lt;lower = 0&gt; y_sample;
+  int&lt;lower = 0&gt; n_sample;
+  real sensitivity;
+  real specificity;
+  real sensitivity_sd;
+  real specificity_sd;
+}
+
+// The parameters accepted by the model. Our model
+// accepts two parameters 'mu' and 'sigma'.
+parameters {
+  real&lt;lower=0, upper = 1&gt; p;
+  real&lt;lower=0, upper = 1&gt; spec;
+  real&lt;lower=0, upper = 1&gt; sens;
+}
+
+// The positivites observed are a function of 
+// sensitivity and specificity of test then
+// drawn from a bininomial distribution
+model {
+  real p_sample = p * sens + (1 - p) * (1 - spec);
+  y_sample ~ binomial(n_sample, p_sample);
+  
+  // Use Priors for Sensitivity and Specificity
+  // Truncated Normal Because That's What is 
+  // Available
+  
+  spec ~ normal(specificity, specificity_sd);
+  sens ~ normal(sensitivity, sensitivity_sd);
+  
+}</code></pre>
+</div>
+</div>
+<p>I made a slight tweak in that the sensitivity and specificity mean and variance are set by the user rather than estimating them from data. Most of the time we don’t have data like these in the hospital where we swab someone multiple times and know the ground “truth.” This would be the equivalent of reading these testing stats off of the proverbial box.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>CmdStan path set to: /Users/michael/.cmdstanr/cmdstan-2.24.0-rc1</code></pre>
+</div>
+</div>
+<p>We can go ahead and compile our model using <code>cmdstan_model</code>. You’ll note that I am using the <a href="https://mc-stan.org/cmdstanr/">cmdstanr</a> package rather than <a href="https://mc-stan.org/rstan/">rstan</a> for compiling and sampling from Stan. This decision is intentional…mainly because I chronically have issues with upgrading rstan on every platform. cmstand seeks to ameliorate this by being a thin wrapper to the command line version of stan. It’s an easy switch, but there are a few differences.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="st">"seroprevalence.stan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Wake Forest University Baptist Medical Center is doing <a href="https://www.wakehealth.edu/Coronavirus/COVID-19-Community-Research-Partnership/Updates-and-Data">a large study for seroprevalence in North Carolina</a> so that is a good place to start.</p>
+<p>They list 19,057 study participants, but this is a multi-part study where not all the persons receive a test kit to test for antibodies. The participants receive a daily questionaire for symptoms and SARS-CoV-2 positive contacts (it doesn’t use that language, just Covid-19 but recall that’s the disease and not the virus). Let’s just assume 25% of the participants receive a test kit. Based on their numbers 9% on average (8-10%) have tested positive. This is somewhat inline with existing seroprevalence studies <span class="citation" data-cites="stringhini_repeated_2020 pollan_prevalence_2020 havers_seroprevalence_2020">(<a href="#ref-stringhini_repeated_2020" role="doc-biblioref">Stringhini et al. 2020</a>; <a href="#ref-pollan_prevalence_2020" role="doc-biblioref">Pollán et al. 2020</a>; <a href="#ref-havers_seroprevalence_2020" role="doc-biblioref">Havers et al. 2020</a>)</span>.</p>
+<section id="running-through-scenarios" class="level2">
+<h2 class="anchored" data-anchor-id="running-through-scenarios">Running Through Scenarios</h2>
+<p>So I looked up the <a href="https://www.centerforhealthsecurity.org/resources/COVID-19/serology/Serology-based-tests-for-COVID-19.html">sensitivity and specificity for the antibody test being used in this study (Scanwell)</a> and plugged in those initial values.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>postitives <span class="ot">&lt;-</span> <span class="dv">19057</span><span class="sc">*</span>.<span class="dv">09</span><span class="sc">*</span>.<span class="dv">25</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="dv">19057</span><span class="sc">*</span>.<span class="dv">25</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>dat_medium_sensi <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y_sample =</span> <span class="fu">as.integer</span>(postitives),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_sample =</span> n,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity =</span> .<span class="dv">863</span>,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity =</span> .<span class="dv">999</span>,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity_sd =</span> .<span class="dv">01</span>,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity_sd=</span> .<span class="dv">01</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>fit_medium_sensi <span class="ot">&lt;-</span> mod<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> dat_medium_sensi,<span class="at">chains =</span> <span class="dv">2</span>,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter_warmup =</span> <span class="dv">500</span>, <span class="at">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter_sampling =</span> <span class="dv">1000</span>, </span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">adapt_delta =</span> .<span class="dv">95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 2 chains, at most 4 in parallel...
+
+Chain 1 finished in 0.1 seconds.
+Chain 2 finished in 0.1 seconds.
+
+Both chains finished successfully.
+Mean chain execution time: 0.1 seconds.
+Total execution time: 0.4 seconds.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+</div>
+<p>So let’s see where this gives us:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(fit_medium_sensi<span class="sc">$</span><span class="fu">summary</span>(<span class="st">"p"</span>)[,<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"q5"</span>, <span class="st">"q95"</span>)], <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">q5</th>
+<th style="text-align: right;">q95</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.096</td>
+<td style="text-align: right;">0.081</td>
+<td style="text-align: right;">0.108</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_hist</span>(fit_medium_sensi<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"p"</span>))<span class="sc">+</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Posterior Draws for P"</span>,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Seroprevalence"</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> .<span class="dv">09</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Which puts us right in the error range that Wake reported. That’s good.</p>
+<p>Now let’s test to see what happens if we losen the test. Let’s say that the sensivity is lower…closer to 65% which some reason (could be that many people have below antibody titers below the lower detection threshold. This means that there would be false negative).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>dat_low_sensi <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">y_sample =</span> <span class="fu">as.integer</span>(postitives),</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_sample =</span> n,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity =</span> .<span class="dv">65</span>,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity =</span> .<span class="dv">999</span>,</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity_sd =</span> .<span class="dv">05</span>,</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity_sd=</span> .<span class="dv">01</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>fit_low_sensi <span class="ot">&lt;-</span> mod<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> dat_low_sensi,<span class="at">chains =</span> <span class="dv">2</span>,</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter_warmup =</span> <span class="dv">500</span>, <span class="at">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter_sampling =</span> <span class="dv">1000</span>, </span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">adapt_delta =</span> .<span class="dv">95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 2 chains, at most 4 in parallel...
+
+Chain 1 finished in 0.1 seconds.
+Chain 2 finished in 0.1 seconds.
+
+Both chains finished successfully.
+Mean chain execution time: 0.1 seconds.
+Total execution time: 0.2 seconds.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+</div>
+<p>Now we can look at the results:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(fit_low_sensi<span class="sc">$</span><span class="fu">summary</span>(<span class="st">"p"</span>)[,<span class="fu">c</span>(<span class="st">"mean"</span>, <span class="st">"q5"</span>, <span class="st">"q95"</span>)], <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">q5</th>
+<th style="text-align: right;">q95</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.128</td>
+<td style="text-align: right;">0.105</td>
+<td style="text-align: right;">0.154</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Yikes! Here we see that we could be under-estimating prevalence.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_hist</span>(fit_low_sensi<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"p"</span>))<span class="sc">+</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Posterior Draws for P"</span>,</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Seroprevalence"</span></span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> .<span class="dv">09</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Now maybe another scenario, is that the sensitivity is the same as the “box” value, but there is some additional noise from testing error.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>dat_medi_low_sensi <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">y_sample =</span> <span class="fu">as.integer</span>(postitives),</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_sample =</span> n,</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity =</span> .<span class="dv">85</span>,</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity =</span> .<span class="dv">999</span>,</span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity_sd =</span> .<span class="dv">05</span>,</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity_sd=</span> .<span class="dv">01</span></span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a>fit_medi_low_sensi <span class="ot">&lt;-</span> mod<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> dat_medi_low_sensi,</span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>                            <span class="at">chains =</span> <span class="dv">2</span>,</span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter_warmup =</span> <span class="dv">500</span>, <span class="at">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter_sampling =</span> <span class="dv">1000</span>, </span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">adapt_delta =</span> .<span class="dv">95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 2 chains, at most 4 in parallel...
+
+Chain 1 finished in 0.1 seconds.
+Chain 2 finished in 0.1 seconds.
+
+Both chains finished successfully.
+Mean chain execution time: 0.1 seconds.
+Total execution time: 0.1 seconds.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_hist</span>(fit_medi_low_sensi<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"p"</span>))<span class="sc">+</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Posterior Draws for P"</span>,</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Seroprevalence"</span></span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> .<span class="dv">09</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We could still be missing some folks.</p>
+</section>
+<section id="specificity" class="level2">
+<h2 class="anchored" data-anchor-id="specificity">Specificity?</h2>
+<p>Just for completeness, it is worth looking at what happens if specificity degrades. This is generally unlikely in many of these tests (especially the case in PCR tests where if there is viral RNA present, it will grow..e.g. if you have a positive tests you are positive).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>dat_low_spec <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">y_sample =</span> <span class="fu">as.integer</span>(postitives),</span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_sample =</span> n,</span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity =</span> .<span class="dv">85</span>,</span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity =</span> .<span class="dv">90</span>,</span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity_sd =</span> .<span class="dv">05</span>,</span>
+<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity_sd=</span> .<span class="dv">01</span></span>
+<span id="cb96-8"><a href="#cb96-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb96-9"><a href="#cb96-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb96-10"><a href="#cb96-10" aria-hidden="true" tabindex="-1"></a>fit_low_spec <span class="ot">&lt;-</span> mod<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> dat_low_spec,</span>
+<span id="cb96-11"><a href="#cb96-11" aria-hidden="true" tabindex="-1"></a>                            <span class="at">chains =</span> <span class="dv">2</span>,</span>
+<span id="cb96-12"><a href="#cb96-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter_warmup =</span> <span class="dv">500</span>, <span class="at">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb96-13"><a href="#cb96-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter_sampling =</span> <span class="dv">1000</span>, </span>
+<span id="cb96-14"><a href="#cb96-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">adapt_delta =</span> .<span class="dv">95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 2 chains, at most 4 in parallel...
+
+Chain 1 finished in 0.1 seconds.
+Chain 2 finished in 0.1 seconds.
+
+Both chains finished successfully.
+Mean chain execution time: 0.1 seconds.
+Total execution time: 0.2 seconds.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_hist</span>(fit_low_spec<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"p"</span>))<span class="sc">+</span></span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Posterior Draws for P"</span>,</span>
+<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Seroprevalence"</span></span>
+<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb109-6"><a href="#cb109-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> .<span class="dv">09</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(from = 1, len = along - 1): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(to = N - 1, len = N - along): partial argument match of
+'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.list)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = ncol(arg.dim)): partial argument match of 'len' to
+'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = N): partial argument match of 'len' to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'
+
+Warning in seq.default(along = arg.names): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(len = length(arg.names)): partial argument match of 'len'
+to 'length.out'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in seq.default(along = perm): partial argument match of 'along' to
+'along.with'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Yikes! This shows the importance of having high specificity!!!</p>
+
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-havers_seroprevalence_2020" class="csl-entry" role="doc-biblioentry">
+Havers, Fiona P., Carrie Reed, Travis Lim, Joel M. Montgomery, John D. Klena, Aron J. Hall, Alicia M. Fry, et al. 2020. <span>“Seroprevalence of <span>Antibodies</span> to <span>SARS</span>-<span>CoV</span>-2 in 10 <span>Sites</span> in the <span>United</span> <span>States</span>, <span>March</span> 23-<span>May</span> 12, 2020.”</span> <em>JAMA Internal Medicine</em>, July. <a href="https://doi.org/10.1001/jamainternmed.2020.4130">https://doi.org/10.1001/jamainternmed.2020.4130</a>.
+</div>
+<div id="ref-pollan_prevalence_2020" class="csl-entry" role="doc-biblioentry">
+Pollán, Marina, Beatriz Pérez-Gómez, Roberto Pastor-Barriuso, Jesús Oteo, Miguel A. Hernán, Mayte Pérez-Olmeda, Jose L. Sanmartín, et al. 2020. <span>“Prevalence of <span>SARS</span>-<span>CoV</span>-2 in <span>Spain</span> (<span>ENE</span>-<span>COVID</span>): A Nationwide, Population-Based Seroepidemiological Study.”</span> <em>The Lancet</em> 0 (0). <a href="https://doi.org/10.1016/S0140-6736(20)31483-5">https://doi.org/10.1016/S0140-6736(20)31483-5</a>.
+</div>
+<div id="ref-stringhini_repeated_2020" class="csl-entry" role="doc-biblioentry">
+Stringhini, Silvia, Ania Wisniak, Giovanni Piumatti, Andrew S Azman, Stephen A Lauer, Helene Baysson, David De Ridder, et al. 2020. <span>“Repeated Seroprevalence of Anti-<span>SARS</span>-<span>CoV</span>-2 <span>IgG</span> Antibodies in a Population-Based Sample from <span>Geneva</span>, <span>Switzerland</span>.”</span> Preprint. Infectious Diseases (except HIV/AIDS). <a href="https://doi.org/10.1101/2020.05.02.20088898">https://doi.org/10.1101/2020.05.02.20088898</a>.
+</div>
+</div></section><section class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1" role="doc-endnote"><p>Note that there was another study that found in a clinical setting the results were worse, but that’s why we have simulations.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2020,
+  author = {Michael DeWitt},
+  title = {Sensitivity and {Specificity}},
+  date = {2020-08-09},
+  url = {https://michaeldewittjr.com/programming/2020-08-09-sensitivity-and-specificity},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2020" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2020. <span>“Sensitivity and Specificity.”</span> August
+9, 2020. <a href="https://michaeldewittjr.com/programming/2020-08-09-sensitivity-and-specificity">https://michaeldewittjr.com/programming/2020-08-09-sensitivity-and-specificity</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

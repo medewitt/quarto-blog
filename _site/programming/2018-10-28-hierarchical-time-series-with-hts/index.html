@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2018-10-28">
+<meta name="description" content="This is just a quick reproduction of the items discussed in the hts package. This allows for hierarchical time series which is an important feature when looking at data that take a hierarchical format like counties within a state or precincts within counties within states.">
+
+<title>Insufficient Statistics - Hierarchical Time Series with hts</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - Hierarchical Time Series with hts">
+<meta property="og:description" content="This is just a quick reproduction of the items discussed in the
+hts package. This allows for hierarchical time series which is
+an important feature when looking at data that take a hierarchical
+format like counties within a state or precincts within counties within states.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - Hierarchical Time Series with hts">
+<meta name="twitter:description" content="This is just a quick reproduction of the items discussed in the
+hts package. This allows for hierarchical time series which is
+an important feature when looking at data that take a hierarchical
+format like counties within a state or precincts within counties within states.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Hierarchical Time Series with hts</h1>
+                  <div>
+        <div class="description">
+          <p>This is just a quick reproduction of the items discussed in the hts package. This allows for hierarchical time series which is an important feature when looking at data that take a hierarchical format like counties within a state or precincts within counties within states.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">time series</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">October 28, 2018</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#mission" id="toc-mission" class="nav-link active" data-scroll-target="#mission">Mission</a></li>
+  <li><a href="#load-required-libraries" id="toc-load-required-libraries" class="nav-link" data-scroll-target="#load-required-libraries">Load Required Libraries</a>
+  <ul class="collapse">
+  <li><a href="#note-on-formatting-data" id="toc-note-on-formatting-data" class="nav-link" data-scroll-target="#note-on-formatting-data">Note on Formatting Data</a></li>
+  </ul></li>
+  <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The Data</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="mission" class="level2">
+<h2 class="anchored" data-anchor-id="mission">Mission</h2>
+<p>The mission is to reproduce the figures in the following article:</p>
+<p><a href="https://cran.r-project.org/web/packages/hts/vignettes/hts.pdf" class="uri">https://cran.r-project.org/web/packages/hts/vignettes/hts.pdf</a></p>
+</section>
+<section id="load-required-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="load-required-libraries">Load Required Libraries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(hts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: forecast</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo </code></pre>
+</div>
+</div>
+<section id="note-on-formatting-data" class="level3">
+<h3 class="anchored" data-anchor-id="note-on-formatting-data">Note on Formatting Data</h3>
+<p>This is important to understand in regard to how to format the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bts is a time series matrix containing the bottom-level series</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The first three series belong to one group, and the last two</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># series belong to a different group</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># nodes is a list containing the number of child nodes at each level.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>bts <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="dv">5</span> <span class="sc">+</span> <span class="fu">matrix</span>(<span class="fu">sort</span>(<span class="fu">rnorm</span>(<span class="dv">500</span>)), <span class="at">ncol=</span><span class="dv">5</span>, <span class="at">nrow=</span><span class="dv">100</span>))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">hts</span>(bts, <span class="at">nodes=</span><span class="fu">list</span>(<span class="dv">2</span>, <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Since argument characters are not specified, the default labelling system is used.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="the-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-data">The Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>infantgts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Grouped Time Series 
+4 Levels 
+Number of groups at each level: 1 2 8 16 
+Total number of series: 27 
+Number of observations per series: 71 
+Top level series: 
+Time Series:
+Start = 1933 
+End = 2003 
+Frequency = 1 
+ [1] 4426 4795 4501 4813 4572 4627 4726 4897 5367 5435 5458 4819 4741 5143 5231
+[16] 4978 4621 4672 4910 4823 4743 4546 4571 4630 4751 4586 4915 4667 4700 4861
+[31] 4652 4403 4124 4065 4205 4293 4507 4620 4809 4465 4088 3974 3341 3161 2834
+[46] 2732 2557 2438 2365 2485 2349 2184 2473 2162 2131 2143 2018 2149 1851 1848
+[61] 1598 1524 1466 1467 1352 1261 1413 1292 1313 1271 1207</code></pre>
+</div>
+</div>
+<p>Use a bottom’s up forcasting method. There are several options from which to choose:</p>
+<ul>
+<li><strong>comb</strong> optimal combination</li>
+<li><strong>bu</strong> bottom’s up</li>
+<li><strong>mo</strong> middle out forecast</li>
+<li><strong>tdgsa</strong> Top-down forecasts based on the average historical proportions (Gross-Sohl method A)</li>
+<li><strong>tdgsf</strong> same as above but with averages</li>
+<li><strong>tdfp</strong> top down forecast using proportions</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Forecast 10-step-ahead using the bottom-up method</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>infantforecast <span class="ot">&lt;-</span> <span class="fu">forecast</span>(infantgts, <span class="at">h=</span><span class="dv">10</span>, <span class="at">method=</span><span class="st">"bu"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'</code></pre>
+</div>
+</div>
+<p>Now we can plot them:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the forecasts including the last ten historical years</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(infantforecast, <span class="at">include=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>allts_infant <span class="ot">&lt;-</span> <span class="fu">aggts</span>(infantgts)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>allf <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">10</span>, <span class="at">ncol=</span><span class="fu">ncol</span>(allts_infant))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Users can select their preferred time-series forecasting method</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># for each time series</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(allts_infant)){</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  allf[,i] <span class="ot">&lt;-</span> <span class="fu">forecast</span>(<span class="fu">auto.arima</span>(allts_infant[,i]), <span class="at">h=</span><span class="dv">10</span>, <span class="at">PI=</span><span class="cn">FALSE</span>)<span class="sc">$</span>mean</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.
+
+Warning in forecast.forecast_ARIMA(auto.arima(allts_infant[, i]), h = 10, : The
+non-existent PI arguments will be ignored.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>allf <span class="ot">&lt;-</span> <span class="fu">ts</span>(allf, <span class="at">start=</span><span class="dv">2004</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># combine the forecasts with the group matrix to get a gts object</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">8</span>), <span class="fu">rep</span>(<span class="dv">2</span>, <span class="dv">8</span>), <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="dv">2</span>)), <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">byrow =</span> T)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>y.f <span class="ot">&lt;-</span> <span class="fu">combinef</span>(allf, <span class="at">groups =</span> g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set up the training sample and testing sample</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">window</span>(infantgts, <span class="at">start=</span><span class="dv">1933</span>, <span class="at">end=</span><span class="dv">1993</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">window</span>(infantgts, <span class="at">start=</span><span class="dv">1994</span>, <span class="at">end=</span><span class="dv">2003</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>forecast <span class="ot">&lt;-</span> <span class="fu">forecast</span>(data, <span class="at">h=</span><span class="dv">10</span>, <span class="at">method=</span><span class="st">"bu"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate ME, RMSE, MAE, MAPE, MPE and MASE</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy.gts</span>(forecast, test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Total  Sex/female    Sex/male   State/NSW   State/VIC  State/QLD
+ME   -229.976631 -51.6732083 -178.303422 -61.6997671 -52.3224384 -54.247885
+RMSE  239.316716  54.8648206  186.952910  72.0726053  55.6797769  58.364656
+MAE   229.976631  51.6732083  178.303422  61.6997671  52.3224384  54.247885
+MAPE   17.383377   8.8573610   24.108196  14.8044550  17.2578539  19.807669
+MPE   -17.383377  -8.8573610  -24.108196 -14.8044550 -17.2578539 -19.807669
+MASE    1.192825   0.5536415    1.634811   0.6922188   0.7123545   1.170397
+        State/SA  State/WA  State/NT  State/ACT  State/TAS NSW female
+ME   -27.9688770 -34.22604 2.4214262 -10.200366  8.2673186 18.1060219
+RMSE  31.4104773  37.80624 4.4008195  12.277985 14.1318898 29.4705103
+MAE   28.3351016  34.22604 3.8128557  10.200366 11.2456064 22.6345181
+MAPE  35.8611517  30.49142 9.3990903  58.625236 25.6532905 11.8532079
+MPE  -35.5481392 -30.49142 5.5716727 -58.625236 16.2664231  9.1030614
+MASE   0.9229675   1.18361 0.3087333   1.577376  0.4954012  0.5199353
+      VIC female QLD female   SA female   WA female   NT female  ACT female
+ME   -19.2448216 -30.927587 -11.8395741  -9.4619072  -3.6619739   1.2229746
+RMSE  22.4856212  34.825359  12.7759741  12.2693801   5.4356560   4.3972340
+MAE   19.2448216  30.927587  11.8395741  11.0295258   4.1036140   3.8000000
+MAPE  15.1713621  27.492021  34.9177563  23.1348356  31.0793050  49.8490801
+MPE  -15.1713621 -27.492021 -34.9177563 -20.8629247 -29.2280894 -15.2907568
+MASE   0.5338369   1.059769   0.6720666   0.6308594   0.5766202   0.9047619
+     TAS female   NSW male    VIC male    QLD male     SA male    WA male
+ME    4.1336593 -79.805789 -33.0776168 -23.3202978 -16.1293029 -24.764134
+RMSE  7.0659449  85.657539  35.4311830  27.7367318  20.5563716  28.118008
+MAE   5.6228032  79.805789  33.0776168  23.3202978  17.9634424  25.771308
+MAPE 25.6532905  34.527431  19.3380825  15.3395187  43.6968568  42.005272
+MPE  16.2664231 -34.527431 -19.3380825 -15.3395187 -41.2835155 -40.987925
+MASE  0.4954012   1.431922   0.7569249   0.9676472   0.9396744   1.577835
+       NT male    ACT male   TAS male
+ME    6.083400  -11.423341  4.1336593
+RMSE  8.673554   12.089644  7.0659449
+MAE   7.729126   11.423341  5.6228032
+MAPE 34.820043  106.448479 25.6532905
+MPE  22.160616 -106.448479 16.2664231
+MASE  1.120163    2.269538  0.4954012</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fcasts <span class="ot">&lt;-</span> <span class="fu">forecast</span>(htseg1, <span class="at">h =</span> <span class="dv">10</span>, <span class="at">method =</span> <span class="st">"comb"</span>, <span class="at">fmethod =</span> <span class="st">"arima"</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="at">weights =</span> <span class="st">"sd"</span>, <span class="at">keep.fitted =</span> <span class="cn">TRUE</span>, <span class="at">parallel =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'
+
+Warning in FUN(X[[i]], ...): partial argument match of 'freq' to 'frequency'</code></pre>
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2018,
+  author = {Michael DeWitt},
+  title = {Hierarchical {Time} {Series} with Hts},
+  date = {2018-10-28},
+  url = {https://michaeldewittjr.com/programming/2018-10-28-hierarchical-time-series-with-hts},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2018" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2018. <span>“Hierarchical Time Series with Hts.”</span>
+October 28, 2018. <a href="https://michaeldewittjr.com/programming/2018-10-28-hierarchical-time-series-with-hts">https://michaeldewittjr.com/programming/2018-10-28-hierarchical-time-series-with-hts</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

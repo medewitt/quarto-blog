@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2021-04-15">
+<meta name="description" content="On why we need to trust and respect those with skin in the game rather than pundits who havenothing to lose but followers for a bad or simplistic take on the world.">
+
+<title>Insufficient Statistics - Skin in the Game</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - Skin in the Game">
+<meta property="og:description" content="On why we need to trust and respect those with skin in the game rather than pundits who  havenothing to lose but followers for a bad or simplistic take on the world.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - Skin in the Game">
+<meta name="twitter:description" content="On why we need to trust and respect those with skin in the game rather than pundits who  havenothing to lose but followers for a bad or simplistic take on the world.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Skin in the Game</h1>
+                  <div>
+        <div class="description">
+          <p>On why we need to trust and respect those with skin in the game rather than pundits who havenothing to lose but followers for a bad or simplistic take on the world.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Musing</div>
+                <div class="quarto-category">Skin in the Game</div>
+                <div class="quarto-category">Pundits</div>
+                <div class="quarto-category">Experience</div>
+                <div class="quarto-category">Risk</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 15, 2021</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-world-is-complicated-and-messy" id="toc-the-world-is-complicated-and-messy" class="nav-link active" data-scroll-target="#the-world-is-complicated-and-messy">The World is Complicated and Messy</a></li>
+  <li><a href="#where-things-get-complicated" id="toc-where-things-get-complicated" class="nav-link" data-scroll-target="#where-things-get-complicated">Where Things Get Complicated</a></li>
+  <li><a href="#pundits-and-sophists" id="toc-pundits-and-sophists" class="nav-link" data-scroll-target="#pundits-and-sophists">Pundits and Sophists</a>
+  <ul class="collapse">
+  <li><a href="#in-the-arena" id="toc-in-the-arena" class="nav-link" data-scroll-target="#in-the-arena">In the Arena</a></li>
+  <li><a href="#which-leads-to-the-pandemic" id="toc-which-leads-to-the-pandemic" class="nav-link" data-scroll-target="#which-leads-to-the-pandemic">Which Leads to the Pandemic</a></li>
+  </ul></li>
+  <li><a href="#not-credentialism" id="toc-not-credentialism" class="nav-link" data-scroll-target="#not-credentialism">Not Credentialism</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content">
+
+
+
+
+<p>Nassim Nicholas Taleb is a rather polarizing figure, but one point he makes over and over again is that it is better to trust someone who has “skin in the game.” If you have money on the table or stakes in the outcome, you typically sharpen your pencil and try to maximize your chance of winning (and edge or fold so to speak) when you don’t.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Even to the point that he wrote a book about it, titled, you guessed it <a href="https://www.amazon.com/Skin-Game-Hidden-Asymmetries-Daily/dp/042528462X">Skin in the Game</a></p>
+</div></div><p>The argument is very similar to the famous <a href="https://en.wikipedia.org/wiki/Citizenship_in_a_Republic">“man in the arena”</a> speech by Teddy Roosevelt, in that the one who fights the battle, who lives with the toils, knows the terrain. Even in the Toyota Manufacturing Way, deference is given to those that live in the <em>Gemba</em>, the place where the work happens, rather than the experts.</p>
+<section id="the-world-is-complicated-and-messy" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="the-world-is-complicated-and-messy">The World is Complicated and Messy</h2>
+<p>So what prompted this post? The below tweet from Nate Silver, the editor in chief of the data journalism/poll and sport focused <a href="https://fivethirtyeight.com">fivethirtyeight</a> site, made in regard to the <a href="https://www.fda.gov/news-events/press-announcements/joint-cdc-and-fda-statement-johnson-johnson-covid-19-vaccine">United State’s Food and Drug Administration’s decision</a> to recommend pausing distribution of the Johnson &amp; Johnson/ Janssen SARS-CoV-2 vaccine.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Note that they did not revoked the Emergency Use Authorization so technically it was not pulled off the shelf.</p>
+</div></div><div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="nate.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Nate’s Tweet</figcaption><p></p>
+</figure>
+</div>
+<p>Having an opinion on things is not against the law. Quite frankly, having an opinion and feeling compelled to share it is why Twitter exists in the first place. Later Mr Silver talks about how this is a silly decision due to the gross number of adverse events (n = 6) compared to the total number of doses given (N = 7 Million Doses). Drugs are complicated and there is a monitoring process that detected these so called adverse events which triggered this action from the regulatory bodies.</p>
+</section>
+<section id="where-things-get-complicated" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="where-things-get-complicated">Where Things Get Complicated</h2>
+<p>The J&amp;J vaccine really is a wonder drug in the fight against the pandemic. It is a single shot dose and is easy to handle, meaning that you can often access regions that may have poor infrastructure (both infrastructure as in roads/travel/distance/rural areas as well as health care access) and do not have to worry about the loss to follow-up with the two dose regimes. Because of these features, this vaccine was often the go-to for marginalized communities that may suffer from access. Issuing any kind of notice about safety then is a double edged sword where vaccine confidence could be harmed (which is not good in the face of a global pandemic) as well as reducing trust in a key group of people (i.e., the same marginalized people who were sent this vaccine also have a tremendous history with the medicine establishment) who likely need this vaccine the most because of economic conditions that have forced them back to work or living conditions (congregate, multi-general homes) while a high degree of infection still exists. So what do you do? Do you stay quiet and study while potentially more (relatively rare) events occur or do you try and be cautious and transparent and hope that in the long run this move will reinforce the notion that we <em>have safety process</em> and that those processes <em>do work</em> to keep people safe.</p>
+<p>The FDA went with the transparency now. This is where Mr Silver has a gripe. The risk of dying from an infection from SARS-CoV-2 for certain demographics is much, much higher than having an adverse event (at face value).</p>
+<p><strong>But, the plot thicken</strong> when the <a href="https://www.cdc.gov/vaccines/acip/index.html">ACIP group</a> looked into the adverse events, they found that the outcomes occurred in a very specific demographic. Importantly, the <a href="https://www.cdc.gov/vaccines/acip/meetings/downloads/slides-2021-04/03-COVID-Shimabukuro-508.pdf">details</a> indicate that the observed rate is not 6 out of 7 million, but more like 6 out of 1.7 million. Still rare, but when you want to vaccinate billions of people, the differences stack up.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Generally, balancing risks is incredibly hard. Nothing is absolute and one must way the risk of the vaccine vs the risk of getting in a car to go get a vaccine vs the risk of infection. I get that. However, explaining that to the general public where they just want to know if something is safe is hard (probabilistic vs black and white).</p>
+</div></div><div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="acip.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">ACIP Slides</figcaption><p></p>
+</figure>
+</div>
+<p>So it’s details like this, doing the homework, getting into the details, doing the case analysis, that separates the pundits from the people in the field.</p>
+</section>
+<section id="pundits-and-sophists" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="pundits-and-sophists">Pundits and Sophists</h2>
+<p>So here’s where the skin in the game point comes to play. Nate can put whatever he wants on Twitter. If he has a bad take, people may choose not to follow him on twitter or go to his website, sure. People aren’t opening hospitals or setting up refrigerated trucks repurposed as morgues with his projections. States aren’t using his polls to change policy (maybe, but certainly not during the pandemic). All of his forecasting work is really for both sport and political sport (Eitan Hersh has a <a href="https://www.amazon.com/Politics-Power-Beyond-Political-Hobbyism/dp/1982116781">great book</a> on political engagement vs hobbyism with the polling horse race certainly falling into the latter ). Granted some research has shown that his polls (and those like it) may have a <a href="https://www.journals.uchicago.edu/doi/abs/10.1086/708682?mobileUi=0&amp;">negative influence on voter turnout</a>, but that’s for another day. He can say what he wants and no real decisions are made for which someone can say, “because you said x, we did y, and now you are accountable.”</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>He’s not stupid enough to do something that heinous that would drive people away from him (but given how the world works, he might attract others to whom whatever it is he says confirms their own notions)</p>
+</div></div><p>IF the FDA says or does something stupid, those are the people who regular our food and drugs. They have all kinds of prerogatives to never mess up. If someone says something is safe and it turns out to be less safe than marketed, that’s on them. You can see it, you can point to it (I took this shot and it messed me up). Getting sick from a raging virus is harder to point to an agency or a person behind a desk at an agency and say, “because you said this was OK and I believed you and now I got hurt.” SARS-CoV-2 is a known.</p>
+<p>Because the FDA had skin in the game, they had to err on the side of transparency and caution. Does it suck that people who could benefit from the vaccine (e.g., the elderly) might not? Absolutely. It is awful and another tragedy and will continue to impact those marginalized communities the most. Would not saying something that would later blow up into a big news story about the FDA covering up an investigation into vaccine induced clotting disorders destroy faith in a regulatory agency be a good reason to err on the side of caution. Yeah.</p>
+<section id="in-the-arena" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="in-the-arena">In the Arena</h3>
+<p>When I started my first job, I had a ton of confidence. I was good at math and pretty decent at building models. A project came a long where I built the model based on some assumptions that I had been given and it said we didn’t need to make this big capital investment. The company deferred the investment, I was viewed as a hero and all great things. However, as time passes, it turns out that one of the key, critical assumptions that I had been given (from an “expert”) was false. The expert had overstated the performance (more like gave me the target performance rather than actual achieved). If someone in the field had actually gone and seen the machine that was used as the benchmark they would have known that this performance was impossible. The outcome of this event was that even if we reactivated the project, it would be 18 months before we would have what we needed, and by the way we reallocated the capital to support other ambitions. The plant was left with a headache for those two years.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>In another tweet Nate talks about how his first job as a management consultant gives him some sage wisdom. Sure management consultants, often ivy league/ private university educated young adults fresh from university, are articulate and good at quick math (and powerpoint), but also suffer from the skin in the game problem. You hire a big three consulting firm, they tell you your problems and leave. They are rarely on the hook for the outcomes or running the implementation where the rubber meets the road. Think McKinsey helping Pharma push opiods or fixing bread prices…. All that to say, this is another example of a group that doesn’t have skin in the game, who doesn’t have to roll up their sleeves and do the work (rather they build the powerpoint and fly home).</p>
+</div></div><p>I wasn’t blamed for “bad analysis”. However, I (along with my teammates) had to live with my mistake. I never let myself forget each time I had to face an issue that was directly related to the outcomes of my analysis. I took a pundit’s input at face value, rather than doing the homework and talking to those who were on the group with the process. After that I vowed to never trust a pundit or professed expert and would go see for myself or seek the wisdom of those doing the job. It might have taken a little longer and perceived as a conservative shift, but better decisions were made and more thoughtful analysis provided after that day. Interestingly, by developing expertise in sniffing out what was real, you could know when to be more aggressive vs when to operate in the known, precisely because you took the time to develop expertise.</p>
+</section>
+<section id="which-leads-to-the-pandemic" class="level3">
+<h3 class="anchored" data-anchor-id="which-leads-to-the-pandemic">Which Leads to the Pandemic</h3>
+<p>One of the craziest things in this pandemic, working in health care was the run on purple top wipes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">date =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">burn =</span> <span class="dv">10</span><span class="sc">*</span><span class="fu">exp</span>(.<span class="dv">05</span><span class="sc">*</span><span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>stock <span class="ot">&lt;-</span> <span class="dv">10000</span><span class="sc">-</span><span class="fu">cumsum</span>(dat<span class="sc">$</span>burn)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>stock <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(dat<span class="sc">$</span>stock<span class="sc">&lt;</span><span class="dv">0</span>,<span class="dv">0</span>,dat<span class="sc">$</span>stock)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> stock))<span class="sc">+</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">colour =</span> <span class="st">"purple"</span>)<span class="sc">+</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma)<span class="sc">+</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Ficticious Stock of Purple Top Wipes"</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="skin-in-the-game_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Skin in the Game Projections</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Early in the pandemic, when we were instituting and modeling our materials use, the question came up about our burn rate on disinfectant wipes used to clean rooms and equipment. Tell me how works into some kind of fancy model of the pandemic. While all these new twitter experts and anyone who could write code was trying to model how many deaths or cases there would be in a month, the most pressing issue within a real hospital was when would we run out of a particular wipe or how many people would show up in my ED and how many nurses, doctors, sanitation support, etc would I need in order to serve them in a given town (not the US or even at the state level). If you’re the person making the projections and you give bad information, someone might not get care who needs it. And there is a face a name behind that persons, not a twitter handle doom-scrolling on a weeknight.</p>
+<p>Similarly, you have to take the input from someone who lives day in and day out talking through vaccine hesitancy or rebuilding trust with the health profession. It takes time and you have to listen and see with your eyes open. Spent a few weeks shadowing these people (shadowing nights in a busy ED will certainly open your eyes to what happens in the world in a real way).</p>
+</section>
+</section>
+<section id="not-credentialism" class="level2">
+<h2 class="anchored" data-anchor-id="not-credentialism">Not Credentialism</h2>
+<p>I’m not writing this to support credentials or credentialism/gatekeeping. We all don’t need to have PhDs and MDs or some kind of advanced degrees to contribute (I don’t have a PhD or MD). Everyone brings something different to the table and can provide insight. Interdisciplinary discussions are vitally important in moving the conservation and analysis forward and results in better decisions being taken. However, if you come to the table, you have to do your homework. That could be in the form of reading books, articles, listening to reputable experts, interviewing boots on the ground, working through the problems, whatever, you have to do the homework. Experience and the experience of others is invaluable. Act like you have skin in the game and that everything you say you will be accountable for. You have to respect the science and approach the conversation with respect. Measures are messy, the world is certainly not simple, science is hard, trust is easily lost, and communication is challenging.</p>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2021,
+  author = {Michael DeWitt},
+  title = {Skin in the {Game}},
+  date = {2021-04-15},
+  url = {https://michaeldewittjr.com/posts/2021-04-15-skin-in-the-game/skin-in-the-game.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2021" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2021. <span>“Skin in the Game.”</span> April 15, 2021.
+<a href="https://michaeldewittjr.com/posts/2021-04-15-skin-in-the-game/skin-in-the-game.html">https://michaeldewittjr.com/posts/2021-04-15-skin-in-the-game/skin-in-the-game.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.483">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael DeWitt">
+<meta name="dcterms.date" content="2019-04-08">
+<meta name="description" content="In this post I explore a potential outcomes to the composition of the Winston-Salem city council.">
+
+<title>Insufficient Statistics - Re-districting in Winston-Salem</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<meta property="og:title" content="Insufficient Statistics - Re-districting in Winston-Salem">
+<meta property="og:description" content="In this post I explore a potential outcomes to the composition of the Winston-Salem city council.
+">
+<meta property="og:site-name" content="Insufficient Statistics">
+<meta name="twitter:title" content="Insufficient Statistics - Re-districting in Winston-Salem">
+<meta name="twitter:description" content="In this post I explore a potential outcomes to the composition of the Winston-Salem city council.
+">
+<meta name="twitter:creator" content="@medewittjr">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Insufficient Statistics</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
+        <li>
+    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="dropdown-text"><span class="citation" data-cites="medewittjr">(<a href="#ref-medewittjr" role="doc-biblioref"><strong>medewittjr?</strong></a>)</span></span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
+</i> 
+ <span class="dropdown-text">medewitt</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.linkedin.com/in/michael-dewitt-jr/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="dropdown-text">michael-dewitt-jr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://orcid.org/0000-0001-8940-1967"><i class="bi bi-lightbulb" role="img">
+</i> 
+ <span class="dropdown-text">ORCID</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="mailto:me.dewitt.jr@gmail.com"><i class="bi bi-envelope" role="img">
+</i> 
+ <span class="dropdown-text">me.dewitt.jr@gmail.com</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-blogs" role="button" data-bs-toggle="dropdown" aria-expanded="false">blogs</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-blogs">    
+        <li>
+    <a class="dropdown-item" href="../../programming.html">
+ <span class="dropdown-text">Technical and Programming</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../posts.html">
+ <span class="dropdown-text">Thoughts and Musings</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../presentations.html">My Work</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-teaching" role="button" data-bs-toggle="dropdown" aria-expanded="false">teaching</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-teaching">    
+        <li>
+    <a class="dropdown-item" href="../../introduction_to_r/index.html">
+ <span class="dropdown-text">Introduction to R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../advanced_analysis_in_r/index.html">
+ <span class="dropdown-text">Advanced Analysis in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../resources/index.html">
+ <span class="dropdown-text">Methods and Resources</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://www.dewittlab.com">
+ <span class="dropdown-text">Reading Notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/virusdynamics/">
+ <span class="dropdown-text">Virus Dynamics in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://michaeldewittjr.com/sars2-fitness-tracker/">
+ <span class="dropdown-text">SARS2 Fitness Tracker</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://michaeldewittjr.com/news/index.html">newsfeed</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Re-districting in Winston-Salem</h1>
+                  <div>
+        <div class="description">
+          <p>In this post I explore a potential outcomes to the composition of the Winston-Salem city council.</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Political</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <a href="https://michaeldewittjr.com">Michael DeWitt</a> <a href="https://orcid.org/0000-0001-8940-1967" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://wf-id.github.io">
+              Wake Forest Unversity Section on Infectious Diseases
+              </a>
+            </p>
+        </div>
+      </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 8, 2019</p>
+      </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Doi</div>
+      <div class="quarto-title-meta-contents">
+        <p class="doi">
+          <a href="https://doi.org/10.5281/zenodo.2635742">10.5281/zenodo.2635742</a>
+        </p>
+      </div>
+    </div>
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#analysis" id="toc-analysis" class="nav-link" data-scroll-target="#analysis">Analysis</a>
+  <ul class="collapse">
+  <li><a href="#current-state" id="toc-current-state" class="nav-link" data-scroll-target="#current-state">Current State</a></li>
+  <li><a href="#new-proposal" id="toc-new-proposal" class="nav-link" data-scroll-target="#new-proposal">New Proposal</a></li>
+  </ul></li>
+  <li><a href="#nc-voter-history" id="toc-nc-voter-history" class="nav-link" data-scroll-target="#nc-voter-history">NC Voter History</a></li>
+  <li><a href="#voter-efficiency" id="toc-voter-efficiency" class="nav-link" data-scroll-target="#voter-efficiency">Voter Efficiency</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>There was a recent bill introduced in the North Carolina General Assembly to reorganise the city counsel by two Republican state members of the General Assembly. The status quo is that there are a total of eight wards, each with a seat on the city counsel. The mayor votes only when there is a tie. As things are, the current city counsel is composed of four Black individuals and four white men, with a white man as mayor. The proposal from the General Assembly is to collapse several of the ward seats into five wards and then create three permanent at-large city counsel positions. Additionally, the mayor would have a vote on all matters, not just in ties.</p>
+<p>There is a lot going on here that this post cannot unpack. The biggest issue is truely the political landscape in North Carolina where the Supreme Court of the United States of America is actively hearing a case on gerrymandering where a member of the general assembly admitted to voter packing. Additionally, Winston-Salem has an interesting relationship with racial and political sorting. All of these elements are at play with this new proposed structure. Additionaly, the members whose wards would be collapsed would be the three Black women who are currently on the city counsel. This paired with reducing terms to two hears makes it logistically harder to run campaigns (shorter term lengths mean more campaigning, at-large positions favor people with cash to campaign all over the city, etc). Just a lot happening that can’t be completely unpacked. See <a href="https://www.journalnow.com/news/elections/local/ward-plan-puts-three-black-city-council-members-into-one/article_8cd889ea-90c2-5de2-832e-0b69c6b5ae5c.html">here</a> for more details.</p>
+</section>
+<section id="analysis" class="level2">
+<h2 class="anchored" data-anchor-id="analysis">Analysis</h2>
+<p>I am going to take some historical voting records and see given the new ward proposal how the seats would have fallen. Again, this is a quick analysis and more work could defitely be done on this.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✓ ggplot2 3.3.5.9000     ✓ purrr   0.3.4.9000
+✓ tibble  3.1.6.9001     ✓ dplyr   1.0.8.9000
+✓ tidyr   1.1.4.9000     ✓ stringr 1.4.0.9000
+✓ readr   2.1.2          ✓ forcats 0.5.1     </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'lubridate'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union</code></pre>
+</div>
+</div>
+<section id="current-state" class="level3">
+<h3 class="anchored" data-anchor-id="current-state">Current State</h3>
+<div class="cell">
+
+</div>
+<p>And now because the records of each primary are made public, I will download them and read them in. Excuse the messiness; I imagine there is an easier way to do this, but the NC Board of Elections elected to change their output format between the years, so it is quicker just to read the files in one at a time as there aren’t too many of them. All of the data are available <a href="https://er.ncsbe.gov/downloads.html">here</a> if you would like to play along.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>my_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"data"</span>, <span class="at">full.names =</span> T, <span class="at">pattern =</span> <span class="st">"results_"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now to read them in, fix a few things and then combine them. I will write a quick helper function though…</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>clean_ncbe <span class="ot">&lt;-</span> <span class="cf">function</span>(df){</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">contest_name =</span> contest, </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">choice_party =</span> party) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(county, precinct, contest_name, contest_type, </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>         total_votes, choice, choice_party)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now to read them in.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>results_2010 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(my_files[[<span class="dv">1</span>]])<span class="sc">%&gt;%</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_ncbe</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 188007 Columns: 15
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (7): county, precinct, contest_type, contest, choice, party, district
+dbl (8): runoff_status, recount_status, winner_status, Election Day, One Sto...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>results_2011 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(my_files[[<span class="dv">2</span>]])<span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_ncbe</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 37125 Columns: 15
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (7): county, precinct, contest_type, contest, choice, party, district
+dbl (8): runoff_status, recount_status, winner_status, Election Day, One Sto...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>results_2012 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(my_files[[<span class="dv">2</span>]])<span class="sc">%&gt;%</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_ncbe</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 37125 Columns: 15
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (7): county, precinct, contest_type, contest, choice, party, district
+dbl (8): runoff_status, recount_status, winner_status, Election Day, One Sto...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">lapply</span>( my_files[<span class="dv">4</span><span class="sc">:</span><span class="dv">8</span>], <span class="cf">function</span>(x) data.table<span class="sc">::</span><span class="fu">fread</span>(x, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">rbindlist</span>(z, <span class="at">fill =</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can then put the data together as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>all_results <span class="ot">&lt;-</span><span class="fu">bind_rows</span>(results_2010, results_2011, </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                        results_2012, z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This data frame includes <em>all</em> precinct level reporting for each election. For the sake of this analysis I want to reduce my scope down to just Forsyth County, the home county of Winston-Salem.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>forsyth_results <span class="ot">&lt;-</span> all_results <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"FORSYTH"</span>,county)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">precinct =</span> <span class="fu">str_extract</span>(precinct, <span class="st">"</span><span class="sc">\\</span><span class="st">d{2,}"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(proposed_wards, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"precinct"</span> <span class="ot">=</span> <span class="st">"pct_label"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">my_date =</span> lubridate<span class="sc">::</span><span class="fu">mdy</span>(election_date),</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">election =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(my_date))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Upon inspection of the data it is interesting to note that straight party tickets were once allowed. This practice was outlawed by the North Carolina General Assembly in 2013 <span class="citation" data-cites="lynch_elimination_nodate">(<a href="#ref-lynch_elimination_nodate" role="doc-biblioref">Lynch n.d.</a>)</span>.</p>
+<p>Further, if I just wanted to look look a city counsel elections, the subject of this analysis I could do the following actions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>city_consel_elections <span class="ot">&lt;-</span> forsyth_results <span class="sc">%&gt;%</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"WARD"</span>, contest_name)) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"HIGH POINT"</span>, contest_name))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Just as a reminder the last city counsel elections occured in 2016. Previous legislation moved the city counsel elections to presidential election years. Additionaly, citizens have the option of writing in candidates, so that can explain some of the votes for “others.”</p>
+<p>Looking at the overall 2016 city counsel elections we can see the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>city_consel_elections <span class="sc">%&gt;%</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">choice_party =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(choice_party), <span class="st">"Other"</span>, choice_party)) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(election, choice_party) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_vote =</span> <span class="fu">sum</span>(total_votes, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(choice_party, total_vote, <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DEM_vote_share =</span> scales<span class="sc">::</span><span class="fu">percent</span>(DEM <span class="sc">/</span> (DEM <span class="sc">+</span> REP <span class="sc">+</span> V1))) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Vote Share Overall, 2016 City Counsel Elections"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'election'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
+Using compatibility `.name_repair`.
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Vote Share Overall, 2016 City Counsel Elections</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">election</th>
+<th style="text-align: right;">V1</th>
+<th style="text-align: right;">DEM</th>
+<th style="text-align: right;">REP</th>
+<th style="text-align: left;">DEM_vote_share</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: right;">1656</td>
+<td style="text-align: right;">80697</td>
+<td style="text-align: right;">23660</td>
+<td style="text-align: left;">76%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>So all in all Winston-Salem has a strong lean towards the Democratic Party. Digging deeper we can look at the individual wards.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>city_consel_elections <span class="sc">%&gt;%</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">choice_party =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(choice_party)<span class="sc">|</span>choice_party<span class="sc">==</span><span class="st">""</span>, <span class="st">"Other"</span>, choice_party)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(election, contest_name, choice_party) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_vote =</span> <span class="fu">sum</span>(total_votes, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(choice_party, total_vote, <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">contest_name =</span> <span class="fu">str_remove</span>(contest_name, <span class="st">"WINSTON SALEM CITY COUNCIL - "</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DEM_vote_share =</span> scales<span class="sc">::</span><span class="fu">percent</span>(DEM <span class="sc">/</span> (DEM <span class="sc">+</span> REP <span class="sc">+</span> Other))) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Vote Share By Ward, 2016 City Counsel Elections"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'election', 'contest_name'. You can
+override using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Vote Share By Ward, 2016 City Counsel Elections</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">election</th>
+<th style="text-align: left;">contest_name</th>
+<th style="text-align: right;">DEM</th>
+<th style="text-align: right;">Other</th>
+<th style="text-align: right;">REP</th>
+<th style="text-align: left;">DEM_vote_share</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">EAST WARD</td>
+<td style="text-align: right;">11673</td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">98.28%</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">NORTH WARD</td>
+<td style="text-align: right;">15454</td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">98.67%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">NORTHEAST WARD</td>
+<td style="text-align: right;">13276</td>
+<td style="text-align: right;">397</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">97.10%</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">NORTHWEST WARD</td>
+<td style="text-align: right;">9410</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">5984</td>
+<td style="text-align: left;">61.04%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">SOUTH WARD</td>
+<td style="text-align: right;">9832</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">4374</td>
+<td style="text-align: left;">69.03%</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">SOUTHEAST WARD</td>
+<td style="text-align: right;">9044</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">98.01%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">SOUTHWEST WARD</td>
+<td style="text-align: right;">12008</td>
+<td style="text-align: right;">295</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">97.60%</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">WEST WARD</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">13302</td>
+<td style="text-align: left;">0.00%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>We can see pretty easily from this analysis that Winston-Salem is pretty solidly democratic, with the exception of the West ward where not a single vote was cast of a democratic candidate. The only truly competitive districts were the South and Northwest wards which still strongly favoured democratic candidates. However, one of the major take-aways here is that there is evidence of strong population sorting occuring with solidly democratic neighborhoods and solidly republican neighborhoods.</p>
+</section>
+<section id="new-proposal" class="level3">
+<h3 class="anchored" data-anchor-id="new-proposal">New Proposal</h3>
+<p>So let’s see how this all plays out under the new proposed wards. If take the 2016 election and group by Wards we see that there still will only be one strong Republican ward, Ward 5. One thing that occludes a stronger take on this is that absentee ballots are not assigned to a precinct.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>city_consel_elections <span class="sc">%&gt;%</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">choice_party =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(choice_party)<span class="sc">|</span>choice_party<span class="sc">==</span><span class="st">""</span>, <span class="st">"Other"</span>, choice_party)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(election, new_ward, choice_party) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_vote =</span> <span class="fu">sum</span>(total_votes)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(choice_party, total_vote) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DEM_vote_share =</span> scales<span class="sc">::</span><span class="fu">percent</span>(DEM <span class="sc">/</span> (DEM <span class="sc">+</span> REP <span class="sc">+</span> Other))) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Vote Share By Ward, 2016 City Counsel Elections"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'election', 'new_ward'. You can override
+using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Vote Share By Ward, 2016 City Counsel Elections</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">election</th>
+<th style="text-align: left;">new_ward</th>
+<th style="text-align: right;">DEM</th>
+<th style="text-align: right;">Other</th>
+<th style="text-align: right;">REP</th>
+<th style="text-align: left;">DEM_vote_share</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">Ward 1</td>
+<td style="text-align: right;">16865</td>
+<td style="text-align: right;">228</td>
+<td style="text-align: right;">5396</td>
+<td style="text-align: left;">74.99%</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">Ward 2</td>
+<td style="text-align: right;">18669</td>
+<td style="text-align: right;">361</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: left;">97.80%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">Ward 3</td>
+<td style="text-align: right;">15064</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: left;">97.61%</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">Ward 4</td>
+<td style="text-align: right;">16376</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">3786</td>
+<td style="text-align: left;">80.29%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">Ward 5</td>
+<td style="text-align: right;">6904</td>
+<td style="text-align: right;">375</td>
+<td style="text-align: right;">11444</td>
+<td style="text-align: left;">36.87%</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2016</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">6819</td>
+<td style="text-align: right;">151</td>
+<td style="text-align: right;">2915</td>
+<td style="text-align: left;">68.98%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>And we can see that while many absentee votes are democratic the margins could say some of the above districts to be more competitive. Because of this it is probably worth looking and historical voting.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>city_consel_elections <span class="sc">%&gt;%</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">choice_party =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(choice_party)<span class="sc">|</span>choice_party<span class="sc">==</span><span class="st">""</span>, <span class="st">"Other"</span>, choice_party)) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(contest_name, choice_party) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>( <span class="at">total_ab =</span> <span class="fu">sum</span>(absentee_by_mail)) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> scales<span class="sc">::</span><span class="fu">percent</span>(total_ab<span class="sc">/</span><span class="fu">sum</span>(total_ab))) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">metric =</span> <span class="fu">paste0</span>(percent, <span class="st">" n= "</span>, total_ab)) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>total_ab, <span class="sc">-</span>percent) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(choice_party, metric) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Breakdown of Absentee Ballots, 2016 City Counsel Elections"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'contest_name'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Breakdown of Absentee Ballots, 2016 City Counsel Elections</caption>
+<colgroup>
+<col style="width: 57%">
+<col style="width: 15%">
+<col style="width: 11%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">contest_name</th>
+<th style="text-align: left;">DEM</th>
+<th style="text-align: left;">Other</th>
+<th style="text-align: left;">REP</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">WINSTON SALEM CITY COUNCIL - EAST WARD</td>
+<td style="text-align: left;">98% n= 971</td>
+<td style="text-align: left;">2% n= 19</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WINSTON SALEM CITY COUNCIL - NORTH WARD</td>
+<td style="text-align: left;">98% n= 1043</td>
+<td style="text-align: left;">2% n= 19</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WINSTON SALEM CITY COUNCIL - NORTHEAST WARD</td>
+<td style="text-align: left;">98% n= 1194</td>
+<td style="text-align: left;">2% n= 23</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WINSTON SALEM CITY COUNCIL - NORTHWEST WARD</td>
+<td style="text-align: left;">58% n= 1070</td>
+<td style="text-align: left;">0% n= 2</td>
+<td style="text-align: left;">42% n= 773</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WINSTON SALEM CITY COUNCIL - SOUTH WARD</td>
+<td style="text-align: left;">60% n= 772</td>
+<td style="text-align: left;">0% n= 5</td>
+<td style="text-align: left;">40% n= 517</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WINSTON SALEM CITY COUNCIL - SOUTHEAST WARD</td>
+<td style="text-align: left;">98% n= 755</td>
+<td style="text-align: left;">2% n= 16</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WINSTON SALEM CITY COUNCIL - SOUTHWEST WARD</td>
+<td style="text-align: left;">97% n= 1014</td>
+<td style="text-align: left;">3% n= 27</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WINSTON SALEM CITY COUNCIL - WEST WARD</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2% n= 40</td>
+<td style="text-align: left;">98% n= 1625</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="nc-voter-history" class="level2">
+<h2 class="anchored" data-anchor-id="nc-voter-history">NC Voter History</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>nc_voter_vistory <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/ncvhis34.txt"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 1060196 Columns: 15
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (13): county_desc, voter_reg_num, election_lbl, election_desc, voting_me...
+dbl  (2): county_id, voted_county_id
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<p>Additionally, let’s use the 2016 presidential election using the voter history files from the NC Board of Elections <a href="https://dl.ncsbe.gov/index.html?prefix=data/">here</a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>nc_voter_vistory <span class="sc">%&gt;%</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(proposed_wards) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(new_ward)) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(election_desc <span class="sc">==</span> <span class="st">"11/08/2016 GENERAL"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(voted_party_desc)) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">voted_party_desc =</span> <span class="fu">ifelse</span>(voted_party_desc<span class="sc">==</span><span class="st">"LIBERTARIAN"</span>,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">"REPUBLICAN"</span>, voted_party_desc)) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(new_ward, voted_party_desc) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span> (<span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vote_share =</span> <span class="fu">round</span>(n<span class="sc">/</span><span class="fu">sum</span>(n)<span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Vote Share By New Ward, 2016 Voters Party Affiliations"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining, by = "pct_label"
+`summarise()` has grouped output by 'new_ward'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Vote Share By New Ward, 2016 Voters Party Affiliations</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">new_ward</th>
+<th style="text-align: left;">voted_party_desc</th>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">vote_share</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Ward 1</td>
+<td style="text-align: left;">DEMOCRATIC</td>
+<td style="text-align: right;">16212</td>
+<td style="text-align: right;">47</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ward 1</td>
+<td style="text-align: left;">REPUBLICAN</td>
+<td style="text-align: right;">9950</td>
+<td style="text-align: right;">29</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ward 1</td>
+<td style="text-align: left;">UNAFFILIATED</td>
+<td style="text-align: right;">8307</td>
+<td style="text-align: right;">24</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ward 2</td>
+<td style="text-align: left;">DEMOCRATIC</td>
+<td style="text-align: right;">20381</td>
+<td style="text-align: right;">62</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ward 2</td>
+<td style="text-align: left;">REPUBLICAN</td>
+<td style="text-align: right;">6449</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ward 2</td>
+<td style="text-align: left;">UNAFFILIATED</td>
+<td style="text-align: right;">5970</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ward 3</td>
+<td style="text-align: left;">DEMOCRATIC</td>
+<td style="text-align: right;">14668</td>
+<td style="text-align: right;">47</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ward 3</td>
+<td style="text-align: left;">REPUBLICAN</td>
+<td style="text-align: right;">9429</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ward 3</td>
+<td style="text-align: left;">UNAFFILIATED</td>
+<td style="text-align: right;">7106</td>
+<td style="text-align: right;">23</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ward 4</td>
+<td style="text-align: left;">DEMOCRATIC</td>
+<td style="text-align: right;">12544</td>
+<td style="text-align: right;">48</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ward 4</td>
+<td style="text-align: left;">REPUBLICAN</td>
+<td style="text-align: right;">6497</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ward 4</td>
+<td style="text-align: left;">UNAFFILIATED</td>
+<td style="text-align: right;">7269</td>
+<td style="text-align: right;">28</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ward 5</td>
+<td style="text-align: left;">DEMOCRATIC</td>
+<td style="text-align: right;">12856</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ward 5</td>
+<td style="text-align: left;">REPUBLICAN</td>
+<td style="text-align: right;">15220</td>
+<td style="text-align: right;">39</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ward 5</td>
+<td style="text-align: left;">UNAFFILIATED</td>
+<td style="text-align: right;">10896</td>
+<td style="text-align: right;">28</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Again, what is interesting here is that all but one of the Wards start with a clearly identified Democratic plurality.</p>
+</section>
+<section id="voter-efficiency" class="level2">
+<h2 class="anchored" data-anchor-id="voter-efficiency">Voter Efficiency</h2>
+<p>While not the best metric we can look at the <a href="https://en.wikipedia.org/wiki/Wasted_vote">efficiency gap</a>. So looking at the current situation we see that there is a:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>city_consel_elections <span class="sc">%&gt;%</span> </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">choice_party =</span> <span class="fu">ifelse</span>(choice_party <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"DEM"</span>, <span class="st">"REP"</span>), choice_party,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"other"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(election, contest_name, choice_party) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_vote =</span> <span class="fu">sum</span>(total_votes, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(choice_party, total_vote, <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">winning =</span> (DEM<span class="sc">+</span>other<span class="sc">+</span>REP)<span class="sc">/</span><span class="dv">2</span><span class="sc">+</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DEM_wasted_vote =</span> <span class="fu">ifelse</span>(DEM <span class="sc">-</span> winning<span class="sc">&lt;</span><span class="dv">0</span>,DEM,DEM <span class="sc">-</span> winning),</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">REP_wasted_vote =</span> <span class="fu">ifelse</span>(REP <span class="sc">-</span> winning<span class="sc">&lt;</span><span class="dv">0</span>,REP,REP <span class="sc">-</span> winning)) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_voter=</span> <span class="fu">sum</span>(REP<span class="sc">+</span>other <span class="sc">+</span>DEM),</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">wasted_dem =</span> <span class="fu">sum</span>(DEM_wasted_vote),</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">wasted_rep =</span> <span class="fu">sum</span>(REP_wasted_vote)) <span class="ot">-&gt;</span> current_eff</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'election', 'contest_name'. You can
+override using the `.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>scales<span class="sc">::</span><span class="fu">percent</span>((current_eff<span class="sc">$</span>wasted_rep<span class="sc">-</span>current_eff<span class="sc">$</span>wasted_dem)<span class="sc">/</span>current_eff<span class="sc">$</span>total_voter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "-17%"</code></pre>
+</div>
+</div>
+<p>And if we move to the proposed organization we see:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>forsyth_results <span class="sc">%&gt;%</span> </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(new_ward)) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="at">x =</span> contest_name, <span class="st">"PRESIDENT"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">choice_party =</span> <span class="fu">ifelse</span>(choice_party <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"DEM"</span>, <span class="st">"REP"</span>), choice_party,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"other"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(election, new_ward, choice_party) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total =</span> <span class="fu">sum</span>(total_votes)) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(choice_party, total) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">election =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(election), <span class="dv">2012</span>, election)) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DEM_share =</span> DEM<span class="sc">/</span> (DEM<span class="sc">+</span>other<span class="sc">+</span>REP)) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">winning =</span> (DEM<span class="sc">+</span>other<span class="sc">+</span>REP)<span class="sc">/</span><span class="dv">2</span><span class="sc">+</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DEM_wasted_vote =</span> <span class="fu">ifelse</span>(DEM <span class="sc">-</span> winning<span class="sc">&lt;</span><span class="dv">0</span>,DEM,DEM <span class="sc">-</span> winning),</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">REP_wasted_vote =</span> <span class="fu">ifelse</span>(REP <span class="sc">-</span> winning<span class="sc">&lt;</span><span class="dv">0</span>,REP,REP <span class="sc">-</span> winning)) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_voter=</span> <span class="fu">sum</span>(REP<span class="sc">+</span>other <span class="sc">+</span>DEM),</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">wasted_dem =</span> <span class="fu">sum</span>(DEM_wasted_vote),</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">wasted_rep =</span> <span class="fu">sum</span>(REP_wasted_vote))<span class="ot">-&gt;</span>efficiency</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'election', 'new_ward'. You can override
+using the `.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>scales<span class="sc">::</span><span class="fu">percent</span>((efficiency<span class="sc">$</span>wasted_rep<span class="sc">-</span>efficiency<span class="sc">$</span>wasted_dem)<span class="sc">/</span>efficiency<span class="sc">$</span>total_voter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "16%"</code></pre>
+</div>
+</div>
+<p>So no real change in the efficiency gap.</p>
+
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-lynch_elimination_nodate" class="csl-entry" role="doc-biblioentry">
+Lynch, Harry. n.d. <span>“Elimination of Straight-Ticket Voting Could Leave More Ballots Incomplete.”</span> <em>Newsobserver</em>. Accessed April 8, 2019. <a href="https://www.newsobserver.com/news/politics-government/election/article95286262.html">https://www.newsobserver.com/news/politics-government/election/article95286262.html</a>.
+</div>
+</div></section><section class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1" role="doc-endnote"><p>Reall what I should be doing here is writing a function that inspects what kind of delimiter is being used in the file and then import accordingly. However, I’m a bit lazy at the moment and not going to do that. The plus sides for doing that method is most importantly it is more reprocible and scalable should I go back and look at previous data. Additionally, I could do a <code>map</code> function to read and apply the newly written function rather than writing piecemeal as I am now.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2019,
+  author = {Michael DeWitt},
+  title = {Re-Districting in {Winston-Salem}},
+  date = {2019-04-08},
+  url = {https://michaeldewittjr.com/programming/2019-04-08-re-districting-in-winston-salem},
+  doi = {10.5281/zenodo.2635742},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2019" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+Michael DeWitt. 2019. <span>“Re-Districting in Winston-Salem.”</span>
+April 8, 2019. <a href="https://doi.org/10.5281/zenodo.2635742">https://doi.org/10.5281/zenodo.2635742</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
