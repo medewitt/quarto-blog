@@ -39,17 +39,17 @@ website:
       - text: teaching
         menu:
         - text: "Introduction to R"
-          href: introduction_to_r/index.html
+          href: https://medewitt.github.io/introduction_to_r/index.html
         - text: "Advanced Analysis in R"
-          href: advanced_analysis_in_r/index.html
+          href: https://medewitt.github.io/advanced_analysis_in_r/index.html
         - text: "Methods and Resources"
-          href: resources/index.html
+          href: https://medewitt.github.io/resources/index.html
         - text: "Reading Notes"
           href: https://www.dewittlab.com
         - text: "Virus Dynamics in R"
-          href: https://michaeldewittjr.com/virusdynamics/
+          href: https://medewitt.github.io/virusdynamics/
         - text: "SARS2 Fitness Tracker"
-          href: https://michaeldewittjr.com/sars2-fitness-tracker/
+          href: https://medewitt.github.io/sars2-fitness-tracker/
       - text: "newsfeed"
         href: https://michaeldewittjr.com/news/index.html
       - about.qmd
