@@ -1,0 +1,61 @@
+project:
+  type: website
+
+website:
+  title: "Insufficient Statistics"
+  site-url: https://michaeldewittjr.com
+  repo-url: https://github.com/medewitt/quarto-blog
+  open-graph: true
+  twitter-card:
+    creator: "@medewittjr"
+    card-style: summary_large_image
+  navbar:
+    background: primary
+    left:
+      - href: index.qmd
+        text: home
+      - text: "contact me"
+        menu:
+        - icon: twitter
+          href: https://twitter.com/medewittjr
+          text: "@medewittjr"
+        - icon: github
+          href: https://github.com/medewitt
+          text: "medewitt"
+        - icon: linkedin
+          href: https://www.linkedin.com/in/michael-dewitt-jr/
+          text: michael-dewitt-jr
+        - icon: lightbulb
+          href: https://orcid.org/0000-0001-8940-1967
+          text: "ORCID"
+        - icon: envelope
+          href: mailto:me.dewitt.jr@gmail.com
+          text: "me.dewitt.jr@gmail.com"
+      - text: "blogs"
+        menu:
+        - programming.qmd
+        - posts.qmd
+      - presentations.qmd
+      - text: teaching
+        menu:
+        - text: "Introduction to R"
+          href: introduction_to_r/index.html
+        - text: "Advanced Analysis in R"
+          href: advanced_analysis_in_r/index.html
+        - text: "Methods and Resources"
+          href: resources/index.html
+        - text: "Reading Notes"
+          href: https://www.dewittlab.com
+        - text: "Virus Dynamics in R"
+          href: https://michaeldewittjr.com/virusdynamics/
+        - text: "SARS2 Fitness Tracker"
+          href: https://michaeldewittjr.com/sars2-fitness-tracker/
+      - text: "newsfeed"
+        href: https://michaeldewittjr.com/news/index.html
+      - about.qmd
+
+format:
+  html:
+    theme: [cosmo, michael.scss]
+    css: styles.css
+    toc: true
