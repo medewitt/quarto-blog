@@ -1,0 +1,85 @@
+---
+title: "selected works"
+---
+
+Working in private organizations limits what I can show publicly, but here are some publically available things that I can show.
+
+## publications
+
+* C. T. Semelka, M. E. DeWitt, K. E. Callahan, D. M. Herrington, M. A. Alexander-Miller, J. O. Yukich, I. Munawar, L. H. McCurdy, M. A. Gibbs, W. S. Weintraub and J. W. Sanders. "Frailty and COVID-19 mRNA Vaccine Antibody Response in The COVID-19 Community Research Partnership.” J Gerontol A Biol Sci Med Sci; DOI: <https://doi.org/10.1093/gerona/glac095>
+
+* Michael E. DeWitt, Christopher Scheib, Morgan Jones and Pamela Cowin
+North Carolina Medical Journal July 2021, 82 (4) 284-286; DOI: <https://doi.org/10.18043/ncm.82.4.284>
+
+* DeWitt, Michael, and Phil Handwerk. “Wake Forest’s Ten Years of Test-Optional Admissions: A Review of Students Who Did Not Submit Versus Those Who Did.” In The Scandal of Standardized Tests: Why We Need to Drop the SAT and ACT, by Joseph A. Soares. Teacher’s College Press, February 2020.
+
+* [**Analysis of the Winston-Salem Public Transit System**](http://www.virginiapolicyreview.org/blog/analysis-of-the-winston-salem-public-transit-system) _Virginia Policy Review_, October 2018
+
+
+## software
+
+Sam Abbott, Joel Hellewell, Katharine Sherratt, Katelyn Gostic, Joe Hickson, Hamada S. Badr, Michael
+DeWitt, Robin Thompson, EpiForecasts, and Sebastian Funk (2020). EpiNow2: Estimate Real-Time
+Case Counts and Time-Varying Epidemiological Parameters, DOI: 10.5281/zenodo.3957489
+
+Sam Abbott, Nikos Bosse, Joel Hellewell, Katharine Sherratt, James Munday, Robin Thompson, Aurelien Chateigner, Sylvain Mareschal, Andrea Rau, Nathalie Vialaneix, Michael DeWitt and Sebastian
+Funk (2020). EpiSoon: Forecast Cases Using Reproduction Numbers. R package version 0.3.0.
+
+DeWitt et al., (2019). tidyqwi: A Tidy Approach to Accessing The US Census Bureau's Quarterly Workforce Indicators. Journal
+  of Open Source Software, 4(38), 1462, <https://doi.org/10.21105/joss.01462>
+  
+Bruno Castanho Silva and Michael DeWitt (2019). SCtools: Extensions for
+  Synthetic Controls Analysis. R package version 0.3.0.
+  <https://CRAN.R-project.org/package=SCtools>
+  
+## Working Papers
+
+DeWitt, Michael E. “Rapid Impact Analysis of B 1.1.7 Variant on the Spread of SARS-CoV-2 in North Carolina.” MedRxiv, February 9, 2021, 2021.02.07.21251291. <https://doi.org/10.1101/2021.02.07.21251291>.
+
+DeWitt, Michael E. “Automatic Contact Tracing for Outbreak Detection Using Hospital Electronic Medical Record Data.” MedRxiv, September 13, 2020, 2020.09.08.20190876. <https://doi.org/10.1101/2020.09.08.20190876>.
+
+  
+## technical papers
+
+* [**Office of Institutional Research Survey Methodology**](https://prod.wp.cdn.aws.wfu.edu/sites/202/2018/05/oir_survey_methodology.pdf), _Wake Forest University_, May 2018
+
+
+## public comment
+
+This section represents any public analysis that has been presented to any public bodies.
+
+* [**Winston-Salem Public Transit Analysis**](https://michaeldewittjr.com/bus_analysis/) by Michael DeWitt, Phillip Summers, Jeff Bloomfield, Keena Moore, Megan Irby, _Winston-Salem City Council_, September 2018
+
+## applications
+
+This sections represents public facing applications.
+
+* [**Winston-Salem Police Department Tracker**](https://mdewitt.shinyapps.io/wspd_scanner/) October 2018
+
+* [**Algorithmic Bias Simulator**](https://mdewitt.shinyapps.io/bias_simulation/) February 2019
+
+## presentations
+
+This is a non-exhaustive list of presentations that I have given.
+
+* **Designing a Student Retention Model**,  _North Carolina Independent Colleges and Universities Institutional Research Directors Meeting_, December 2018
+
+* **Does My Instructor Look Like Me: A Multi-Institution Look at Implicit Bias in Grading**,  _Southern Association for Institutional Research_, October 2018
+
+* [**Comparing Two Groups: Effect Sizes**](https://docs.google.com/presentation/d/e/2PACX-1vTACUkOIFra4TqEvaQUCakpsYk7KgIRBdyo14hLJ798GiPb8Z4bY0YlgvcJoj1yoDc1_9wtUXqOKbii/pub?start=false&loop=false&delayms=3000),  _Wake Forest University Business Analytics Team_, September 2018
+
+* [**Comparing Two Groups: T-Test**](docs/2018-08_BAI_t-test.pdf), _Wake Forest University Business Analytics Team_, August 2018
+
+* [**Introduction to R**](https://github.com/medewitt/intro_to_r/blob/master/presentations/intro_presentation.pdf), _Wake Forest University Professional Development_, March 2018
+
+* [**Overview of Distributions**](docs/2018-02_BAI_distributions.pdf), _Wake Forest University Business Analytics Team_, February 2018
+
+* [**Measures of Central Tendency**](docs/2017-12_BAI_central_tendency.pdf), _Wake Forest University Business Analytics Team_, December 2017
+
+* **Graphing Different Kinds of Data**, _Wake Forest University Business Analytics Team_, November 2017
+
+## patents
+
+Procede d’identifier, gerer et réincorporer les produits complexes comme les produits valorises (WO2019154657 - 2019-08-15)
+
+Systeme d’identifier, gerer et reincorporer les produits complexes comme les produits valorises (WO2019154656 - 2019-08-15)

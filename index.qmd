@@ -1,0 +1,38 @@
+---
+title: "Michael DeWitt"
+---
+
+I'm Michael DeWitt.
+I'm a data scientist and applied statistician working in infectious disease research.
+Additionally, I have experience in manufacturing, higher education, and health care.
+My interests are in Bayesian inference, infectious disease epidemiology, survey analysis, forecasting, and causal inference. 
+
+In addition to my professional work, I apply the tools of the trade on local community projects and subjects of interest.
+This includes analysis of local economic policy, transportation availability, policing, and politics. 
+I'm passionate about data informed policy and decision-making and scientific communication in general.
+
+
+```{r}
+#| echo: false
+#| include: false
+# list names of post folders
+
+write_redirected <- function(directory){
+  posts <- list.dirs(
+  path = here::here(directory),
+  full.names = FALSE,
+  recursive = FALSE
+)
+
+# extract the slugs
+slugs <- gsub("^(\\d{4}-\\d{2}-\\d{2}-)", "", posts)
+
+# lines to insert to a netlify _redirect file
+redirects <- paste0("/", slugs, " ", "/",directory,"/", posts)
+
+# write the _redirect file
+writeLines(redirects, here::here("_site", "_redirects"))
+}
+
+lapply(c("posts", "programming"), write_redirected)
+```

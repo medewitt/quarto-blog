@@ -1,0 +1,62 @@
+---
+title: "about"
+image: profile.jpg
+about:
+  template: jolla
+  links:
+    - icon: twitter
+      text: Twitter
+      href: https://twitter.com/medewittjr
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com
+    - icon: github
+      text: Github
+      href: https://github.com/medewitt
+---
+
+## Currently
+
+I'm an applied statistician and data scientist working in infectious diseases at [Atrium Wake Forest Baptist Health](https://school.wakehealth.edu/departments/internal-medicine/infectious-diseases) in Winston-Salem, NC. 
+
+<left>
+My interests are in: 
+
+* Bayesian Inference
+
+* Infectious Disease Modelling and Epidemiology
+
+* Causal Inference
+
+* Survey Analysis
+
+* Applied Machine Learning and Prediction
+
+* Simulation and Optimization
+
+</left>
+
+Additionally, I am an advocate for improving mobility. 
+In my spare time I volunteer as a member of the Winston-Salem Transportation Coalition where we advocate for better public transit. 
+I employ data science techniques in order to quantify and shed light on the issues. 
+
+You can read more about my work [here](presentations.html). 
+Additionally, I maintain a site regarding local politics and economic analysis. 
+You can read that [here](https://www.nctriadresearch.com/).
+
+## Before
+
+I came into statistics and data science from chemical engineering (which is what I studied at University). 
+I also minored in philosophy and wrote my honors thesis in the English department.
+
+After graduation I worked in industrial engineering at Michelin North America in plant industrial engineering and continuous improvement and at the central level in industrial engineering, project management and decision support and analysis.
+
+It you want to learn more, check out my resume [here](https://michaeldewittjr.com/letters/DeWittResume.pdf).
+
+<details>
+<summary><h2>Short Bio</h2> </summary>
+Michael DeWitt is an applied statistician and data scientist working in infectious disease research at Atrium Wake Forest Baptist Health, one of the largest health care networks in North Carolina. 
+Prior to infectious disease research, Michael has over ten years of experience in manufacturing, higher education analytics, and health care analytics. 
+His specialties are Bayesian inference, hierarchical modeling, survey design and analysis, simulation and optimization, network analysis, and applied predictive modeling. 
+He holds a bachelor's degree in Chemical Engineering from Clemson University and a Master's Degree in Statistics from North Carolina State University.
+</details>

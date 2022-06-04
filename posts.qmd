@@ -1,0 +1,8 @@
+---
+title: "Thoughts and Musings"
+listing:
+  sort: "date desc"
+  type: default
+  categories: true
+  contents: posts
+---
