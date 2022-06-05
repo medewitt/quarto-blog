@@ -22,11 +22,11 @@
   </url>
   <url>
     <loc>https://michaeldewittjr.com/index.html</loc>
-    <lastmod>2022-06-05T16:22:48.311Z</lastmod>
+    <lastmod>2022-06-05T17:26:13.036Z</lastmod>
   </url>
   <url>
     <loc>https://michaeldewittjr.com/programming.html</loc>
-    <lastmod>2022-06-05T16:22:50.124Z</lastmod>
+    <lastmod>2022-06-05T17:25:54.176Z</lastmod>
   </url>
   <url>
     <loc>https://michaeldewittjr.com/about.html</loc>
@@ -231,5 +231,9 @@
   <url>
     <loc>https://michaeldewittjr.com/presentations.html</loc>
     <lastmod>2022-06-05T16:24:46.135Z</lastmod>
+  </url>
+  <url>
+    <loc>https://michaeldewittjr.com/programming/2022-06-05-moving-to-quarto/index.html</loc>
+    <lastmod>2022-06-05T17:25:59.763Z</lastmod>
   </url>
 </urlset>

@@ -1,0 +1,68 @@
+---
+title: "Moving to quarto"
+description: |
+  Moving to Quarto from Distill
+date: 2022-06-05
+image: quarto.png
+categories:  [R, Quarto]
+---
+
+>*tl;dr;* porting to Quarto was not terrible. Also moving from GitHub pages to Netlify at the same time was a bit much.
+
+I finally made the jump to Quarto. 
+I had been following the project and using it for several different projects [here](https://medewitt.github.io/sars2-fitness-tracker/), [here](https://medewitt.github.io/virusdynamics/), amongst some private personal projects.
+The primary driver for the website change was that some posts failed to build under distill and I couldn't seem to render any new blog posts due to issues with building the listing.
+I like Quarto in general and find that the outputs are extremely stable (less issues with $\LaTeX$, Microsoft Word) and the defaults are nice for books.
+
+:::{.column-margin}
+This could have been due to an invalid yaml in an old post that for some reason failed. But it was a good push.
+:::
+
+There have been better and more detailed posts about each of these steps both [here](https://quarto.org/docs/websites/website-blog.html) and [Danielle Navarro's awesome tutorial](https://blog.djnavarro.net/posts/2022-04-20_porting-to-quarto/).
+Those links are much more comphrensive than anything that I would write, but I'll give some broadstrokes.
+
+## Some More Background on Blogging
+
+My first real blogging platform^[i.e., not Google blogger] was [radix](https://www.rstudio.com/blog/radix-for-r-markdown/), an early iteration on what would become distill.
+I absolutely loved radix and had a nice simple stand-alone blog site in addition to my Rmarkdown built github pages home site.
+[Radix eventually became distill](https://rstudio.github.io/distill/migrating.html) and was no longer under development, so I made the [transition](https://www.michaeldewittjr.com/posts/2021-05-07-moving-to-distill--again/moving-to-distill--again.html).
+This was pretty seamless as I just imported old websites where possible or changed extensions.
+Quarto would be a new test.
+
+## A reproducibility test
+
+Moving to quarto I copied to folder structure I had for my distill website.
+I decided that I would go ahead and rename all my source rmd files to qmd and then render then a-new with Quarto.
+Well, I learned that you likely need to use `renv` to manage your package versions.
+I had over 60 different posts starting in 2018.
+Syntax had changed, some packages weren't available, etc.
+All and all there weren't a ton of failures, but enough that I know I really need to adopt a strategy to maintain versions on blog posts.
+Note that quarto had the `_freeze: true` argument that can be set in order to render only on change, but this doesn't future-proof yourself. 
+
+## Now to Netlifly
+
+I have been using github pages for a long time. 
+They offer so much ease of use when it comes to spitting out a website, but I wanted to get away from google analytics and have a little more control over hosting (and Netlifly has some cool options with forms and secured pages).
+I followed [the guidance from the quarto docs](https://quarto.org/docs/websites/publishing-websites.html) as well as some other resources on the web to set-up my site and move my github pages site.
+On the github site, the meant removing the CNAME file and removing custom domains from the username.github.io repo. 
+
+## Redirect City
+
+Having four years of Github pages on the internet definitely has provided some challenges in making sure old links work.
+Use the `_redirect` file liberally, I used the guidance [here](https://dev.to/steveblue/setup-a-redirect-on-github-pages-1ok7) to redirect some of my old github pages from my personal website to the github pages versions.
+It seems to work, but I am still getting some 404s on occasion.
+
+Additionally, because I had multiple versions of my blog still floating (radix, distill) dumped redirects at the index of these old websites to make sure everything landed at the right location (just an example):
+
+```html
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Redirecting to https://michaeldewittjr.com/index.html</title>
+<meta http-equiv="refresh" content="0; URL=https://michaeldewittjr.com/index.html/">
+<link rel="canonical" href="https://michaeldewittjr.com/">
+```
+
+## So far
+
+So far so good, but time will tell. 
+I still need to learn the `renv` magic at the post level to make sure that another port will go smoothly.

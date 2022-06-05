@@ -10,7 +10,74 @@
 <atom:link href="https://michaeldewittjr.com/programming.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-0.9.483</generator>
-<lastBuildDate>Fri, 11 Feb 2022 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 05 Jun 2022 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Moving to quarto</title>
+  <link>https://michaeldewittjr.com/programming/2022-06-05-moving-to-quarto/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<blockquote class="blockquote">
+<p><em>tl;dr;</em> porting to Quarto was not terrible. Also moving from GitHub pages to Netlify at the same time was a bit much.</p>
+</blockquote>
+<p>I finally made the jump to Quarto. I had been following the project and using it for several different projects <a href="https://medewitt.github.io/sars2-fitness-tracker/">here</a>, <a href="https://medewitt.github.io/virusdynamics/">here</a>, amongst some private personal projects. The primary driver for the website change was that some posts failed to build under distill and I couldn’t seem to render any new blog posts due to issues with building the listing. I like Quarto in general and find that the outputs are extremely stable (less issues with <img src="https://latex.codecogs.com/png.latex?%5CLaTeX">, Microsoft Word) and the defaults are nice for books.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>This could have been due to an invalid yaml in an old post that for some reason failed. But it was a good push.</p>
+</div></div><p>There have been better and more detailed posts about each of these steps both <a href="https://quarto.org/docs/websites/website-blog.html">here</a> and <a href="https://blog.djnavarro.net/posts/2022-04-20_porting-to-quarto/">Danielle Navarro’s awesome tutorial</a>. Those links are much more comphrensive than anything that I would write, but I’ll give some broadstrokes.</p>
+<section id="some-more-background-on-blogging" class="level2">
+<h2 class="anchored" data-anchor-id="some-more-background-on-blogging">Some More Background on Blogging</h2>
+<p>My first real blogging platform<sup>1</sup> was <a href="https://www.rstudio.com/blog/radix-for-r-markdown/">radix</a>, an early iteration on what would become distill. I absolutely loved radix and had a nice simple stand-alone blog site in addition to my Rmarkdown built github pages home site. <a href="https://rstudio.github.io/distill/migrating.html">Radix eventually became distill</a> and was no longer under development, so I made the <a href="https://www.michaeldewittjr.com/posts/2021-05-07-moving-to-distill--again/moving-to-distill--again.html">transition</a>. This was pretty seamless as I just imported old websites where possible or changed extensions. Quarto would be a new test.</p>
+</section>
+<section id="a-reproducibility-test" class="level2">
+<h2 class="anchored" data-anchor-id="a-reproducibility-test">A reproducibility test</h2>
+<p>Moving to quarto I copied to folder structure I had for my distill website. I decided that I would go ahead and rename all my source rmd files to qmd and then render then a-new with Quarto. Well, I learned that you likely need to use <code>renv</code> to manage your package versions. I had over 60 different posts starting in 2018. Syntax had changed, some packages weren’t available, etc. All and all there weren’t a ton of failures, but enough that I know I really need to adopt a strategy to maintain versions on blog posts. Note that quarto had the <code>_freeze: true</code> argument that can be set in order to render only on change, but this doesn’t future-proof yourself.</p>
+</section>
+<section id="now-to-netlifly" class="level2">
+<h2 class="anchored" data-anchor-id="now-to-netlifly">Now to Netlifly</h2>
+<p>I have been using github pages for a long time. They offer so much ease of use when it comes to spitting out a website, but I wanted to get away from google analytics and have a little more control over hosting (and Netlifly has some cool options with forms and secured pages). I followed <a href="https://quarto.org/docs/websites/publishing-websites.html">the guidance from the quarto docs</a> as well as some other resources on the web to set-up my site and move my github pages site. On the github site, the meant removing the CNAME file and removing custom domains from the username.github.io repo.</p>
+</section>
+<section id="redirect-city" class="level2">
+<h2 class="anchored" data-anchor-id="redirect-city">Redirect City</h2>
+<p>Having four years of Github pages on the internet definitely has provided some challenges in making sure old links work. Use the <code>_redirect</code> file liberally, I used the guidance <a href="https://dev.to/steveblue/setup-a-redirect-on-github-pages-1ok7">here</a> to redirect some of my old github pages from my personal website to the github pages versions. It seems to work, but I am still getting some 404s on occasion.</p>
+<p>Additionally, because I had multiple versions of my blog still floating (radix, distill) dumped redirects at the index of these old websites to make sure everything landed at the right location (just an example):</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode html code-with-copy"><code class="sourceCode html"><span id="cb1-1"><span class="dt" style="color: #AD0000;">&lt;!DOCTYPE </span>html<span class="dt" style="color: #AD0000;">&gt;</span></span>
+<span id="cb1-2"><span class="kw" style="color: #003B4F;">&lt;meta</span> <span class="er" style="color: #AD0000;">charset</span><span class="ot" style="color: #003B4F;">=</span><span class="st" style="color: #20794D;">"utf-8"</span><span class="kw" style="color: #003B4F;">&gt;</span></span>
+<span id="cb1-3"><span class="kw" style="color: #003B4F;">&lt;title&gt;</span>Redirecting to https://michaeldewittjr.com/index.html<span class="kw" style="color: #003B4F;">&lt;/title&gt;</span></span>
+<span id="cb1-4"><span class="kw" style="color: #003B4F;">&lt;meta</span> <span class="er" style="color: #AD0000;">http-equiv</span><span class="ot" style="color: #003B4F;">=</span><span class="st" style="color: #20794D;">"refresh"</span> <span class="er" style="color: #AD0000;">content</span><span class="ot" style="color: #003B4F;">=</span><span class="st" style="color: #20794D;">"0; URL=https://michaeldewittjr.com/index.html/"</span><span class="kw" style="color: #003B4F;">&gt;</span></span>
+<span id="cb1-5"><span class="kw" style="color: #003B4F;">&lt;link</span> <span class="er" style="color: #AD0000;">rel</span><span class="ot" style="color: #003B4F;">=</span><span class="st" style="color: #20794D;">"canonical"</span> <span class="er" style="color: #AD0000;">href</span><span class="ot" style="color: #003B4F;">=</span><span class="st" style="color: #20794D;">"https://michaeldewittjr.com/"</span><span class="kw" style="color: #003B4F;">&gt;</span></span></code></pre></div>
+</section>
+<section id="so-far" class="level2">
+<h2 class="anchored" data-anchor-id="so-far">So far</h2>
+<p>So far so good, but time will tell. I still need to learn the <code>renv</code> magic at the post level to make sure that another port will go smoothly.</p>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>i.e., not Google blogger↩︎</p></li>
+</ol>
+</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2022,
+  author = {Michael DeWitt},
+  title = {Moving to Quarto},
+  date = {2022-06-05},
+  url = {https://michaeldewittjr.com/programming/2022-06-05-moving-to-quarto},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2022" class="csl-entry quarto-appendix-citeas">
+Michael DeWitt. 2022. <span>“Moving to Quarto.”</span> June 5, 2022. <a href="https://michaeldewittjr.com/programming/2022-06-05-moving-to-quarto">https://michaeldewittjr.com/programming/2022-06-05-moving-to-quarto</a>.
+</div></div></section></div> ]]></description>
+  <category>R</category>
+  <category>Quarto</category>
+  <guid>https://michaeldewittjr.com/programming/2022-06-05-moving-to-quarto/index.html</guid>
+  <pubDate>Sun, 05 Jun 2022 04:00:00 GMT</pubDate>
+  <media:content url="https://michaeldewittjr.com/programming/2022-06-05-moving-to-quarto/quarto.png" medium="image" type="image/png" height="35" width="144"/>
+</item>
 <item>
   <title>Pfizer BNT162b2 for Under 5s</title>
   <link>https://michaeldewittjr.com/programming/2022-02-11-pfizer-bnt162b2-for-under-5s/index.html</link>
@@ -20849,59 +20916,6 @@ Subsystem.”</span> 3AD–4AD. <a href="https://michaeldewittjr.com/programming
   <guid>https://michaeldewittjr.com/programming/2020-03-04-airflow-on-windows-linux-subsystem/index.html</guid>
   <pubDate>Wed, 04 Mar 2020 05:00:00 GMT</pubDate>
   <media:content url="https://michaeldewittjr.com/programming/2020-03-04-airflow-on-windows-linux-subsystem/airflow-logo.png" medium="image" type="image/png" height="144" width="144"/>
-</item>
-<item>
-  <title>2020 Plans</title>
-  <link>https://michaeldewittjr.com/programming/2020-01-01-2020-plans/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>I’m not one for New Year’s resolutions, but this post is more about those things that I wish to accomplish in this coming year. Someone once told me that you should do a little of whatever you want to do in the coming year on New Year’s day (e.g.&nbsp;if you want to read more, read a bit; if you want to draw, sketch a little something). I would like to blog more, so this should start the year off right.</p>
-<section id="blog-posts-in-the-pipeline" class="level2">
-<h2 class="anchored" data-anchor-id="blog-posts-in-the-pipeline">Blog Posts in the Pipeline</h2>
-<p>I have a few projects that started in 2019 that I need to complete in 2019. As this blog is dedicated mostly to methods (while <a href="">this site</a> is dedicated to community based projects), I want to re-start by “Stan a Day” program. Last year I tried to implement some kind of algorithm in <a href="https://mc-stan.org/">Stan</a>, or at least work in Stan directly everyday. I had some success (e.g.&nbsp;<a href="https://michaeldewittjr.com/resources/stan_mult_linear_regression.html">here</a>), but I would like to pursue this in 2020.</p>
-<section id="on-this-site" class="level3">
-<h3 class="anchored" data-anchor-id="on-this-site">On this site…</h3>
-<p>I bought a few books that I would like to implement in Stan with some toy data (e.g.&nbsp;<a href="http://www.statistica.it/gianluca/book/bcea/">Bayesian Cost-Effectiveness Analysis</a> and <a href="https://www.amazon.com/Oxford-Handbook-Bayesian-Econometrics-Handbooks/dp/0199681333/ref=pd_sim_14_3/139-4296261-7243065?_encoding=UTF8&amp;pd_rd_i=0199681333&amp;pd_rd_r=64da1613-ecec-45ef-b822-a9ba15cf5b7a&amp;pd_rd_w=kSrih&amp;pd_rd_wg=Cs0Bz&amp;pf_rd_p=04d27813-a1f2-4e7b-a32b-b5ab374ce3f9&amp;pf_rd_r=H896WMR960QCCQ46MJAZ&amp;psc=1&amp;refRID=H896WMR960QCCQ46MJAZ">The Oxford Handbook of Bayesian Econometrics</a>). If I can at least generate a few implementations of some of the models in these books, I’ll be happy.</p>
-<p>Another blog post that has yet to be written is a simulation study on method employed on a paper I read. In this paper they used Lasso regression to select for predictors and then fed them into another model and then repeated this process many times. I have already done some simulation studies on this, but I want to write up the results before I give additional details.</p>
-</section>
-<section id="on-nc-triad-research" class="level3">
-<h3 class="anchored" data-anchor-id="on-nc-triad-research">On NC Triad Research</h3>
-<p>I started a <a href="https://www.nctriadresearch.com/">community-focused site</a> in 2019. The idea was to do more community salient analysis on one site, leaving this site as somewhat rambly. I think that community focused research and analysis is incredibly powerful, and it would be fun to look at local news and policy with the most advanced analytical tools. Perhaps the analysis can be presented to city council to make local changes, or in the least serve as a resource for others.</p>
-<p>I have a few fun blog posts in mind for the site regardless:</p>
-<ul>
-<li><p>An investigation of the money left on the table from not maximizing Medicaid enrollments. This requires a good bit of data scraping, time series analysis with spatial effects. Regardless of one’s opinion of Medicaid<sup>1</sup>, it is “free” money from the government.</p></li>
-<li><p>A post on differences in assessed taxes across the different wards in Winston-Salem. There might be nothing there, but on the other hand, then could be something.</p></li>
-<li><p>I’ve been gathering data for two years on another topic, so until it’s posted, I’ll keep the last series of blog posts to myself.</p></li>
-</ul>
-<p>Happy 2020 and more to come!</p>
-
-
-</section>
-</section>
-
-
-<div id="quarto-appendix" class="default"><section class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>I’m all for it and I wish North Carolina would expand it.↩︎</p></li>
-</ol>
-</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2020,
-  author = {Michael DeWitt},
-  title = {2020 {Plans}},
-  date = {2020-01-01},
-  url = {https://michaeldewittjr.com/programming/2020-01-01-2020-plans},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2020" class="csl-entry quarto-appendix-citeas">
-Michael DeWitt. 2020. <span>“2020 Plans.”</span> January 1, 2020. <a href="https://michaeldewittjr.com/programming/2020-01-01-2020-plans">https://michaeldewittjr.com/programming/2020-01-01-2020-plans</a>.
-</div></div></section></div> ]]></description>
-  <category>Resolutions</category>
-  <category>Stan</category>
-  <guid>https://michaeldewittjr.com/programming/2020-01-01-2020-plans/index.html</guid>
-  <pubDate>Wed, 01 Jan 2020 05:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
