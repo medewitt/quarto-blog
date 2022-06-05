@@ -51,8 +51,10 @@ website:
         - text: "SARS2 Fitness Tracker"
           href: https://medewitt.github.io/sars2-fitness-tracker/
       - text: "newsfeed"
-        href: https://michaeldewittjr.com/news/index.html
+        href: https://medewitt.github.io/news/index.html
       - about.qmd
+      - icon: rss
+        href: index.xml
 
 format:
   html:
