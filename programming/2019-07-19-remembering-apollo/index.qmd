@@ -40,7 +40,7 @@ I think that this spirit was also around when people were tackling problems at B
 Predating the above tools look at the relevance of FORTRAN today:
 
 
-![<https://twitter.com/markvdloo/status/1152172519270604800>"]("fortran-tweet.png")
+![<https://twitter.com/markvdloo/status/1152172519270604800>"](fortran-tweet.png)
 
 
 Just fantastic stuff.

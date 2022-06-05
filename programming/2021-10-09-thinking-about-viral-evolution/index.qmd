@@ -3,6 +3,7 @@ title: "Thinking About Viral Evolution"
 description: |
   Exploring the impact of contact rate and virulence and their impact on the basic reproduction number of a pathogen.
 date: 2021-10-09
+image: preview.png
 categories: [musings, sars-cov-2, Covid-19, epidemiology]
 ---
 
@@ -87,6 +88,7 @@ p2<-expand.grid(gamma = .1,
 ```
 
 ```{r}
+#| image: true
 p1+p2
 ```
 

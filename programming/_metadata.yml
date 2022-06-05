@@ -16,7 +16,7 @@ toc-location: left
 execute:
   echo: true
   message: true
-  warning: true
+  warning: false
 
 
 # Default author

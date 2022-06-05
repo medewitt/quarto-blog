@@ -3145,71 +3145,57 @@ November 11, 2021. <a href="https://michaeldewittjr.com/programming/2021-10-11-n
 <p>’ I think it is always good to explore these relationships through simulation just to see the impacts.</p>
 <p>First we can define some functions for <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> and <img src="https://latex.codecogs.com/png.latex?%5Cgamma">. In both cases, we can say that they are monotonically decreasing with virulence (<img src="https://latex.codecogs.com/png.latex?%5Calpha">). Thinking here that for the modelled pathogen if the mortality rate increases the period of time that you are infectious decreases at some rate and similarly you are less likely to have many additional contacts. This could be a bad assumption depending on the pathogen, but for exploratory purposes let’s go with it.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;">library</span>(tidyverse)</span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>✓ ggplot2 3.3.5.9000     ✓ purrr   0.3.4.9000
-✓ tibble  3.1.6.9001     ✓ dplyr   1.0.8.9000
-✓ tidyr   1.1.4.9000     ✓ stringr 1.4.0.9000
-✓ readr   2.1.2          ✓ forcats 0.5.1     </code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-x dplyr::filter() masks stats::filter()
-x dplyr::lag()    masks stats::lag()</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;">library</span>(patchwork)</span>
-<span id="cb5-2"></span>
-<span id="cb5-3">beta_star <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="cf" style="color: #003B4F;">function</span>(beta, alpha){</span>
-<span id="cb5-4">  beta <span class="sc" style="color: #5E5E5E;">*</span> <span class="fu" style="color: #4758AB;">exp</span>(<span class="sc" style="color: #5E5E5E;">-</span>alpha)</span>
-<span id="cb5-5">}</span>
-<span id="cb5-6"></span>
-<span id="cb5-7">gamma_star <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="cf" style="color: #003B4F;">function</span>(gamma, alpha){</span>
-<span id="cb5-8">  log_curve <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="cf" style="color: #003B4F;">function</span>(k, x, x0){</span>
-<span id="cb5-9">    <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>(<span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">+</span><span class="fu" style="color: #4758AB;">exp</span>(<span class="sc" style="color: #5E5E5E;">-</span>k<span class="sc" style="color: #5E5E5E;">*</span>(x<span class="sc" style="color: #5E5E5E;">-</span>x0)))</span>
-<span id="cb5-10">  }</span>
-<span id="cb5-11">  </span>
-<span id="cb5-12">  recovery_time <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>gamma</span>
-<span id="cb5-13">    </span>
-<span id="cb5-14">    recovery_time_star <span class="ot" style="color: #003B4F;">&lt;-</span> recovery_time <span class="sc" style="color: #5E5E5E;">*</span> (.<span class="dv" style="color: #AD0000;">5</span><span class="sc" style="color: #5E5E5E;">+</span><span class="fu" style="color: #4758AB;">log_curve</span>(<span class="sc" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>,alpha,.<span class="dv" style="color: #AD0000;">02</span>))</span>
-<span id="cb5-15">    </span>
-<span id="cb5-16">    <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>recovery_time_star</span>
-<span id="cb5-17">  </span>
-<span id="cb5-18">}</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;">library</span>(tidyverse)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;">library</span>(patchwork)</span>
+<span id="cb1-3"></span>
+<span id="cb1-4">beta_star <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="cf" style="color: #003B4F;">function</span>(beta, alpha){</span>
+<span id="cb1-5">  beta <span class="sc" style="color: #5E5E5E;">*</span> <span class="fu" style="color: #4758AB;">exp</span>(<span class="sc" style="color: #5E5E5E;">-</span>alpha)</span>
+<span id="cb1-6">}</span>
+<span id="cb1-7"></span>
+<span id="cb1-8">gamma_star <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="cf" style="color: #003B4F;">function</span>(gamma, alpha){</span>
+<span id="cb1-9">  log_curve <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="cf" style="color: #003B4F;">function</span>(k, x, x0){</span>
+<span id="cb1-10">    <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>(<span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">+</span><span class="fu" style="color: #4758AB;">exp</span>(<span class="sc" style="color: #5E5E5E;">-</span>k<span class="sc" style="color: #5E5E5E;">*</span>(x<span class="sc" style="color: #5E5E5E;">-</span>x0)))</span>
+<span id="cb1-11">  }</span>
+<span id="cb1-12">  </span>
+<span id="cb1-13">  recovery_time <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>gamma</span>
+<span id="cb1-14">    </span>
+<span id="cb1-15">    recovery_time_star <span class="ot" style="color: #003B4F;">&lt;-</span> recovery_time <span class="sc" style="color: #5E5E5E;">*</span> (.<span class="dv" style="color: #AD0000;">5</span><span class="sc" style="color: #5E5E5E;">+</span><span class="fu" style="color: #4758AB;">log_curve</span>(<span class="sc" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>,alpha,.<span class="dv" style="color: #AD0000;">02</span>))</span>
+<span id="cb1-16">    </span>
+<span id="cb1-17">    <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>recovery_time_star</span>
+<span id="cb1-18">  </span>
+<span id="cb1-19">}</span></code></pre></div>
 </div>
 <p>Now we can create a simulation grid to explore these functions:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">p1 <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">expand.grid</span>(<span class="at" style="color: #657422;">beta =</span> .<span class="dv" style="color: #AD0000;">2</span>,</span>
-<span id="cb6-2">       <span class="at" style="color: #657422;">alpha =</span> <span class="fu" style="color: #4758AB;">seq</span>(.<span class="dv" style="color: #AD0000;">01</span>,.<span class="dv" style="color: #AD0000;">5</span>,.<span class="dv" style="color: #AD0000;">01</span>)) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
-<span id="cb6-3">  <span class="fu" style="color: #4758AB;">mutate</span>(<span class="at" style="color: #657422;">beta_star =</span> <span class="fu" style="color: #4758AB;">beta_star</span>(beta, alpha)) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
-<span id="cb6-4">  <span class="fu" style="color: #4758AB;">ggplot</span>(<span class="fu" style="color: #4758AB;">aes</span>(alpha, beta_star))<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb6-5">  <span class="fu" style="color: #4758AB;">geom_line</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb6-6">  <span class="fu" style="color: #4758AB;">labs</span>(</span>
-<span id="cb6-7">    <span class="at" style="color: #657422;">title =</span> <span class="st" style="color: #20794D;">"Effect of Virulence on Contact Rate"</span>,</span>
-<span id="cb6-8">    <span class="at" style="color: #657422;">subtitle =</span> <span class="st" style="color: #20794D;">"With Fixed Contact Rate"</span>,</span>
-<span id="cb6-9">    <span class="at" style="color: #657422;">y =</span> <span class="fu" style="color: #4758AB;">expression</span>(beta<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Contact Rate)"</span>),</span>
-<span id="cb6-10">    <span class="at" style="color: #657422;">x =</span> <span class="fu" style="color: #4758AB;">expression</span>(alpha<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Virulence)"</span>)</span>
-<span id="cb6-11">  )<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb6-12">  <span class="fu" style="color: #4758AB;">theme_bw</span>()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">p1 <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">expand.grid</span>(<span class="at" style="color: #657422;">beta =</span> .<span class="dv" style="color: #AD0000;">2</span>,</span>
+<span id="cb2-2">       <span class="at" style="color: #657422;">alpha =</span> <span class="fu" style="color: #4758AB;">seq</span>(.<span class="dv" style="color: #AD0000;">01</span>,.<span class="dv" style="color: #AD0000;">5</span>,.<span class="dv" style="color: #AD0000;">01</span>)) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb2-3">  <span class="fu" style="color: #4758AB;">mutate</span>(<span class="at" style="color: #657422;">beta_star =</span> <span class="fu" style="color: #4758AB;">beta_star</span>(beta, alpha)) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb2-4">  <span class="fu" style="color: #4758AB;">ggplot</span>(<span class="fu" style="color: #4758AB;">aes</span>(alpha, beta_star))<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb2-5">  <span class="fu" style="color: #4758AB;">geom_line</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb2-6">  <span class="fu" style="color: #4758AB;">labs</span>(</span>
+<span id="cb2-7">    <span class="at" style="color: #657422;">title =</span> <span class="st" style="color: #20794D;">"Effect of Virulence on Contact Rate"</span>,</span>
+<span id="cb2-8">    <span class="at" style="color: #657422;">subtitle =</span> <span class="st" style="color: #20794D;">"With Fixed Contact Rate"</span>,</span>
+<span id="cb2-9">    <span class="at" style="color: #657422;">y =</span> <span class="fu" style="color: #4758AB;">expression</span>(beta<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Contact Rate)"</span>),</span>
+<span id="cb2-10">    <span class="at" style="color: #657422;">x =</span> <span class="fu" style="color: #4758AB;">expression</span>(alpha<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Virulence)"</span>)</span>
+<span id="cb2-11">  )<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb2-12">  <span class="fu" style="color: #4758AB;">theme_bw</span>()</span></code></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">p2<span class="ot" style="color: #003B4F;">&lt;-</span><span class="fu" style="color: #4758AB;">expand.grid</span>(<span class="at" style="color: #657422;">gamma =</span> .<span class="dv" style="color: #AD0000;">1</span>,</span>
-<span id="cb7-2">       <span class="at" style="color: #657422;">alpha =</span> <span class="fu" style="color: #4758AB;">seq</span>(.<span class="dv" style="color: #AD0000;">01</span>,.<span class="dv" style="color: #AD0000;">5</span>,.<span class="dv" style="color: #AD0000;">01</span>)) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
-<span id="cb7-3">  <span class="fu" style="color: #4758AB;">mutate</span>(<span class="at" style="color: #657422;">gamma_star =</span> <span class="fu" style="color: #4758AB;">gamma_star</span>(gamma, alpha)) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
-<span id="cb7-4">  <span class="fu" style="color: #4758AB;">ggplot</span>(<span class="fu" style="color: #4758AB;">aes</span>(alpha, <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>gamma_star))<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb7-5">  <span class="fu" style="color: #4758AB;">geom_line</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb7-6">  <span class="fu" style="color: #4758AB;">labs</span>(</span>
-<span id="cb7-7">    <span class="at" style="color: #657422;">title =</span> <span class="st" style="color: #20794D;">"Effect of Virulence on Recovery Rate"</span>,</span>
-<span id="cb7-8">    <span class="at" style="color: #657422;">subtitle =</span> <span class="st" style="color: #20794D;">"With Fixed Contact Rate"</span>,</span>
-<span id="cb7-9">    <span class="at" style="color: #657422;">y =</span> <span class="st" style="color: #20794D;">"Recovery Time (Days)"</span>,</span>
-<span id="cb7-10">    <span class="at" style="color: #657422;">x =</span> <span class="fu" style="color: #4758AB;">expression</span>(alpha<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Virulence)"</span>)</span>
-<span id="cb7-11">  )<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb7-12">  <span class="fu" style="color: #4758AB;">theme_bw</span>()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">p2<span class="ot" style="color: #003B4F;">&lt;-</span><span class="fu" style="color: #4758AB;">expand.grid</span>(<span class="at" style="color: #657422;">gamma =</span> .<span class="dv" style="color: #AD0000;">1</span>,</span>
+<span id="cb3-2">       <span class="at" style="color: #657422;">alpha =</span> <span class="fu" style="color: #4758AB;">seq</span>(.<span class="dv" style="color: #AD0000;">01</span>,.<span class="dv" style="color: #AD0000;">5</span>,.<span class="dv" style="color: #AD0000;">01</span>)) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb3-3">  <span class="fu" style="color: #4758AB;">mutate</span>(<span class="at" style="color: #657422;">gamma_star =</span> <span class="fu" style="color: #4758AB;">gamma_star</span>(gamma, alpha)) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb3-4">  <span class="fu" style="color: #4758AB;">ggplot</span>(<span class="fu" style="color: #4758AB;">aes</span>(alpha, <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>gamma_star))<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb3-5">  <span class="fu" style="color: #4758AB;">geom_line</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb3-6">  <span class="fu" style="color: #4758AB;">labs</span>(</span>
+<span id="cb3-7">    <span class="at" style="color: #657422;">title =</span> <span class="st" style="color: #20794D;">"Effect of Virulence on Recovery Rate"</span>,</span>
+<span id="cb3-8">    <span class="at" style="color: #657422;">subtitle =</span> <span class="st" style="color: #20794D;">"With Fixed Contact Rate"</span>,</span>
+<span id="cb3-9">    <span class="at" style="color: #657422;">y =</span> <span class="st" style="color: #20794D;">"Recovery Time (Days)"</span>,</span>
+<span id="cb3-10">    <span class="at" style="color: #657422;">x =</span> <span class="fu" style="color: #4758AB;">expression</span>(alpha<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Virulence)"</span>)</span>
+<span id="cb3-11">  )<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb3-12">  <span class="fu" style="color: #4758AB;">theme_bw</span>()</span></code></pre></div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">p1<span class="sc" style="color: #5E5E5E;">+</span>p2</span></code></pre></div>
+<div class="cell" data-image="true">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">p1<span class="sc" style="color: #5E5E5E;">+</span>p2</span></code></pre></div>
 <div class="cell-output-display">
 <p><img src="https://michaeldewittjr.com/programming/2021-10-09-thinking-about-viral-evolution/index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -3219,37 +3205,37 @@ x dplyr::lag()    masks stats::lag()</code></pre>
 <h2 class="anchored" data-anchor-id="impact-on-r0">Impact on R0</h2>
 <p>We can pull all of this together into a function for R0 as described initially by Anderson and May (ignoring the impact of population density, N, in this case):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">r0 <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="cf" style="color: #003B4F;">function</span>(beta, <span class="at" style="color: #657422;">alpha=</span>.<span class="dv" style="color: #AD0000;">01</span>, <span class="at" style="color: #657422;">mu =</span> <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>(<span class="dv" style="color: #AD0000;">365</span><span class="sc" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">75</span>), <span class="at" style="color: #657422;">gamma =</span> <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">7</span>){</span>
-<span id="cb9-2">  <span class="co" style="color: #5E5E5E;"># Beta is Some function of Virulence, alpha</span></span>
-<span id="cb9-3"> </span>
-<span id="cb9-4">  beta_star_in <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">beta_star</span>(beta,alpha)</span>
-<span id="cb9-5">  </span>
-<span id="cb9-6">  gamma_star_in <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">gamma_star</span>(gamma, alpha)</span>
-<span id="cb9-7">  </span>
-<span id="cb9-8">  beta_star_in<span class="sc" style="color: #5E5E5E;">/</span>(alpha <span class="sc" style="color: #5E5E5E;">+</span> mu <span class="sc" style="color: #5E5E5E;">+</span> gamma_star_in)</span>
-<span id="cb9-9">  </span>
-<span id="cb9-10">}</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">r0 <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="cf" style="color: #003B4F;">function</span>(beta, <span class="at" style="color: #657422;">alpha=</span>.<span class="dv" style="color: #AD0000;">01</span>, <span class="at" style="color: #657422;">mu =</span> <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span>(<span class="dv" style="color: #AD0000;">365</span><span class="sc" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">75</span>), <span class="at" style="color: #657422;">gamma =</span> <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">7</span>){</span>
+<span id="cb5-2">  <span class="co" style="color: #5E5E5E;"># Beta is Some function of Virulence, alpha</span></span>
+<span id="cb5-3"> </span>
+<span id="cb5-4">  beta_star_in <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">beta_star</span>(beta,alpha)</span>
+<span id="cb5-5">  </span>
+<span id="cb5-6">  gamma_star_in <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">gamma_star</span>(gamma, alpha)</span>
+<span id="cb5-7">  </span>
+<span id="cb5-8">  beta_star_in<span class="sc" style="color: #5E5E5E;">/</span>(alpha <span class="sc" style="color: #5E5E5E;">+</span> mu <span class="sc" style="color: #5E5E5E;">+</span> gamma_star_in)</span>
+<span id="cb5-9">  </span>
+<span id="cb5-10">}</span></code></pre></div>
 </div>
 <p>We can then explore the surface generate over a range of virulence and contact rates.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">sim_grid <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">expand.grid</span>(<span class="at" style="color: #657422;">beta =</span> <span class="fu" style="color: #4758AB;">seq</span>(.<span class="dv" style="color: #AD0000;">01</span>,<span class="dv" style="color: #AD0000;">2</span>,.<span class="dv" style="color: #AD0000;">01</span>),</span>
-<span id="cb10-2">            <span class="at" style="color: #657422;">alpha =</span> <span class="fu" style="color: #4758AB;">seq</span>(.<span class="dv" style="color: #AD0000;">001</span>,.<span class="dv" style="color: #AD0000;">2</span>,.<span class="dv" style="color: #AD0000;">001</span>))</span>
-<span id="cb10-3"></span>
-<span id="cb10-4">pred <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">with</span>(sim_grid, <span class="fu" style="color: #4758AB;">r0</span>(beta,alpha))</span>
-<span id="cb10-5"></span>
-<span id="cb10-6">dat <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">cbind</span>(sim_grid, <span class="at" style="color: #657422;">r0 =</span> pred)</span>
-<span id="cb10-7"></span>
-<span id="cb10-8"><span class="fu" style="color: #4758AB;">ggplot</span>(<span class="at" style="color: #657422;">data=</span> dat, <span class="fu" style="color: #4758AB;">aes</span>(beta, alpha, <span class="at" style="color: #657422;">fill =</span> r0))<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb10-9">         <span class="fu" style="color: #4758AB;">geom_raster</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb10-10">  <span class="fu" style="color: #4758AB;">scale_fill_viridis_c</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb10-11">  <span class="fu" style="color: #4758AB;">theme_classic</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb10-12">  <span class="fu" style="color: #4758AB;">coord_cartesian</span>(<span class="at" style="color: #657422;">expand =</span> <span class="cn" style="color: #8f5902;">FALSE</span>)<span class="sc" style="color: #5E5E5E;">+</span></span>
-<span id="cb10-13">  <span class="fu" style="color: #4758AB;">labs</span>(</span>
-<span id="cb10-14">    <span class="at" style="color: #657422;">y =</span> <span class="fu" style="color: #4758AB;">expression</span>(alpha<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Virulence)"</span>),</span>
-<span id="cb10-15">    <span class="at" style="color: #657422;">x =</span> <span class="fu" style="color: #4758AB;">expression</span>(beta<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Contact Rate)"</span>),</span>
-<span id="cb10-16">    <span class="at" style="color: #657422;">fill =</span> <span class="fu" style="color: #4758AB;">expression</span>(R[<span class="dv" style="color: #AD0000;">0</span>]), </span>
-<span id="cb10-17">    <span class="at" style="color: #657422;">title =</span> <span class="fu" style="color: #4758AB;">expression</span>(R[<span class="dv" style="color: #AD0000;">0</span>]<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" as a function of Virulence and Contact Rate"</span>)</span>
-<span id="cb10-18">  )</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">sim_grid <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">expand.grid</span>(<span class="at" style="color: #657422;">beta =</span> <span class="fu" style="color: #4758AB;">seq</span>(.<span class="dv" style="color: #AD0000;">01</span>,<span class="dv" style="color: #AD0000;">2</span>,.<span class="dv" style="color: #AD0000;">01</span>),</span>
+<span id="cb6-2">            <span class="at" style="color: #657422;">alpha =</span> <span class="fu" style="color: #4758AB;">seq</span>(.<span class="dv" style="color: #AD0000;">001</span>,.<span class="dv" style="color: #AD0000;">2</span>,.<span class="dv" style="color: #AD0000;">001</span>))</span>
+<span id="cb6-3"></span>
+<span id="cb6-4">pred <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">with</span>(sim_grid, <span class="fu" style="color: #4758AB;">r0</span>(beta,alpha))</span>
+<span id="cb6-5"></span>
+<span id="cb6-6">dat <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">cbind</span>(sim_grid, <span class="at" style="color: #657422;">r0 =</span> pred)</span>
+<span id="cb6-7"></span>
+<span id="cb6-8"><span class="fu" style="color: #4758AB;">ggplot</span>(<span class="at" style="color: #657422;">data=</span> dat, <span class="fu" style="color: #4758AB;">aes</span>(beta, alpha, <span class="at" style="color: #657422;">fill =</span> r0))<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb6-9">         <span class="fu" style="color: #4758AB;">geom_raster</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb6-10">  <span class="fu" style="color: #4758AB;">scale_fill_viridis_c</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb6-11">  <span class="fu" style="color: #4758AB;">theme_classic</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb6-12">  <span class="fu" style="color: #4758AB;">coord_cartesian</span>(<span class="at" style="color: #657422;">expand =</span> <span class="cn" style="color: #8f5902;">FALSE</span>)<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb6-13">  <span class="fu" style="color: #4758AB;">labs</span>(</span>
+<span id="cb6-14">    <span class="at" style="color: #657422;">y =</span> <span class="fu" style="color: #4758AB;">expression</span>(alpha<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Virulence)"</span>),</span>
+<span id="cb6-15">    <span class="at" style="color: #657422;">x =</span> <span class="fu" style="color: #4758AB;">expression</span>(beta<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" (Contact Rate)"</span>),</span>
+<span id="cb6-16">    <span class="at" style="color: #657422;">fill =</span> <span class="fu" style="color: #4758AB;">expression</span>(R[<span class="dv" style="color: #AD0000;">0</span>]), </span>
+<span id="cb6-17">    <span class="at" style="color: #657422;">title =</span> <span class="fu" style="color: #4758AB;">expression</span>(R[<span class="dv" style="color: #AD0000;">0</span>]<span class="sc" style="color: #5E5E5E;">~</span><span class="st" style="color: #20794D;">" as a function of Virulence and Contact Rate"</span>)</span>
+<span id="cb6-18">  )</span></code></pre></div>
 <div class="cell-output-display">
 <p><img src="https://michaeldewittjr.com/programming/2021-10-09-thinking-about-viral-evolution/index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -3282,6 +3268,7 @@ October 9, 2021. <a href="https://michaeldewittjr.com/programming/2021-10-09-thi
   <category>epidemiology</category>
   <guid>https://michaeldewittjr.com/programming/2021-10-09-thinking-about-viral-evolution/index.html</guid>
   <pubDate>Sat, 09 Oct 2021 04:00:00 GMT</pubDate>
+  <media:content url="https://michaeldewittjr.com/programming/2021-10-09-thinking-about-viral-evolution/preview.png" medium="image" type="image/png" height="89" width="144"/>
 </item>
 <item>
   <title>RProfiles</title>
