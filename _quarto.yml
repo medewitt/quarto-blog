@@ -3,6 +3,7 @@ project:
 
 website:
   title: "Insufficient Statistics"
+  descriptio : "A blog exploring infectious diseases, statistics, epidemiology, and data science."
   site-url: https://michaeldewittjr.com
   repo-url: https://github.com/medewitt/quarto-blog
   open-graph: true
@@ -54,7 +55,7 @@ website:
         href: https://medewitt.github.io/news/index.html
       - about.qmd
       - icon: rss
-        href: index.xml
+        href: programming.xml
 
 format:
   html:
