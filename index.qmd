@@ -35,4 +35,6 @@ writeLines(redirects, here::here("_site", "_redirects"))
 }
 
 lapply(c("posts", "programming"), write_redirected)
+
+source("_build_redirects.R")
 ```
