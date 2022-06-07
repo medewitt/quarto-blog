@@ -6,22 +6,35 @@ date: 2022-06-05
 categories:  [Bayes, Covid-19, Clinical Trials, Stan, Causal Inference]
 ---
 
+The first example
+
+$$
+X_1 \sim \mathrm{Normal(Y_{True}, \sigma_1)} \\
+X_2 \sim \mathrm{Normal(Y_{True}, \sigma_2)} \\
+X_1 \bot X_2 \\
+$$
+So we are interested in the distribution of errors:
+
+$$
+D = X_1 - X_2 \\
+D = \mathrm{Normal(0, \sqrt{\sigma_1^2+\sigma_2^2)}}
+$$
+
 Let's make some fake data:
 
 ```{r}
-SIGMA <- diag(2)
+N <- 100
+Y_true <- runif(n = N, min = 170, 200)
+X1 <- round(rnorm(N, Y_true, 5),0)
+X2 <- round(rnorm(N, Y_true, 7),0)
 
-SIGMA[1,2] <- SIGMA[2,1] <- .3
-
-SIGMA
-
-z <- MASS::mvrnorm(n = 100, mu = c(1,1), Sigma = SIGMA)
+z <- cbind(X1,X2)
 
 ```
 
 ```{r}
 plot(z, bty = "l", las = 1,  cex.axis = 1, 
-     ylab = "Measure 2", xlab = "Measure 2")
+     ylab = "Measure 1", xlab = "Measure 2")
 abline(a = 0,b = 1, lty = 2, col = "blue")
 ```
 
@@ -33,9 +46,17 @@ diff_z <- z[,1] - z[,2]
 mu_diff <- mean(diff_z)
 ba_lower <- mu_diff - 1.96*sd(diff_z)
 ba_upper <- mu_diff + 1.96*sd(diff_z)
-plot(mu_z, diff_z, pch = 19)
+plot(mu_z, diff_z, pch = 19, bty = "l", las = 1,  cex.axis = 1 )
 abline(h = ba_lower, col = "red", lty = "dashed")
 abline(h = ba_upper, col = "red", lty = "dashed")
+abline(h = 0, lty = 2, col = "grey40")
+abline(h = mu_diff, col = "blue")
+```
+
+So what proportion of our samples are outside of our limits?
+
+```{r}
+mean(diff_z>ba_upper|diff_z<ba_lower)
 ```
 
 
