@@ -6,21 +6,30 @@ date: 2022-06-05
 categories:  [Bayes, Covid-19, Clinical Trials, Stan, Causal Inference]
 ---
 
-The first example
+```{r}
+rethink_palette <- c("#8080FF","#F98400","#00A08A","#E2AD00","#FF0000")
+```
 
-$$
-X_1 \sim \mathrm{Normal(Y_{True}, \sigma_1)} \\
-X_2 \sim \mathrm{Normal(Y_{True}, \sigma_2)} \\
-X_1 \bot X_2 \\
-$$
-So we are interested in the distribution of errors:
+## Thinking about measurement error
 
-$$
-D = X_1 - X_2 \\
-D = \mathrm{Normal(0, \sqrt{\sigma_1^2+\sigma_2^2)}}
-$$
+One common issue in medical statistics is measurement error.
+Often we are interested in some outcome measure that is itself from a distribution measured by noisy tools.
+Beyond this, we often use different measurement tools to try to capture this unseen true value.
+For example, we might think of blood pressure.
+To simplify further we can think about your diastolic blood pressue, the top number in the 120/80 blood pressure result we all desire.
+One method of measuring your blood pressure could be to use the automatic blood pressure cuff available at the pharmacy.
+This device functions by filling up a pneumatic cuff and then measuring the resistance against the cuff to establish blood pressure.
+Because the cuff is designed for the masses it has wider specifications so has slightly more measurement error, let's say 7 points.
+The alternative way to measure blood pressure would be to have an experience provider measure it with a manual blood pressure cuff.
+This provider will manually inflate the cuff while examining the resistance offered by your vasculature.
+Let's say that this measurement is less noisy than the previous, automated method, with a standard deviation of 5 pts.
+Ideally, we would like all of the measurements to come from the manual process.
+However, due to time, cost, or some other study constraints we might need to take some measurements from the manual process and some from the automated process.
+Ideally we would like to know the concordance between these two processes as we use them for some downstream endpoint analysis.
 
-Let's make some fake data:
+To examine the potential data we can then generate some synthetic data representing this example.
+First, we assume that the true values of blood pressure are drawn for a uniform distribution.
+We can then generate two sets of measurements, X1, representing those measurements from the manual process, and X2 from the automatic process.
 
 ```{r}
 N <- 100
@@ -32,11 +41,34 @@ z <- cbind(X1,X2)
 
 ```
 
+Visualizing these data we can compare the two sets of measured (remember that the true value is unknown).
+
 ```{r}
-plot(z, bty = "l", las = 1,  cex.axis = 1, 
-     ylab = "Measure 1", xlab = "Measure 2")
-abline(a = 0,b = 1, lty = 2, col = "blue")
+plot(z, bty = "l", las = 1,  cex.axis = 1, pch = 19,
+     ylab = "Measure 1", xlab = "Measure 2", col ="slateblue")
+abline(a = 0,b = 1, lty = 2, col = "grey80")
 ```
+
+
+$$
+\begin{align} 
+X_1 \sim \mathrm{Normal(Y_{True}, \sigma_1)} \\
+X_2 \sim \mathrm{Normal(Y_{True}, \sigma_2)} \\
+X_1 \bot X_2
+\end{align}
+$$
+So we are interested in the distribution of errors:
+
+$$
+\begin{align} 
+D = X_1 - X_2 \\
+D = \mathrm{Normal(0, \sqrt{\sigma_1^2+\sigma_2^2)}}
+\end{align}
+$$
+
+Let's make some fake data:
+
+
 
 Now construct the plot
 
@@ -46,7 +78,8 @@ diff_z <- z[,1] - z[,2]
 mu_diff <- mean(diff_z)
 ba_lower <- mu_diff - 1.96*sd(diff_z)
 ba_upper <- mu_diff + 1.96*sd(diff_z)
-plot(mu_z, diff_z, pch = 19, bty = "l", las = 1,  cex.axis = 1 )
+plot(mu_z, diff_z, pch = 19, bty = "l", 
+     las = 1,  cex.axis = 1, col = "slateblue" )
 abline(h = ba_lower, col = "red", lty = "dashed")
 abline(h = ba_upper, col = "red", lty = "dashed")
 abline(h = 0, lty = 2, col = "grey40")
