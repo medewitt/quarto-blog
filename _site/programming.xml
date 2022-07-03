@@ -10,7 +10,182 @@
 <atom:link href="https://michaeldewittjr.com/programming.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-0.9.483</generator>
-<lastBuildDate>Sun, 05 Jun 2022 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 03 Jul 2022 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Forever Chemicals in the Water</title>
+  <link>https://michaeldewittjr.com/programming/2022-07-03-forever-chemicals-in-the-water/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="forever-chemicals" class="level2">
+<h2 class="anchored" data-anchor-id="forever-chemicals">Forever Chemicals</h2>
+<p>The EPA recently issued updated guidance on acceptable levels of two so-called forever chemicals in the drinking water <a href="https://en.wikipedia.org/wiki/Perfluorooctanoic_acid">Perfluorooctanoic acid</a> (PFOA) and <a href="https://en.wikipedia.org/wiki/Per-_and_polyfluoroalkyl_substances">perfluorinated alkylated substances</a> (PFAS). These substances are used in non-stick applications and have become pervasive in every day life. Unfortunately, these substances are extraordinarily stable and don’t easy degrade in nature, are not captured by waste-water processing, and have been found for years in human serum. The EPA has been slowly lowering the acceptable levels in drinking water as the science evolves. As is the case with many long-term environment studies it takes a long time to gather observational data (with unknown effect sizes), but unsurprising to anyone they have found that even a little of these chemicals could have negative effects on human health.</p>
+</section>
+<section id="so-where-are-we" class="level2">
+<h2 class="anchored" data-anchor-id="so-where-are-we">So where are we?</h2>
+<p>By law, municipalities are supposed to post their drinking water composition so that the public knows what they are putting into their body. A hallmark of a developed society is having <a href="https://www.cdc.gov/healthywater/drinking/public/index.html">safe drinking water</a>. One of the easiest to get to websites is the drinking water page for Greensboro, NC. Unfortunately for Greensboro, some industry friends have not been friends of the public and have been known to <a href="https://www.wral.com/nc-lawmakers-mull-proposal-to-crack-down-on-pfas-contamination/20311840">dump forever chemicals</a>. We can use the standard tooling to pull down and visualize these data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;">library</span>(tidyverse)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;">library</span>(rvest)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;">theme_set</span>(cowplot<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">theme_cowplot</span>())</span></code></pre></div>
+</div>
+<p>First, I’ll denote my website and use the awesome <code>html_table</code> feature to extract the tables on the website. I’ll be left with two tables representing the two treatment facilities that service Greensboro,NC.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">url <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="st" style="color: #20794D;">'greensboro-nc.gov/departments/water-resources/water-system/pfos-pfoa-updates/pfos-pfoa-sample-results'</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3">ses <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">session</span>(<span class="at" style="color: #657422;">url =</span> url)</span>
+<span id="cb2-4"></span>
+<span id="cb2-5">ses_tabs <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">html_table</span>(ses)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="fu" style="color: #4758AB;">names</span>(ses_tabs) <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">c</span>(<span class="st" style="color: #20794D;">"Lake Brandt Raw Water - Mitchell Water Treatment Plant Source"</span>,</span>
+<span id="cb2-8">                     <span class="st" style="color: #20794D;">"Mitchell Water Treatment Plant Point of Entry"</span>)</span>
+<span id="cb2-9"></span>
+<span id="cb2-10">ses_tabs <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">lapply</span>(ses_tabs, <span class="cf" style="color: #003B4F;">function</span>(x) {</span>
+<span id="cb2-11">  <span class="fu" style="color: #4758AB;">setNames</span>(x, <span class="fu" style="color: #4758AB;">c</span>(<span class="st" style="color: #20794D;">"date"</span>, <span class="st" style="color: #20794D;">"substance"</span>, <span class="st" style="color: #20794D;">"result"</span>, <span class="st" style="color: #20794D;">"unit"</span>))}</span>
+<span id="cb2-12">  )</span></code></pre></div>
+</div>
+<p>Now we can examine those tables and see that in the second table we captured some headers that need not be there. We can zip those away and the format and bind these tables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;">str</span>(ses_tabs)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 2
+ $ Lake Brandt Raw Water - Mitchell Water Treatment Plant Source: tibble [12 × 4] (S3: tbl_df/tbl/data.frame)
+  ..$ date     : chr [1:12] "5/10/22" "5/10/22" "4/6/22" "4/6/22" ...
+  ..$ substance: chr [1:12] "Perfluoroctanesulfonic acid&nbsp;(PFOS)" "Perfluorooctanoic acid (PFOA)" "Perfluoroctanesulfonic acid&nbsp;(PFOS)" "Perfluorooctanoic acid (PFOA)" ...
+  ..$ result   : num [1:12] 32 4.4 22 3.3 22 3.5 15 2.8 23 3.9 ...
+  ..$ unit     : chr [1:12] "ng/L (ppt)" "ng/L (ppt)" "ng/L (ppt)" "ng/L (ppt)" ...
+ $ Mitchell Water Treatment Plant Point of Entry                : tibble [15 × 4] (S3: tbl_df/tbl/data.frame)
+  ..$ date     : chr [1:15] "Date sample\n            taken" "5/10/22" "5/10/22" "4/6/22" ...
+  ..$ substance: chr [1:15] "" "Perfluorooctanesulfonic&nbsp;acid (PFOS)" "Perfluorooctanesulfonic&nbsp;acid (PFOS)" "Perfluorooctanesulfonic&nbsp;acid (PFOS)" ...
+  ..$ result   : chr [1:15] "Result" "24" "3.7" "20" ...
+  ..$ unit     : chr [1:15] "Unit" "ng/L (ppt)" "ng/L (ppt)" "ng/L (ppt)" ...</code></pre>
+</div>
+</div>
+<p>Now we bind and format with <code>map</code> call and a function to coerce the columns to the correct type.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">ses_tabs[[<span class="dv" style="color: #AD0000;">2</span>]] <span class="ot" style="color: #003B4F;">&lt;-</span> ses_tabs[[<span class="dv" style="color: #AD0000;">2</span>]][<span class="sc" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>,]</span>
+<span id="cb5-2"></span>
+<span id="cb5-3">ses_tabs <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">map</span>(ses_tabs, <span class="cf" style="color: #003B4F;">function</span>(x){</span>
+<span id="cb5-4">  x <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb5-5">    <span class="fu" style="color: #4758AB;">mutate</span>(<span class="at" style="color: #657422;">date =</span> lubridate<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">mdy</span>(date),</span>
+<span id="cb5-6">           <span class="at" style="color: #657422;">result =</span> <span class="fu" style="color: #4758AB;">as.numeric</span>(result),</span>
+<span id="cb5-7">           <span class="at" style="color: #657422;">unit =</span> <span class="fu" style="color: #4758AB;">as.character</span>(unit))</span>
+<span id="cb5-8">})</span>
+<span id="cb5-9"></span>
+<span id="cb5-10">ses_tabs <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">bind_rows</span>(ses_tabs, <span class="at" style="color: #657422;">.id =</span> <span class="st" style="color: #20794D;">"source"</span>)</span>
+<span id="cb5-11"></span>
+<span id="cb5-12"><span class="fu" style="color: #4758AB;">head</span>(ses_tabs <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb5-13">       <span class="fu" style="color: #4758AB;">select</span>(date,substance,result))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  date       substance                          result
+  &lt;date&gt;     &lt;chr&gt;                               &lt;dbl&gt;
+1 2022-05-10 Perfluoroctanesulfonic acid&nbsp;(PFOS)   32  
+2 2022-05-10 Perfluorooctanoic acid (PFOA)         4.4
+3 2022-04-06 Perfluoroctanesulfonic acid&nbsp;(PFOS)   22  
+4 2022-04-06 Perfluorooctanoic acid (PFOA)         3.3
+5 2022-03-08 Perfluoroctanesulfonic acid&nbsp;(PFOS)   22  
+6 2022-03-08 Perfluorooctanoic acid (PFOA)         3.5</code></pre>
+</div>
+</div>
+<p>Note that they say that a nanogram per Liter (ng/L) is equivalent to a <a href="https://pubs.usgs.gov/circ/circ1133/conversion-factors.html">part per trillion (ppt)</a> which is a standard unit for acceptable contamination levels.</p>
+</section>
+<section id="lets-see-what-were-drinking" class="level2">
+<h2 class="anchored" data-anchor-id="lets-see-what-were-drinking">Let’s see what we’re drinking</h2>
+<p>We can start with a simple graph of these two chemicals over time.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">ses_tabs<span class="sc" style="color: #5E5E5E;">$</span>compound <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">with</span>(ses_tabs, stringr<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">str_extract</span>(<span class="at" style="color: #657422;">string =</span> substance, <span class="st" style="color: #20794D;">"PFOA|PFOS"</span>))</span>
+<span id="cb7-2">ses_tabs<span class="sc" style="color: #5E5E5E;">$</span>wwtp <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">with</span>(ses_tabs, stringr<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">str_extract</span>(<span class="at" style="color: #657422;">string =</span> source, <span class="st" style="color: #20794D;">"Lake Brandt|Mitchell"</span>))</span>
+<span id="cb7-3"></span>
+<span id="cb7-4">fig1 <span class="ot" style="color: #003B4F;">&lt;-</span> ses_tabs <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb7-5">  <span class="fu" style="color: #4758AB;">ggplot</span>(<span class="fu" style="color: #4758AB;">aes</span>(date, result, <span class="at" style="color: #657422;">color =</span> wwtp))<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb7-6">  <span class="fu" style="color: #4758AB;">geom_line</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb7-7">  <span class="fu" style="color: #4758AB;">theme</span>(<span class="at" style="color: #657422;">legend.position =</span> <span class="st" style="color: #20794D;">"bottom"</span>)<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb7-8">  <span class="fu" style="color: #4758AB;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;">~</span>compound)<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb7-9">  <span class="fu" style="color: #4758AB;">labs</span>(</span>
+<span id="cb7-10">    <span class="at" style="color: #657422;">title =</span> <span class="st" style="color: #20794D;">'Forever Chemical Concentrations in Greensboro, NC'</span>,</span>
+<span id="cb7-11">    <span class="at" style="color: #657422;">y =</span> <span class="st" style="color: #20794D;">"parts per trillion"</span>,</span>
+<span id="cb7-12">    <span class="at" style="color: #657422;">x =</span> <span class="cn" style="color: #8f5902;">NULL</span>)<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb7-13">  <span class="fu" style="color: #4758AB;">scale_x_date</span>(<span class="at" style="color: #657422;">date_labels =</span> <span class="st" style="color: #20794D;">"%b %Y"</span>)<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb7-14">  MetBrewer<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">scale_color_met_d</span>(<span class="st" style="color: #20794D;">"Demuth"</span>)</span>
+<span id="cb7-15"></span>
+<span id="cb7-16">fig1</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="https://michaeldewittjr.com/programming/2022-07-03-forever-chemicals-in-the-water/index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Now the critical point is are these ok? According to the <a href="https://www.epa.gov/sdwa/drinking-water-health-advisories-pfoa-and-pfos">EPA again</a>, the new limits are:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Compound</th>
+<th>Limit (ppt)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PFOA</td>
+<td>0.004</td>
+</tr>
+<tr class="even">
+<td>PFOS</td>
+<td>0.02</td>
+</tr>
+</tbody>
+</table>
+<p>I don’t need to draw any lines on the graph to saw that we are likely exceeding those limits with a high confidence.</p>
+</section>
+<section id="where-it-going" class="level2">
+<h2 class="anchored" data-anchor-id="where-it-going">Where it going?</h2>
+<p>Unfortunately, we don’t have a done of historical data upon which to build a model. The last two years of data are not available and earlier years are locked into pdfs. Regardless, we can fit a trend line.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">dat_ts <span class="ot" style="color: #003B4F;">&lt;-</span> ses_tabs <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb8-2">  <span class="fu" style="color: #4758AB;">filter</span>(compound<span class="sc" style="color: #5E5E5E;">==</span><span class="st" style="color: #20794D;">"PFOS"</span> <span class="sc" style="color: #5E5E5E;">&amp;</span> wwtp <span class="sc" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"Mitchell"</span>) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb8-3">  <span class="fu" style="color: #4758AB;">group_by</span>(date) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb8-4">  <span class="fu" style="color: #4758AB;">filter</span>(result <span class="sc" style="color: #5E5E5E;">==</span> <span class="fu" style="color: #4758AB;">max</span>(result)) <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb8-5">  <span class="fu" style="color: #4758AB;">ungroup</span>()</span>
+<span id="cb8-6"></span>
+<span id="cb8-7">dat_ts <span class="sc" style="color: #5E5E5E;">%&gt;%</span> </span>
+<span id="cb8-8">  <span class="fu" style="color: #4758AB;">ggplot</span>(<span class="fu" style="color: #4758AB;">aes</span>(date, result))<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb8-9">  <span class="fu" style="color: #4758AB;">geom_point</span>()<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb8-10">  <span class="fu" style="color: #4758AB;">geom_smooth</span>(<span class="at" style="color: #657422;">method =</span> <span class="st" style="color: #20794D;">"lm"</span>)<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb8-11">  <span class="fu" style="color: #4758AB;">labs</span>(</span>
+<span id="cb8-12">    <span class="at" style="color: #657422;">title =</span> <span class="st" style="color: #20794D;">"PFOS Concentration at the Mitchell WWTP"</span>,</span>
+<span id="cb8-13">    <span class="at" style="color: #657422;">y =</span> <span class="st" style="color: #20794D;">"ppt"</span>,</span>
+<span id="cb8-14">    <span class="at" style="color: #657422;">x =</span> <span class="cn" style="color: #8f5902;">NULL</span>,</span>
+<span id="cb8-15">    <span class="at" style="color: #657422;">subtitle =</span> <span class="st" style="color: #20794D;">"Linear Trend"</span></span>
+<span id="cb8-16">  )<span class="sc" style="color: #5E5E5E;">+</span></span>
+<span id="cb8-17">  <span class="fu" style="color: #4758AB;">geom_hline</span>(<span class="at" style="color: #657422;">yintercept =</span> <span class="fl" style="color: #AD0000;">0.02</span>, <span class="at" style="color: #657422;">col =</span> <span class="st" style="color: #20794D;">"red"</span>, <span class="at" style="color: #657422;">lty =</span><span class="dv" style="color: #AD0000;">2</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="https://michaeldewittjr.com/programming/2022-07-03-forever-chemicals-in-the-water/index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Only have seven irregularly spaced data points makes this trend line a stretch. Additionally, we don’t have a good sense of the measurement error or the effect of seasonality on these measures, so it is tough to say what the trend i, but the major conclusion is that the concentration is well above the recommendation.</p>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2022,
+  author = {Michael DeWitt},
+  title = {Forever {Chemicals} in the {Water}},
+  date = {2022-07-03},
+  url = {https://michaeldewittjr.com/programming/2022-07-03-forever-chemicals-in-the-water},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2022" class="csl-entry quarto-appendix-citeas">
+Michael DeWitt. 2022. <span>“Forever Chemicals in the Water.”</span>
+July 3, 2022. <a href="https://michaeldewittjr.com/programming/2022-07-03-forever-chemicals-in-the-water">https://michaeldewittjr.com/programming/2022-07-03-forever-chemicals-in-the-water</a>.
+</div></div></section></div> ]]></description>
+  <category>Chemicals</category>
+  <category>Environment</category>
+  <category>Water</category>
+  <category>web-scraping</category>
+  <guid>https://michaeldewittjr.com/programming/2022-07-03-forever-chemicals-in-the-water/index.html</guid>
+  <pubDate>Sun, 03 Jul 2022 04:00:00 GMT</pubDate>
+  <media:content url="https://michaeldewittjr.com/programming/2022-07-03-forever-chemicals-in-the-water/preview.png" medium="image" type="image/png" height="89" width="144"/>
+</item>
 <item>
   <title>Moving to quarto</title>
   <link>https://michaeldewittjr.com/programming/2022-06-05-moving-to-quarto/index.html</link>
@@ -20613,309 +20788,6 @@ Michael DeWitt. 2020. <span>“Flatten the Curve.”</span> March 13, 2020.
   <category>exponential growth modeling</category>
   <guid>https://michaeldewittjr.com/programming/2020-03-13-flatten-the-curve/index.html</guid>
   <pubDate>Fri, 13 Mar 2020 04:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Airflow on Windows Linux Subsystem</title>
-  <link>https://michaeldewittjr.com/programming/2020-03-04-airflow-on-windows-linux-subsystem/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<section id="why-do-this" class="level1">
-<h1>Why Do This?</h1>
-<p>Like it or not, there are a lot of Windows shops out there. However, many super useful tools are Linux native and don’t really bridge into the Windows world (for good reason). That being said Windows and Microsoft (I think) are acknowledging this gap and have provided the Windows Linux Subsystem as a bridge between these two dominate platforms. This allows us little people to take advantage of some of the high powered tools available.</p>
-</section>
-<section id="special-thanks" class="level1">
-<h1>Special Thanks</h1>
-<p>This post stands on the back of a lot of really well written articles which I will link to. Additionally, the code here is good as of Feb 2020 so things are always subject to change.</p>
-</section>
-<section id="start-with-wls" class="level1">
-<h1>Start with WLS</h1>
-<p>Assuming you are on a Windows box, you’ll need to enable Windows Linux Subsystem. This will allow you to run a lightweight virtual machine that also has access to your root machine file system if you so choose. The instructions are pretty decent <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">at this link</a>, but here are the high points.</p>
-<section id="enable-wsl" class="level2">
-<h2 class="anchored" data-anchor-id="enable-wsl">Enable WSL</h2>
-<p>You need to enable your features via <strong>Powershell</strong> in administrator mode. If you are on a server or VM, you can do this by adding the features using the usual methods by selecting the additional features.</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1">Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux</span></code></pre></div>
-</section>
-<section id="get-the-distro" class="level2">
-<h2 class="anchored" data-anchor-id="get-the-distro">Get the Distro</h2>
-<p>Now you can download your distribution of choice (I like Ubuntu 18.04). There is some weirdness with some of the versions, so be careful what you choice. For instance when I installed Ubuntu 16LTS I could not upgrade to Python3.6, which I needed, so I had to burn it down and install another.</p>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1">Invoke-WebRequest -Uri https://aka.ms/wsl-ubuntu-1804 -OutFile Ubuntu.appx -UseBasicParsing</span>
-<span id="cb2-2">Add-AppxPackage .\Ubuntu.appx</span></code></pre></div>
-<section id="burn-it-down-huh" class="level3">
-<h3 class="anchored" data-anchor-id="burn-it-down-huh">Burn it Down? Huh?</h3>
-<p>So this is a little aside. Sometimes you mess up and the instal doesn’t go as expected. It is surprisingly hard to remove an old distribution and restart (though some tutorials say that it is). Here is a trick, again in powershell</p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1">wslconfig /l</span></code></pre></div>
-<p>Which will allow you to see what is installed. If you want to reset your distribution, which I had to do, do the following:</p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1">wslconfig /u Ubuntu18-04</span></code></pre></div>
-<p>This will unlist the distribution and you can install it afresh, otherwise it will continue to live on in your system.</p>
-</section>
-</section>
-<section id="now-start-ubuntu" class="level2">
-<h2 class="anchored" data-anchor-id="now-start-ubuntu">Now Start Ubuntu</h2>
-<p>Assuming your install went ok, now go to the start button (or whatever it is called now) and type “Ubuntu”. You should see the familiar logo. Select it and it will run. You’ll also have to name yourself (which can be anything you want).</p>
-<p>As always a good practice it to give your new Ubuntu instance an update and upgrade:</p>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;">sudo</span> apt updade <span class="kw" style="color: #003B4F;">&amp;&amp;</span> <span class="fu" style="color: #4758AB;">sudo</span> apt upgrade</span></code></pre></div>
-<p>Additionally, and this is important, you want to automount your Windows directories. You can typically access them via <code>/mnt/c/Users...</code>, but a lot of programs don’t like this and won’t run from a mounted drive. because of this you will need to update a configuration file:<sup>1</sup></p>
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="fu" style="color: #4758AB;">sudo</span> nano /etc/wsl.conf</span></code></pre></div>
-<p>Then type the following into the configuration file:</p>
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><span class="co" style="color: #5E5E5E;">[</span><span class="ot" style="color: #003B4F;">automount</span><span class="co" style="color: #5E5E5E;">]</span></span>
-<span id="cb7-2">root = /</span>
-<span id="cb7-3">options = "metadata"</span></code></pre></div>
-<p>Now write out the file <code>CTRL + O</code>, then exit with <code>CTRL + X</code></p>
-<p>Now if you type the following, you should see your C drive listed in the directories:</p>
-<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1">ls /l</span></code></pre></div>
-</section>
-</section>
-<section id="postgres" class="level1">
-<h1>Postgres</h1>
-<p><a href="https://en.wikipedia.org/wiki/PostgreSQL">Postgres</a> is an open source database, which works great with Airflow and is relatively easy to use. Aiflow will run out of the box on a local sqlite database, but it always seems to get corrupted and have IO errors which are hard to depug.</p>
-<section id="installing-postgres" class="level2">
-<h2 class="anchored" data-anchor-id="installing-postgres">Installing Postgres</h2>
-<p>In the Ubuntu terminal type the following to get postgres<sup>2</sup></p>
-<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;">sudo</span> apt-get install postgresql</span></code></pre></div>
-<p>The user account for postgres is <code>postgres</code> (easy enough to remember)</p>
-<p>You’ll need to make a password by the following:</p>
-<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="fu" style="color: #4758AB;">sudo</span> passwd postgres</span></code></pre></div>
-<p>Then close Ubuntu and open it back up. Type the following to see if the server is running:</p>
-<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;">sudo</span> service postgresql start</span></code></pre></div>
-</section>
-<section id="create-a-postgres-user-and-database" class="level2">
-<h2 class="anchored" data-anchor-id="create-a-postgres-user-and-database">Create a Postgres User and Database</h2>
-<p>First we’ll create a user for the postgres database. This is how Airflow will connect:</p>
-<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="fu" style="color: #4758AB;">sudo</span> <span class="at" style="color: #657422;">-u</span> postgres createuser airflow</span>
-<span id="cb12-2"><span class="fu" style="color: #4758AB;">sudo</span> <span class="at" style="color: #657422;">-u</span> postgres createdb airflowdb</span></code></pre></div>
-<p>Now you want to jump into the postgres database that you started and provide rights and a password to <code>airflow</code></p>
-<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="fu" style="color: #4758AB;">sudo</span> <span class="at" style="color: #657422;">-u</span> postgres psql</span></code></pre></div>
-<p>Now in the pqsl area (looks like psql=#)</p>
-<pre class="psql"><code>alter user airflow with encrypted password 'securepassword';
-grant all privileges on database airflowdb to airflow ; 
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO airflow;</code></pre>
-<p>Now you can hit <code>CTRL + Z</code> and exit the postgres prompt. Congrats, you now have an airflowdb postgres database.</p>
-<p>To verify that everything went as expected, again in the command line type:</p>
-<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="ex" style="color: null;">psql</span> <span class="at" style="color: #657422;">-d</span> airflow</span></code></pre></div>
-<p>Then in the airflow prompt type:</p>
-<pre class="psql"><code>\conninfo</code></pre>
-<p>Note the port that it is serving on (typically 5432, but could be something different for you). Exit out back to the bash terminal.</p>
-</section>
-<section id="config-for-postgres" class="level2">
-<h2 class="anchored" data-anchor-id="config-for-postgres">Config for Postgres</h2>
-<p>Now, thanks to <a href="https://medium.com/@taufiq_ibrahim/apache-airflow-installation-on-ubuntu-ddc087482c14">this post</a> we will update some configuration files so that Airflow and postgres can communicate.</p>
-<p>First we need to change the pg_hba.conf file. <strong>Note</strong> that you may need to change your path depending on what version of postgres you have.</p>
-<div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="fu" style="color: #4758AB;">sudo</span> nano /etc/postgresql/10/main/pg_hba.conf</span></code></pre></div>
-<p>Now that you have that file open, chage the IPv4 connections to as follows:</p>
-<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1">host all all 0.0.0.0/0 trust</span></code></pre></div>
-<p>Write out those changes and then exit. Now restart the server with:</p>
-<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><span class="fu" style="color: #4758AB;">sudo</span> service postgresql restart</span></code></pre></div>
-<p>Now one more configuration file change, this time at:</p>
-<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><span class="fu" style="color: #4758AB;">sudo</span> nano /etc/postgresql/9.5/main/postgresql.conf</span></code></pre></div>
-<p>Here change the <code>listen_addresses</code> field to look like that below:</p>
-<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb21-1">listen_addresses = ‘*’ # for Airflow connection</span></code></pre></div>
-<p>Then restart the server once more:</p>
-<div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><span class="fu" style="color: #4758AB;">sudo</span> service postgresql restart</span></code></pre></div>
-</section>
-</section>
-<section id="now-airflow" class="level1">
-<h1>Now Airflow</h1>
-<p>Wow, we went through a good bit just to get here. Worry not though, almost done.</p>
-<section id="change-airflowhome" class="level2">
-<h2 class="anchored" data-anchor-id="change-airflowhome">Change Airflowhome</h2>
-<p>First we need to make sure that Airflow goes to a real drive on the local machine and not in the WLS. To ensure this happens, I like to add the path to my .bashrc file.</p>
-<div class="sourceCode" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><span class="fu" style="color: #4758AB;">sudo</span> nano ~/.bashrc</span></code></pre></div>
-<p>Find an empty line and include the line below, changing the “user_name” for whatever username you have. Important here is that you have write access and know that the dags for airflow will be in this case under the AirflowHome directory on your C drive.</p>
-<div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb24-1">export AIRFLOW_HOME=/c/Users/user_name/AirflowHome</span></code></pre></div>
-<p>Write out this change and then exit with the normal keystrokes. Additionally, source your bashrc file or exit Ubuntu and re open it.</p>
-</section>
-<section id="python" class="level2">
-<h2 class="anchored" data-anchor-id="python">Python?</h2>
-<p>It is important to make sure that we have a version of Python 3.6 or newer. This ships with Ubuntu 18-04, but worth checking with the following:</p>
-<div class="sourceCode" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><span class="ex" style="color: null;">python</span> <span class="at" style="color: #657422;">--version</span></span></code></pre></div>
-<p>If we don’t have python then we will need to install it with:</p>
-<div class="sourceCode" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><span class="fu" style="color: #4758AB;">sudo</span> apt get python3</span></code></pre></div>
-<p>If we do have it, we need to verify that we have pip</p>
-<div class="sourceCode" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><span class="ex" style="color: null;">pip3</span> <span class="at" style="color: #657422;">--version</span></span></code></pre></div>
-<p>If not, install it as above.</p>
-</section>
-<section id="install-airflow-finally" class="level2">
-<h2 class="anchored" data-anchor-id="install-airflow-finally">Install Airflow (finally)</h2>
-<p>Now that all the pre-reqs have been accomplished we can install airflow with the following:</p>
-<div class="sourceCode" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><span class="ex" style="color: null;">pip3</span> install apache-airflow[postgres, mssql, celery, rabbitmq]</span></code></pre></div>
-<p>This will install Airflow as well as all the packages that support connecting to postgres, MS Sql and running multiple operators. Depending what packages you have, this might take a bit.</p>
-</section>
-<section id="configuring-airflow" class="level2">
-<h2 class="anchored" data-anchor-id="configuring-airflow">Configuring Airflow</h2>
-<p>Once everything is installed, we need to update the configuration for airflow to point it to our prefered destinations.</p>
-<p>We an do this with:</p>
-<div class="sourceCode" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><span class="fu" style="color: #4758AB;">sudo</span> nano <span class="va" style="color: #111111;">${AIRFLOW_HOME}</span>/airflow.cfg</span></code></pre></div>
-<p>(This also tests that our path was successful).</p>
-<p>Once there we need to alter two fields.</p>
-<ol type="1">
-<li>Update our database to our fancy postgres instance as shown below:</li>
-</ol>
-<div class="sourceCode" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb30-1">sql_alchemy_conn = postgresql+psycopg2://airflow:secure_password@localhost:5432/airflowdb</span></code></pre></div>
-<ol start="2" type="1">
-<li>Change our executor to:</li>
-</ol>
-<div class="sourceCode" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb31-1">executor = LocalExecutor</span></code></pre></div>
-<p>In theory we should be able to use the CeleryExecutor, but I wasn’t sucessful with it and didn’t want to fight that anymore.</p>
-<p>You should scan through this configuration file to see if everything is correct and if you want to make any changes. For example you might want to change the timezone as <a href="https://www.ryanmerlin.com/2019/07/apache-airflow-installation-on-ubuntu-18-04-18-10/">the author of this post did</a></p>
-<div class="sourceCode" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb32-1">default_timezone = America/New_York</span></code></pre></div>
-</section>
-<section id="serving-it-up" class="level2">
-<h2 class="anchored" data-anchor-id="serving-it-up">Serving it Up</h2>
-<p>Now you can exit the configuration file by writing out your changes.</p>
-<p>Now you can start serving Airflow with the following:</p>
-<div class="sourceCode" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><span class="ex" style="color: null;">airflow</span> initdb</span></code></pre></div>
-<p>Now the database has been initialized. Next step is to start the scheduler:</p>
-<div class="sourceCode" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><span class="ex" style="color: null;">airflow</span> scheduler</span></code></pre></div>
-<p>This will start the scheduler (and it might take up the whole window with logs, so just open another instance of Ubunutu).</p>
-<p>Then start the webserver:</p>
-<div class="sourceCode" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><span class="ex" style="color: null;">airflow</span> webserver</span></code></pre></div>
-<p>Again, this might take another terminal over completely, but don’t worry. If everything worked, you should be able to navigate to localhost:8080 and see your Airflow instance running in your favourite browser.</p>
-<p>This will have the default dags loaded by default, so you should see several dags. Turn one of the tutorials one, then manually trigger the DAG to see how it works.</p>
-</section>
-</section>
-<section id="running-a-dag-on-the-local-machine" class="level1">
-<h1>Running A Dag on the Local Machine</h1>
-<p>The whole prupose of Airflow is to schedule tasks. Ideally, you can use all of your windows credentials, Active Directory, looking at you and manipulate files on shared drives. Here’s where it gets tricky; you will call your Windows host machine to run your tasks in your DAG files.</p>
-<section id="an-example" class="level2">
-<h2 class="anchored" data-anchor-id="an-example">An Example</h2>
-<p>I manage my dags through a Git repository. This provides me all the power of version control and lets other users submit PRs with new DAGs. If need to make changes, I just push to my local repository with my new dag or changed dag. Airflow then pulls this repository on a schedule, checks them, and turns any shell scripts into executables.</p>
-<div class="sourceCode" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><span class="co" style="color: #5E5E5E;"># -*- coding: utf-8 -*-</span></span>
-<span id="cb36-2"></span>
-<span id="cb36-3"><span class="im" style="color: #00769E;">from</span> builtins <span class="im" style="color: #00769E;">import</span> <span class="bu" style="color: null;">range</span></span>
-<span id="cb36-4"><span class="im" style="color: #00769E;">from</span> datetime <span class="im" style="color: #00769E;">import</span> timedelta</span>
-<span id="cb36-5"><span class="im" style="color: #00769E;">import</span> airflow</span>
-<span id="cb36-6"><span class="im" style="color: #00769E;">from</span> airflow.models <span class="im" style="color: #00769E;">import</span> DAG</span>
-<span id="cb36-7"><span class="im" style="color: #00769E;">from</span> airflow.operators.bash_operator <span class="im" style="color: #00769E;">import</span> BashOperator</span>
-<span id="cb36-8"><span class="im" style="color: #00769E;">from</span> airflow.operators.dummy_operator <span class="im" style="color: #00769E;">import</span> DummyOperator</span>
-<span id="cb36-9"></span>
-<span id="cb36-10">args <span class="op" style="color: #5E5E5E;">=</span> {</span>
-<span id="cb36-11">    <span class="st" style="color: #20794D;">'owner'</span>: <span class="st" style="color: #20794D;">'michael'</span>,</span>
-<span id="cb36-12">    <span class="st" style="color: #20794D;">'start_date'</span>: airflow.utils.dates.days_ago(<span class="dv" style="color: #AD0000;">2</span>),</span>
-<span id="cb36-13">}</span>
-<span id="cb36-14"></span>
-<span id="cb36-15">dag <span class="op" style="color: #5E5E5E;">=</span> DAG(</span>
-<span id="cb36-16">    dag_id<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'pull_scheduler_updates'</span>,</span>
-<span id="cb36-17">    default_args<span class="op" style="color: #5E5E5E;">=</span>args,</span>
-<span id="cb36-18">    schedule_interval<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'2 4 * * *'</span>,</span>
-<span id="cb36-19">    dagrun_timeout<span class="op" style="color: #5E5E5E;">=</span>timedelta(minutes<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">20</span>),</span>
-<span id="cb36-20">)</span>
-<span id="cb36-21"></span>
-<span id="cb36-22">update_repo <span class="op" style="color: #5E5E5E;">=</span> BashOperator(</span>
-<span id="cb36-23">    task_id<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'update_repo'</span>,</span>
-<span id="cb36-24">    bash_command<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'cd /c/Users/mike/AirflowHome; /c/Program\ Files/Git/cmd/git.exe checkout -f; /c/Program\ Files/Git/cmd/git.exe pull origin master; '</span>,</span>
-<span id="cb36-25">    dag<span class="op" style="color: #5E5E5E;">=</span>dag,</span>
-<span id="cb36-26">)</span>
-<span id="cb36-27"></span>
-<span id="cb36-28">convert_unix <span class="op" style="color: #5E5E5E;">=</span> BashOperator(</span>
-<span id="cb36-29">    task_id<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'convert_to_unix'</span>,</span>
-<span id="cb36-30">    bash_command<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'cd /c/Users/mike/AirflowHome/src; find . -type f -print0 | xargs -0 dos2unix; '</span>,</span>
-<span id="cb36-31">    dag<span class="op" style="color: #5E5E5E;">=</span>dag,</span>
-<span id="cb36-32">)</span>
-<span id="cb36-33"></span>
-<span id="cb36-34">make_exec <span class="op" style="color: #5E5E5E;">=</span> BashOperator(</span>
-<span id="cb36-35">    task_id<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'make_exec'</span>,</span>
-<span id="cb36-36">    bash_command<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"cd /c/Users/mike/AirflowHome/src; ls -l | awk '{k=0;for(i=0;i&lt;=8;i++)k+=((substr($1,i+2,1)~/[rwx]/) *2^(8-i));if(k)printf(</span><span class="ch" style="color: #20794D;">\"</span><span class="sc" style="color: #5E5E5E;">%0o</span><span class="st" style="color: #20794D;"> </span><span class="ch" style="color: #20794D;">\"</span><span class="st" style="color: #20794D;">,k);print}'; "</span>,</span>
-<span id="cb36-37">    dag<span class="op" style="color: #5E5E5E;">=</span>dag,</span>
-<span id="cb36-38">)</span>
-<span id="cb36-39"></span>
-<span id="cb36-40">update_repo <span class="op" style="color: #5E5E5E;">&gt;&gt;</span>  convert_unix</span>
-<span id="cb36-41">convert_unix <span class="op" style="color: #5E5E5E;">&gt;&gt;</span> make_exec</span>
-<span id="cb36-42"></span>
-<span id="cb36-43"><span class="cf" style="color: #003B4F;">if</span> <span class="va" style="color: #111111;">__name__</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"__main__"</span>:</span>
-<span id="cb36-44">    dag.cli()</span></code></pre></div>
-<p>The important part here to note is that I am changing directory to a place on my C drive, then calling <a href="https://git-scm.com/download/win">Windows Git</a> explicitly from my host system files. This allows my Windows machine to handle this process and not count on Ubuntu WLS to execute these tasks.</p>
-<p>Similarly, if I had a shell script that looked like the following:</p>
-<div class="sourceCode" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><span class="bu" style="color: null;">echo</span> <span class="st" style="color: #20794D;">"starting"</span></span>
-<span id="cb37-2"><span class="bu" style="color: null;">echo</span> <span class="va" style="color: #111111;">$(</span><span class="bu" style="color: null;">pwd</span><span class="va" style="color: #111111;">)</span></span>
-<span id="cb37-3"></span>
-<span id="cb37-4"><span class="co" style="color: #5E5E5E;"># Set Location</span></span>
-<span id="cb37-5"><span class="bu" style="color: null;">cd</span> /c/Users/mike/cool_project</span>
-<span id="cb37-6"><span class="ex" style="color: null;">/c/Program\ Files/R/R-3.6.1/bin/x64/Rscript.exe</span> really_long_script.R</span>
-<span id="cb37-7"></span>
-<span id="cb37-8"><span class="bu" style="color: null;">echo</span> <span class="st" style="color: #20794D;">"Done!"</span></span></code></pre></div>
-<p>This would allow me to call R directly on the host machine to run my long script. Ideally, I would set common system commands as alias (eg. Rscript = /c/Program&nbsp;Files/R/R-3.6.1/bin/x64/Rscript.exe or something like this). I might go down that road, but not right now (or I will put it at the top of the bash script and have templates).</p>
-<div class="sourceCode" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><span class="bu" style="color: null;">echo</span> <span class="st" style="color: #20794D;">"starting"</span></span>
-<span id="cb38-2"><span class="bu" style="color: null;">echo</span> <span class="va" style="color: #111111;">$(</span><span class="bu" style="color: null;">pwd</span><span class="va" style="color: #111111;">)</span></span>
-<span id="cb38-3"><span class="ex" style="color: null;">Rscript</span> = /c/Program\ Files/R/R-3.6.1/bin/x64/Rscript.exe</span>
-<span id="cb38-4"><span class="co" style="color: #5E5E5E;"># Set Location</span></span>
-<span id="cb38-5"><span class="bu" style="color: null;">cd</span> /c/Users/mike/cool_project</span>
-<span id="cb38-6"><span class="va" style="color: #111111;">$(</span><span class="ex" style="color: null;">Rscript</span><span class="va" style="color: #111111;">)</span> really_long_script.R</span>
-<span id="cb38-7"></span>
-<span id="cb38-8"><span class="bu" style="color: null;">echo</span> <span class="st" style="color: #20794D;">"Done!"</span></span></code></pre></div>
-<p>Creating variables with the path names is what I have done in Makefiles (because I am old school and love GNUmake). In this way I can still navigate to a directory and issue the <code>make</code> command in the DAG.</p>
-</section>
-<section id="rmarkdown" class="level2">
-<h2 class="anchored" data-anchor-id="rmarkdown">Rmarkdown</h2>
-<p>One thing to consider when dealing with RMarkdown is that you need to explicitly define the path the pandoc when the script is being run by Airflow.</p>
-<div class="sourceCode" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><span class="fu" style="color: #4758AB;">Sys.setenv</span>(<span class="at" style="color: #657422;">RSTUDIO_PANDOC=</span><span class="st" style="color: #20794D;">"C:/Program Files/RStudio/bin/pandoc"</span>)</span></code></pre></div>
-<p>This typically my scripts for R being run by Airflow will look like:</p>
-<div class="sourceCode" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb40-1"><span class="bu" style="color: null;">echo</span> <span class="st" style="color: #20794D;">"starting"</span></span>
-<span id="cb40-2"><span class="bu" style="color: null;">echo</span> <span class="va" style="color: #111111;">$(</span><span class="bu" style="color: null;">pwd</span><span class="va" style="color: #111111;">)</span></span>
-<span id="cb40-3"><span class="ex" style="color: null;">Rscript</span> = /c/Program\ Files/R/R-3.6.1/bin/x64/Rscript.exe</span>
-<span id="cb40-4"></span>
-<span id="cb40-5"><span class="co" style="color: #5E5E5E;"># Set Location</span></span>
-<span id="cb40-6"><span class="bu" style="color: null;">cd</span> /c/Users/mike/cool_project</span>
-<span id="cb40-7"><span class="va" style="color: #111111;">$(</span><span class="ex" style="color: null;">Rscript</span><span class="va" style="color: #111111;">)</span> <span class="at" style="color: #657422;">-e</span> <span class="st" style="color: #20794D;">'Sys.setenv(RSTUDIO_PANDOC="C:/Program Files/RStudio/bin/pandoc"); rmarkdown::render("cool_report.Rmd")'</span></span>
-<span id="cb40-8"></span>
-<span id="cb40-9"><span class="bu" style="color: null;">echo</span> <span class="st" style="color: #20794D;">"Done!"</span></span></code></pre></div>
-</section>
-</section>
-<section id="issues" class="level1">
-<h1>Issues…</h1>
-<p>Sometimes Airflow will die or you will submit a bad DAG and get things messed up. Don’t worry, there are plenty of tricks:</p>
-<ol type="1">
-<li>Reset your database</li>
-</ol>
-<div class="sourceCode" id="cb41" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb41-1"><span class="ex" style="color: null;">airflow</span> resetdb</span></code></pre></div>
-<p>This will clear out and reset your database. For extra reset power, go ahead and use the <code>airflow initdb</code>.</p>
-<p>You might need to start the server and the scheduler again as well.</p>
-<ol start="2" type="1">
-<li>Kill orphan processes. I have found that if something fails while Airflow is running a process, it can get hung up and won’t resart correctly.<sup>3</sup></li>
-</ol>
-<p>When that happens you might need to kill the processes manually, then restart the airflow database, scheulder, and webserver.</p>
-<div class="sourceCode" id="cb42" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb42-1"><span class="fu" style="color: #4758AB;">ps</span> <span class="at" style="color: #657422;">-aux</span> <span class="kw" style="color: #003B4F;">|</span> <span class="fu" style="color: #4758AB;">grep</span> scheduler</span></code></pre></div>
-<p>Will list the processes. Scan them and see if anything needs to be killed as shown below.</p>
-<div class="sourceCode" id="cb43" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb43-1"><span class="bu" style="color: null;">kill</span> <span class="at" style="color: #657422;">-9</span> 3400</span></code></pre></div>
-<p>Update DAGs. If you don’t automatically update the DAGs as I have done and are waiting for a new DAG to appear, you can try the following on the bash shell:</p>
-<div class="sourceCode" id="cb44" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb44-1"><span class="ex" style="color: null;">python3</span> <span class="at" style="color: #657422;">-c</span> <span class="st" style="color: #20794D;">"from airflow.models import DagBag; d = DagBag();"</span></span></code></pre></div>
-</section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
-<p>Airflow is great and I love it. You will have to learn how to use it with Windows, but the pain is worth it for the convenience and transparency of your job.</p>
-
-
-</section>
-
-
-<div id="quarto-appendix" class="default"><section class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>Learned this great tidbit here <a href="https://www.astronomer.io/guides/airflow-wsl/" class="uri">https://www.astronomer.io/guides/airflow-wsl/</a>↩︎</p></li>
-<li id="fn2"><p>Special thanks to this blog post <a href="https://medium.com/@harshityadav95/postgresql-in-windows-subsystem-for-linux-wsl-6dc751ac1ff3" class="uri">https://medium.com/@harshityadav95/postgresql-in-windows-subsystem-for-linux-wsl-6dc751ac1ff3</a>↩︎</p></li>
-<li id="fn3"><p>See this post <a href="https://stackoverflow.com/questions/59080796/airflow-scheduler-periodically-complains-no-heartbeat" class="uri">https://stackoverflow.com/questions/59080796/airflow-scheduler-periodically-complains-no-heartbeat</a> for an example↩︎</p></li>
-</ol>
-</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2020,
-  author = {Michael DeWitt},
-  title = {Airflow on {Windows} {Linux} {Subsystem}},
-  date = {03/04/2020},
-  url = {https://michaeldewittjr.com/programming/2020-03-04-airflow-on-windows-linux-subsystem},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dewitt2020" class="csl-entry quarto-appendix-citeas">
-Michael DeWitt. 3AD–4AD. <span>“Airflow on Windows Linux
-Subsystem.”</span> 3AD–4AD. <a href="https://michaeldewittjr.com/programming/2020-03-04-airflow-on-windows-linux-subsystem">https://michaeldewittjr.com/programming/2020-03-04-airflow-on-windows-linux-subsystem</a>.
-</div></div></section></div> ]]></description>
-  <category>airflow</category>
-  <category>wls</category>
-  <category>git</category>
-  <category>scheduling</category>
-  <category>apache airflow</category>
-  <guid>https://michaeldewittjr.com/programming/2020-03-04-airflow-on-windows-linux-subsystem/index.html</guid>
-  <pubDate>Wed, 04 Mar 2020 05:00:00 GMT</pubDate>
-  <media:content url="https://michaeldewittjr.com/programming/2020-03-04-airflow-on-windows-linux-subsystem/airflow-logo.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 </channel>
 </rss>
