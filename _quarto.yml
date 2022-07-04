@@ -36,6 +36,8 @@ website:
         menu:
         - programming.qmd
         - posts.qmd
+        - text: "substack"
+          href: https://michaeldewittjr.substack.com/
       - presentations.qmd
       - text: teaching
         menu:

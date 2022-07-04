@@ -322,6 +322,20 @@
     "text": "Our libraries of course….\n\nlibrary(ggplot2)\nlibrary(gghighlight)\n\nThis code is copied directly from here.\nBuild some data which is more some white noise with a random walk.\n\nset.seed(2)\nd <- purrr::map_dfr(\n  letters,\n  ~ data.frame(idx = 1:400,\n               value = cumsum(runif(400, -1, 1)),\n               type = .,\n               stringsAsFactors = FALSE))\n\nDefinitely some messiness and colour overload!\n\nggplot(d) +\n  geom_line(aes(idx, value, colour = type))\n\n\n\n\nThe way I would do it…\n\nlibrary(dplyr, warn.conflicts = FALSE)\n\nd_filtered <- d %>%\n  group_by(type) %>% \n  filter(max(value) > 20) %>%\n  ungroup()\n\nggplot() +\n  # draw the original data series with grey\n  geom_line(aes(idx, value, group = type), data = d, colour = alpha(\"grey\", 0.7)) +\n  # colourise only the filtered data\n  geom_line(aes(idx, value, colour = type), data = d_filtered)\n\n\n\n\nNow with this handy package we can do the following:\n\nggplot(d, aes(idx, value, colour = type))+\n    geom_line()+\n    gghighlight(max(value) > 20, label_key = type) +\n  theme_minimal()\n\nWarning: Using `across()` in `filter()` is deprecated, use `if_any()` or\n`if_all()`.\n\n\n\n\n\nAnd because it is a ggplot object we can add things to it.\n\nggplot(d, aes(idx, value, colour = type))+\n    geom_line()+\n    gghighlight(max(value) > 20, label_key = type) +\n  theme_minimal()+\n    facet_wrap(~type)\n\nWarning: Using `across()` in `filter()` is deprecated, use `if_any()` or\n`if_all()`.\n\n\n\n\n\nThe package author does offer a caveat that the package can run slowly with lots of data and filtering and to go back to using dplyr in a discrete step. I imagine it is because of all the grouped operations? Dunno, but this is a neat package to use for exploratory work.\n\n\n\nReusehttps://creativecommons.org/licenses/by/4.0/CitationBibTeX citation:@online{dewitt2018,\n  author = {Michael DeWitt},\n  title = {Gghighlight for the Win},\n  date = {2018-07-04},\n  url = {https://michaeldewittjr.com/programming/2018-07-04-gghighlight-for-the-win},\n  langid = {en}\n}\nFor attribution, please cite this work as:\nMichael DeWitt. 2018. “Gghighlight for the Win.” July 4,\n2018. https://michaeldewittjr.com/programming/2018-07-04-gghighlight-for-the-win."
   },
   {
+    "objectID": "programming/2022-07-04-3d-structural-biology/index.html",
+    "href": "programming/2022-07-04-3d-structural-biology/index.html",
+    "title": "3D Structural Biology",
+    "section": "",
+    "text": "This is just a short blurb to mention the r3dmol package which allows users to render the 3D representation of pdb files of different biological structures."
+  },
+  {
+    "objectID": "programming/2022-07-04-3d-structural-biology/index.html#example-with-neisseria-gonorrhoeae",
+    "href": "programming/2022-07-04-3d-structural-biology/index.html#example-with-neisseria-gonorrhoeae",
+    "title": "3D Structural Biology",
+    "section": "Example with Neisseria gonorrhoeae",
+    "text": "Example with Neisseria gonorrhoeae\nI am interested in generating some of the structures of Neisseria gonorrhoeae, the pathogen responsible for the sexually transmitted infection, gonorrhea. I can go over to the protein data bank and do a search and find some of the available structures.\n\nng_pdb <- \"https://files.rcsb.org/download/4R1I.pdb\"\n\ndownload.file(ng_pdb, destfile = \"4R1I.pdb\")\n\nng_pdb <- readLines(\"4R1I.pdb\")\n\nNow for the magical part:\n\nlibrary(\"r3dmol\")\nm1 <- r3dmol(                         # Set up the initial viewer\n  viewer_spec = m_viewer_spec(\n    cartoonQuality = 10,\n    lowerZoomLimit = 50,\n    upperZoomLimit = 350\n  )\n) %>%\n  m_add_model(                  # Add model to scene\n    data = ng_pdb,\n    format = \"pdb\"\n  ) %>%\n  m_zoom_to() %>%               # Zoom to encompass the whole scene\n  m_set_style(                  # Set style of structures\n    style = m_style_cartoon(\n      color = \"#00cc96\"\n    )\n  )%>%\n  m_set_style(                  # Set style of specific selection\n    sel = m_sel(ss = \"s\"),      # (selecting by secondary)\n    style = m_style_cartoon(\n      color = \"#636efa\",\n      arrows = TRUE\n    )\n  ) %>%\n  m_set_style(                  # Style the alpha helix\n    sel = m_sel(ss = \"h\"),      # (selecting by alpha helix)\n    style = m_style_cartoon(\n      color = \"#ff7f0e\"\n    )\n  ) %>%\n  m_rotate(                     # Rotate the scene by given angle on given axis\n    angle = 90,\n    axis = \"y\"\n  ) %>%\n  m_spin()   \n\nm1\n\n\n\n\n\n\nIt’s that easy! Now if you want to represent the structure with the ball and stick representation, you can do so:\n\nm1 %>% \n m_set_style(style = m_style_stick())"
+  },
+  {
     "objectID": "programming/2021-09-23-how-discerning-is-the-technical-challenge-in-gbbo/index.html",
     "href": "programming/2021-09-23-how-discerning-is-the-technical-challenge-in-gbbo/index.html",
     "title": "How Discerning is the Technical Challenge in GBBO?",
@@ -1482,19 +1496,5 @@
     "title": "selected works",
     "section": "patents",
     "text": "patents\nProcede d’identifier, gerer et réincorporer les produits complexes comme les produits valorises (WO2019154657 - 2019-08-15)\nSysteme d’identifier, gerer et reincorporer les produits complexes comme les produits valorises (WO2019154656 - 2019-08-15)"
-  },
-  {
-    "objectID": "programming/2022-07-04-3d-structural-biology/index.html",
-    "href": "programming/2022-07-04-3d-structural-biology/index.html",
-    "title": "3D Structural Biology",
-    "section": "",
-    "text": "This is just a short blurb to mention the r3dmol package which allows users to render the 3D representation of pdb files of different biological structures."
-  },
-  {
-    "objectID": "programming/2022-07-04-3d-structural-biology/index.html#example-with-neisseria-gonorrhoeae",
-    "href": "programming/2022-07-04-3d-structural-biology/index.html#example-with-neisseria-gonorrhoeae",
-    "title": "3D Structural Biology",
-    "section": "Example with Neisseria gonorrhoeae",
-    "text": "Example with Neisseria gonorrhoeae\nI am interested in generating some of the structures of Neisseria gonorrhoeae, the pathogen responsible for the sexually transmitted infection, gonorrhea. I can go over to the protein data bank and do a search and find some of the available structures.\n\nng_pdb <- \"https://files.rcsb.org/download/4R1I.pdb\"\n\ndownload.file(ng_pdb, destfile = \"4R1I.pdb\")\n\nng_pdb <- readLines(\"4R1I.pdb\")\n\nNow for the magical part:\n\nlibrary(\"r3dmol\")\nm1 <- r3dmol(                         # Set up the initial viewer\n  viewer_spec = m_viewer_spec(\n    cartoonQuality = 10,\n    lowerZoomLimit = 50,\n    upperZoomLimit = 350\n  )\n) %>%\n  m_add_model(                  # Add model to scene\n    data = ng_pdb,\n    format = \"pdb\"\n  ) %>%\n  m_zoom_to() %>%               # Zoom to encompass the whole scene\n  m_set_style(                  # Set style of structures\n    style = m_style_cartoon(\n      color = \"#00cc96\"\n    )\n  )%>%\n  m_set_style(                  # Set style of specific selection\n    sel = m_sel(ss = \"s\"),      # (selecting by secondary)\n    style = m_style_cartoon(\n      color = \"#636efa\",\n      arrows = TRUE\n    )\n  ) %>%\n  m_set_style(                  # Style the alpha helix\n    sel = m_sel(ss = \"h\"),      # (selecting by alpha helix)\n    style = m_style_cartoon(\n      color = \"#ff7f0e\"\n    )\n  ) %>%\n  m_rotate(                     # Rotate the scene by given angle on given axis\n    angle = 90,\n    axis = \"y\"\n  ) %>%\n  m_spin()   \n\nm1\n\n\n\n\n\n\nIt’s that easy! Now if you want to represent the structure with the ball and stick representation, you can do so:\n\nm1 %>% \n m_set_style(style = m_style_stick())"
   }
 ]
