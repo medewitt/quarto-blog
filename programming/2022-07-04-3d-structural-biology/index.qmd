@@ -1,0 +1,76 @@
+---
+title: "3D Structural Biology"
+description: |
+  Representing 3D Structure in R (Structural Biology with r3dmol). 
+date: 2022-07-04
+categories:  [R, 3D, Structural Biology]
+image: "preview.png"
+---
+
+
+This is just a short blurb to mention the [r3dmol](https://cran.r-project.org/web/packages/r3dmol/vignettes/r3dmol.html) package which allows users to render the 3D representation of pdb files of different biological structures.
+
+## Example with Neisseria gonorrhoeae
+
+I am interested in generating some of the structures of Neisseria gonorrhoeae, the pathogen responsible for the sexually transmitted infection, gonorrhea.
+I can go over to the [protein data bank](https://www.rcsb.org/structure/4r1i) and do a search and find some of the available structures.
+
+```{r}
+ng_pdb <- "https://files.rcsb.org/download/4R1I.pdb"
+
+download.file(ng_pdb, destfile = "4R1I.pdb")
+
+ng_pdb <- readLines("4R1I.pdb")
+```
+
+Now for the magical part:
+
+```{r}
+library("r3dmol")
+m1 <- r3dmol(                         # Set up the initial viewer
+  viewer_spec = m_viewer_spec(
+    cartoonQuality = 10,
+    lowerZoomLimit = 50,
+    upperZoomLimit = 350
+  )
+) %>%
+  m_add_model(                  # Add model to scene
+    data = ng_pdb,
+    format = "pdb"
+  ) %>%
+  m_zoom_to() %>%               # Zoom to encompass the whole scene
+  m_set_style(                  # Set style of structures
+    style = m_style_cartoon(
+      color = "#00cc96"
+    )
+  )%>%
+  m_set_style(                  # Set style of specific selection
+    sel = m_sel(ss = "s"),      # (selecting by secondary)
+    style = m_style_cartoon(
+      color = "#636efa",
+      arrows = TRUE
+    )
+  ) %>%
+  m_set_style(                  # Style the alpha helix
+    sel = m_sel(ss = "h"),      # (selecting by alpha helix)
+    style = m_style_cartoon(
+      color = "#ff7f0e"
+    )
+  ) %>%
+  m_rotate(                     # Rotate the scene by given angle on given axis
+    angle = 90,
+    axis = "y"
+  ) %>%
+  m_spin()   
+
+m1
+```
+
+It's that easy!
+Now if you want to represent the structure with the ball and stick representation, you can do so: 
+
+```{r}
+m1 %>% 
+ m_set_style(style = m_style_stick()) 
+```
+
