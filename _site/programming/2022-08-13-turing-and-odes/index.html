@@ -8,7 +8,7 @@
 
 <meta name="author" content="Michael DeWitt">
 <meta name="dcterms.date" content="2022-08-13">
-<meta name="description" content="whatcha writing about?">
+<meta name="description" content="Using Julia and Turing to fit compartmental models.">
 
 <title>Insufficient Statistics - Turing and ODEs</title>
 <style>
@@ -123,10 +123,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Insufficient Statistics - Turing and ODEs">
-<meta property="og:description" content="whatcha writing about?">
+<meta property="og:description" content="Using Julia and Turing to fit compartmental models.">
 <meta property="og:site-name" content="Insufficient Statistics">
 <meta name="twitter:title" content="Insufficient Statistics - Turing and ODEs">
-<meta name="twitter:description" content="whatcha writing about?">
+<meta name="twitter:description" content="Using Julia and Turing to fit compartmental models.">
 <meta name="twitter:creator" content="@medewittjr">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -251,7 +251,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <h1 class="title">Turing and ODEs</h1>
                   <div>
         <div class="description">
-          <p>whatcha writing about?</p>
+          <p>Using Julia and Turing to fit compartmental models.</p>
         </div>
       </div>
                           <div class="quarto-categories">
@@ -437,13 +437,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="solve-using-turing" class="level2">
 <h2 class="anchored" data-anchor-id="solve-using-turing">Solve Using Turing</h2>
-<p>Now we build our model in Turing, using our prior defined ODE.</p>
+<p>Now we build our model in Turing, using our prior defined ODE. Note that I included a check on the ODE output to try and catch values less than one, otherwise the sampler would reject the solution (because Poisson distributions cannot have a rate parameters less than 0).</p>
 <div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@model</span> <span class="fu">bayes_sir</span>(y) <span class="op">=</span> <span class="cf">begin</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate number of timepoints</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  l <span class="op">=</span> <span class="fu">length</span>(y)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  i₀  <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">0.0</span>,<span class="fl">.3</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  β <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">0</span>,<span class="fl">.25</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  i₀  <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">0.0</span>,<span class="fl">.2</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  β <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">0</span>, <span class="fl">.1</span>)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  immunity <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">90</span>,<span class="fl">365</span>)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  I <span class="op">=</span> i₀<span class="op">*</span><span class="fl">6000.0</span></span>
@@ -465,7 +465,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span>
 <span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>mod <span class="op">=</span> <span class="fu">bayes_sir</span>(Y[<span class="fl">1</span><span class="op">:</span><span class="fl">300</span>]);</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>mod <span class="op">=</span> <span class="fu">bayes_sir</span>(Y[<span class="fl">1</span><span class="op">:</span><span class="fl">200</span>]);</span>
 <span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>ode_nuts <span class="op">=</span> <span class="fu">sample</span>(mod, <span class="fu">NUTS</span>(<span class="fl">0.65</span>),<span class="fl">10000</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -487,9 +487,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"Estimate for immunity duration: "</span>, immunity_hat)</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"Estimate for initial proportion infected: "</span>, <span class="fu">mean</span>(posterior[!, <span class="op">:</span>i₀]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Estimate for  β: 0.24988522895897208
-Estimate for immunity duration: 134.67049997981798
-Estimate for initial proportion infected: 0.29982559028903444</code></pre>
+<pre><code>Estimate for  β: 0.04984659207646735
+Estimate for immunity duration: 178.34561091700505
+Estimate for initial proportion infected: 0.0016216537054861632</code></pre>
 </div>
 </div>
 <p>Not too bad! Now we can simulate the dynamics going forward:</p>

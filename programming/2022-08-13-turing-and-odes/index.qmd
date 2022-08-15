@@ -1,7 +1,7 @@
 ---
 title: "Turing and ODEs"
 description: |
-  whatcha writing about? 
+  Using Julia and Turing to fit compartmental models.
 date: 2022-08-13
 jupyter: julia-1.7
 categories:  [Bayes, Turing, Julia, Epidemiology]
@@ -141,14 +141,14 @@ Note the second wave of cases occuring as immunity begins to wane.
 ## Solve Using Turing
 
 Now we build our model in Turing, using our prior defined ODE.
-
+Note that I included a check on the ODE output to try and catch values less than one, otherwise the sampler would reject the solution (because Poisson distributions cannot have a rate parameters less than 0).
 
 ```{julia}
 @model bayes_sir(y) = begin
   # Calculate number of timepoints
   l = length(y)
-  i₀  ~ Uniform(0.0,.3)
-  β ~ Uniform(0,.25)
+  i₀  ~ Uniform(0.0,.2)
+  β ~ Uniform(0, .1)
   immunity ~ Uniform(90,365)
 
   I = i₀*6000.0
@@ -170,7 +170,7 @@ Now we build our model in Turing, using our prior defined ODE.
   end
 end;
 
-mod = bayes_sir(Y[1:300]);
+mod = bayes_sir(Y[1:200]);
 
 ode_nuts = sample(mod, NUTS(0.65),10000);
 ```
