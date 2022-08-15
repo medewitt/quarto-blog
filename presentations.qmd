@@ -80,6 +80,6 @@ This is a non-exhaustive list of presentations that I have given.
 
 ## patents
 
-Procede d’identifier, gerer et réincorporer les produits complexes comme les produits valorises (WO2019154657 - 2019-08-15)
+[Procede d’identifier, gerer et réincorporer les produits complexes comme les produits valorises ](https://register.epo.org/application?number=EP19702385)(WO2019154657 - 2019-08-15)
 
-Systeme d’identifier, gerer et reincorporer les produits complexes comme les produits valorises (WO2019154656 - 2019-08-15)
+[Systeme d’identifier, gerer et reincorporer les produits complexes comme les produits valorises](https://patentscope.wipo.int/search/en/detail.jsf?docId=WO2019154656)(WO2019154656 - 2019-08-15)

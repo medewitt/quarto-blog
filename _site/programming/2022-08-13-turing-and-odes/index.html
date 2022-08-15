@@ -131,7 +131,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="floating nav-fixed">
+<body class="floating nav-fixed slimcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -258,6 +258,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
                 <div class="quarto-category">Bayes</div>
                 <div class="quarto-category">Turing</div>
                 <div class="quarto-category">Julia</div>
+                <div class="quarto-category">Epidemiology</div>
               </div>
                   </div>
   </div>
@@ -298,7 +299,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#solve-using-turing" id="toc-solve-using-turing" class="nav-link active" data-scroll-target="#solve-using-turing">Solve Using Turing</a></li>
+  <li><a href="#exploring-julia-and-odes" id="toc-exploring-julia-and-odes" class="nav-link active" data-scroll-target="#exploring-julia-and-odes">Exploring Julia and ODEs</a></li>
+  <li><a href="#getting-started-with-julia" id="toc-getting-started-with-julia" class="nav-link" data-scroll-target="#getting-started-with-julia">Getting Started with Julia</a></li>
+  <li><a href="#the-approach" id="toc-the-approach" class="nav-link" data-scroll-target="#the-approach">The Approach</a></li>
+  <li><a href="#solve-using-turing" id="toc-solve-using-turing" class="nav-link" data-scroll-target="#solve-using-turing">Solve Using Turing</a></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a></li>
   </ul>
 </nav>
 </nav>
@@ -306,11 +311,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
 <!-- main -->
-<main class="content quarto-banner-title-block" id="quarto-document-content">
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content">
 
 
 
 
+<section id="exploring-julia-and-odes" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-julia-and-odes">Exploring Julia and ODEs</h2>
+<p>This post is exploring the use of Julia, Turing, and ODEs and largely expands on the work from <a href="https://github.com/epirecipes/sir-julia/blob/master/script/ode_turing/ode_turing.jl">Simon Frost’s awesome epirecipes</a>.</p>
+</section>
+<section id="getting-started-with-julia" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="getting-started-with-julia">Getting Started with Julia</h2>
+<p>Julia as a statistical programming language/environment has some really neat properties.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Speed, generally speed.</p>
+</div></div><p><a href="https://turing.ml/stable/">Turing</a> also has some neat elements when it comes to probabilistic computing/programming. The key feature that interests me is the ability to switch between sampling approaches (e.g., Gibbs, Hamiltonian Monte Carlo, no u-turn sampling, sequential) while keeping the same syntax and model structure. While I absolutely love Stan and have spent many hours learning and the syntax (and it is actively developed, highly optimized, etc), I sometimes wish I could explore other sampling approaches due to strange posteriors (especially when it comes to times when SMC might be better).</p>
+</section>
+<section id="the-approach" class="level2">
+<h2 class="anchored" data-anchor-id="the-approach">The Approach</h2>
+<p>This is a pretty vanilla post, in which we will first create some fake data from a known distribution and then fit said data. As always, we will bring in the required packages.</p>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DifferentialEquations</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DiffEqSensitivity</span></span>
@@ -320,158 +340,204 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DataFrames</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">StatsPlots</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Now we can generate a simple three compartment model, with S (susceptibles), I, (infected), and R (recovered).</p>
+<p>Additionally:</p>
+<ul>
+<li>On average 10 contacts are made per day</li>
+<li>The contact rate is 0.05 (probability of passing infection to any given contact)</li>
+<li>Those who are infected recover on average every 5 days</li>
+<li>Immunity lasts for a 180 days on average before people become susceptible again</li>
+<li>Population size of 6,000 individuals</li>
+<li>Standard mass-action approach</li>
+</ul>
+<p>Something that looks like the following:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Luxor</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">MathTeXEngine</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Drawing</span>(<span class="fl">200</span>, <span class="fl">200</span>, <span class="st">"sirs.png"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">origin</span>()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">setline</span>(<span class="fl">10</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>Luxor.<span class="fu">arrow</span>(<span class="fu">Point</span>(<span class="op">-</span><span class="fl">40</span>,<span class="fl">0</span>),<span class="fu">Point</span>(<span class="fl">0</span>,<span class="fl">0</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Luxor.<span class="fu">arrow</span>(<span class="fu">Point</span>(<span class="op">-</span><span class="fl">0</span>,<span class="fl">0</span>),<span class="fu">Point</span>(<span class="fl">40</span>,<span class="fl">0</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">fontsize</span>(<span class="fl">15</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>Luxor.<span class="fu">text</span>(L<span class="st">"S"</span>,<span class="fu">Point</span>(<span class="op">-</span><span class="fl">40</span>,<span class="fl">20</span>), halign <span class="op">=</span> <span class="op">:</span>center)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>Luxor.<span class="fu">text</span>(L<span class="st">"I"</span>,<span class="fu">Point</span>(<span class="fl">0</span>,<span class="fl">20</span>), halign <span class="op">=</span> <span class="op">:</span>center)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>Luxor.<span class="fu">text</span>(L<span class="st">"R"</span>,<span class="fu">Point</span>(<span class="fl">40</span>,<span class="fl">20</span>), halign <span class="op">=</span> <span class="op">:</span>center)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">fontsize</span>(<span class="fl">12</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>Luxor.<span class="fu">text</span>(L<span class="st">"β*c"</span>,<span class="fu">Point</span>(<span class="op">-</span><span class="fl">20</span>,<span class="fl">10</span>), halign <span class="op">=</span> <span class="op">:</span>center)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>Luxor.<span class="fu">text</span>(L<span class="st">"γ"</span>,<span class="fu">Point</span>(<span class="fl">20</span>,<span class="fl">10</span>), halign <span class="op">=</span> <span class="op">:</span>center)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>Luxor.<span class="fu">text</span>(L<span class="st">"δ"</span>,<span class="fu">Point</span>(<span class="fl">0</span>,<span class="op">-</span><span class="fl">15</span>), halign <span class="op">=</span> <span class="op">:</span>center)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>loopx <span class="op">=</span> <span class="fl">30</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>loopy <span class="op">=</span> <span class="fl">40</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>adjx <span class="op">=</span> <span class="fl">6</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>adjy <span class="op">=</span> <span class="op">-</span><span class="fl">2</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>Luxor.<span class="fu">arrow</span>(</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Point</span>(<span class="fl">40</span>,<span class="fl">0</span>) <span class="op">+</span> <span class="fu">Point</span>(<span class="op">-</span>adjx,adjy),</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Point</span>(<span class="fl">40</span>,<span class="fl">0</span>) <span class="op">+</span> <span class="fu">Point</span>(<span class="op">-</span>loopx,<span class="op">-</span>loopy),</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Point</span>(<span class="op">-</span><span class="fl">40</span>,<span class="fl">0</span>)<span class="op">+</span> <span class="fu">Point</span>(loopx,<span class="op">-</span>loopy),</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Point</span>(<span class="op">-</span><span class="fl">40</span>,<span class="fl">0</span>)<span class="fu">+Point</span>(adjx,adjy)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="fu">finish</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="sirs.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">SIRS Compartmental Model</figcaption><p></p>
+</figure>
+</div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">sir_ode!</span>(du,u,p,t)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    (S,I,R,C) <span class="op">=</span> u</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    (β,c,γ) <span class="op">=</span> p</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> S<span class="op">+</span>I<span class="op">+</span>R</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    infection <span class="op">=</span> β<span class="op">*</span>c<span class="op">*</span>I<span class="op">/</span>N<span class="op">*</span>S</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    recovery <span class="op">=</span> γ<span class="op">*</span>I</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@inbounds</span> <span class="cf">begin</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        du[<span class="fl">1</span>] <span class="op">=</span> <span class="op">-</span>infection</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        du[<span class="fl">2</span>] <span class="op">=</span> infection <span class="op">-</span> recovery</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        du[<span class="fl">3</span>] <span class="op">=</span> recovery</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        du[<span class="fl">4</span>] <span class="op">=</span> infection</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="cn">nothing</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>tmax <span class="op">=</span> <span class="fl">40.0</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>tspan <span class="op">=</span> (<span class="fl">0.0</span>,tmax)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>obstimes <span class="op">=</span> <span class="fl">1.0</span><span class="op">:</span><span class="fl">1.0</span><span class="op">:</span>tmax</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>u0 <span class="op">=</span> [<span class="fl">990.0</span>,<span class="fl">10.0</span>,<span class="fl">0.0</span>,<span class="fl">0.0</span>] <span class="co"># S,I.R,C</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> [<span class="fl">0.05</span>,<span class="fl">10.0</span>,<span class="fl">0.25</span>]; <span class="co"># β,c,γ</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>prob_ode <span class="op">=</span> <span class="fu">ODEProblem</span>(sir_ode!,u0,tspan,p);</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>sol_ode <span class="op">=</span> <span class="fu">solve</span>(prob_ode,</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>            <span class="fu">Tsit5</span>(),</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>            saveat <span class="op">=</span> <span class="fl">1.0</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">sir_ode!</span>(du,u,p,t)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    (S,I,R,C) <span class="op">=</span> u</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    (β,c,γ, δ) <span class="op">=</span> p</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> S<span class="op">+</span>I<span class="op">+</span>R</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    infection <span class="op">=</span> β<span class="op">*</span>c<span class="op">*</span>I<span class="op">*</span>S<span class="op">/</span>N</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    recovery <span class="op">=</span> γ<span class="op">*</span>I</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    wane <span class="op">=</span> δ <span class="op">*</span> R</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@inbounds</span> <span class="cf">begin</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        du[<span class="fl">1</span>] <span class="op">=</span> <span class="op">-</span>infection <span class="op">+</span> wane</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        du[<span class="fl">2</span>] <span class="op">=</span> infection <span class="op">-</span> recovery</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        du[<span class="fl">3</span>] <span class="op">=</span> recovery <span class="op">-</span> wane</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        du[<span class="fl">4</span>] <span class="op">=</span> infection </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="cn">nothing</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>tmax <span class="op">=</span> <span class="fl">365.0</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>tspan <span class="op">=</span> (<span class="fl">0.0</span>,tmax)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>obstimes <span class="op">=</span> <span class="fl">1.0</span><span class="op">:</span><span class="fl">1.0</span><span class="op">:</span>tmax</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>u0 <span class="op">=</span> [<span class="fl">5990.0</span>,<span class="fl">10.0</span>,<span class="fl">0.0</span>,<span class="fl">0.0</span>] <span class="co"># S,I.R,C</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> [<span class="fl">0.05</span>,<span class="fl">10.0</span>,<span class="fl">0.20</span>, <span class="fl">1.0</span><span class="op">/</span><span class="fl">180</span>]; <span class="co"># β, c, γ, δ</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>prob_ode <span class="op">=</span> <span class="fu">ODEProblem</span>(sir_ode!,u0,tspan,p);</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>sol_ode <span class="op">=</span> <span class="fu">solve</span>(prob_ode,</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>            <span class="fu">Tsit5</span>(),</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>            saveat <span class="op">=</span> <span class="fl">1.0</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then visualize our expected cases:</p>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> <span class="fu">Array</span>(sol_ode)[<span class="fl">4</span>,<span class="op">:</span>] <span class="co"># Cumulative cases</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> C[<span class="fl">2</span><span class="op">:</span><span class="kw">end</span>] <span class="op">-</span> C[<span class="fl">1</span><span class="op">:</span>(<span class="kw">end</span><span class="op">-</span><span class="fl">1</span>)];</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">Random</span>.<span class="fu">seed!</span>(<span class="fl">1234</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> <span class="fu">rand</span>.(<span class="fu">Poisson</span>.(X));</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">bar</span>(obstimes,Y,legend<span class="op">=</span><span class="cn">false</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot!</span>(obstimes,X,legend<span class="op">=</span><span class="cn">false</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> <span class="fu">Array</span>(sol_ode)[<span class="fl">4</span>,<span class="op">:</span>] <span class="co"># Cumulative cases</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> C[<span class="fl">2</span><span class="op">:</span><span class="kw">end</span>] <span class="op">-</span> C[<span class="fl">1</span><span class="op">:</span>(<span class="kw">end</span><span class="op">-</span><span class="fl">1</span>)];</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="bu">Random</span>.<span class="fu">seed!</span>(<span class="fl">1234</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> <span class="fu">rand</span>.(<span class="fu">Poisson</span>.(X));</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">bar</span>(obstimes,Y,legend<span class="op">=</span><span class="cn">false</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot!</span>(obstimes,X,legend<span class="op">=</span><span class="cn">false</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <p><img src="index_files/figure-html/cell-4-output-1.svg" class="img-fluid"></p>
 </div>
 </div>
-<p>Proportion of the population infected over time:</p>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot!</span>(obstimes, C[<span class="fl">1</span><span class="op">:</span><span class="fl">40</span>]<span class="op">/</span><span class="fl">1000</span>, legend <span class="op">=</span> <span class="cn">false</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<p><img src="index_files/figure-html/cell-5-output-1.svg" class="img-fluid"></p>
-</div>
-</div>
+<p>Note the second wave of cases occuring as immunity begins to wane.</p>
+</section>
 <section id="solve-using-turing" class="level2">
 <h2 class="anchored" data-anchor-id="solve-using-turing">Solve Using Turing</h2>
+<p>Now we build our model in Turing, using our prior defined ODE.</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@model</span> <span class="fu">bayes_sir</span>(y) <span class="op">=</span> <span class="cf">begin</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate number of timepoints</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  l <span class="op">=</span> <span class="fu">length</span>(y)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  i₀  <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">0.0</span>,<span class="fl">.3</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  β <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">0</span>,<span class="fl">.25</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  immunity <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">90</span>,<span class="fl">365</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  I <span class="op">=</span> i₀<span class="op">*</span><span class="fl">6000.0</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  u0<span class="op">=</span>[<span class="fl">6000.0</span><span class="op">-</span>I,I,<span class="fl">0.0</span>,<span class="fl">0.0</span>]</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  p<span class="op">=</span>[β,<span class="fl">10.0</span>,<span class="fl">0.2</span>, <span class="fl">1.0</span><span class="op">/</span>immunity]</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  tspan <span class="op">=</span> (<span class="fl">0.0</span>,<span class="fu">float</span>(l))</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  prob <span class="op">=</span> <span class="fu">ODEProblem</span>(sir_ode!,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>          u0,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>          tspan,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>          p)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  sol <span class="op">=</span> <span class="fu">solve</span>(prob,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>              <span class="fu">Tsit5</span>(),</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>              saveat <span class="op">=</span> <span class="fl">1.0</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  sol_C <span class="op">=</span> <span class="fu">Array</span>(sol)[<span class="fl">4</span>,<span class="op">:</span>] <span class="co"># Cumulative cases</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  sol_X <span class="op">=</span> sol_C[<span class="fl">2</span><span class="op">:</span><span class="kw">end</span>] <span class="op">-</span> sol_C[<span class="fl">1</span><span class="op">:</span>(<span class="kw">end</span><span class="op">-</span><span class="fl">1</span>)]</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  l <span class="op">=</span> <span class="fu">length</span>(y)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>l</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    y[i] <span class="op">~</span> <span class="fu">Poisson</span>(<span class="fu">ifelse</span>(sol_X[i] <span class="op">&lt;</span><span class="fl">0</span> , <span class="fl">1e-6</span>, sol_X[i] ))</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>mod <span class="op">=</span> <span class="fu">bayes_sir</span>(Y[<span class="fl">1</span><span class="op">:</span><span class="fl">300</span>]);</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>ode_nuts <span class="op">=</span> <span class="fu">sample</span>(mod, <span class="fu">NUTS</span>(<span class="fl">0.65</span>),<span class="fl">10000</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@model</span> <span class="fu">bayes_sir</span>(y) <span class="op">=</span> <span class="cf">begin</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate number of timepoints</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  l <span class="op">=</span> <span class="fu">length</span>(y)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  i₀  <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">0.0</span>,<span class="fl">1.0</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  β <span class="op">~</span> <span class="fu">Uniform</span>(<span class="fl">0.0</span>,<span class="fl">1.0</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  I <span class="op">=</span> i₀<span class="op">*</span><span class="fl">1000.0</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  u0<span class="op">=</span>[<span class="fl">1000.0</span><span class="op">-</span>I,I,<span class="fl">0.0</span>,<span class="fl">0.0</span>]</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  p<span class="op">=</span>[β,<span class="fl">10.0</span>,<span class="fl">0.25</span>]</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  tspan <span class="op">=</span> (<span class="fl">0.0</span>,<span class="fu">float</span>(l))</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  prob <span class="op">=</span> <span class="fu">ODEProblem</span>(sir_ode!,</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>          u0,</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>          tspan,</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>          p)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  sol <span class="op">=</span> <span class="fu">solve</span>(prob,</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>              <span class="fu">Tsit5</span>(),</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>              saveat <span class="op">=</span> <span class="fl">1.0</span>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  sol_C <span class="op">=</span> <span class="fu">Array</span>(sol)[<span class="fl">4</span>,<span class="op">:</span>] <span class="co"># Cumulative cases</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  sol_X <span class="op">=</span> sol_C[<span class="fl">2</span><span class="op">:</span><span class="kw">end</span>] <span class="op">-</span> sol_C[<span class="fl">1</span><span class="op">:</span>(<span class="kw">end</span><span class="op">-</span><span class="fl">1</span>)]</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  l <span class="op">=</span> <span class="fu">length</span>(y)</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>l</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    y[i] <span class="op">~</span> <span class="fu">Poisson</span>(<span class="fu">ifelse</span>(sol_X[i] <span class="op">&lt;</span><span class="fl">0</span> , <span class="fl">1e-6</span>, sol_X[i] ))</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>mod <span class="op">=</span> <span class="fu">bayes_sir</span>(Y);</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>ode_nuts <span class="op">=</span> <span class="fu">sample</span>(mod, <span class="fu">NUTS</span>(<span class="fl">0.65</span>),<span class="fl">10000</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(ode_nuts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(ode_nuts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>2-element Vector{ChainDataFrame}:
- Summary Statistics (2 x 8)
- Quantiles (2 x 6)</code></pre>
+ Summary Statistics (3 x 8)
+ Quantiles (3 x 6)</code></pre>
 </div>
 </div>
+<p>Now let’s see if we were able to recover our parameters:</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ode_nuts)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>posterior <span class="op">=</span> <span class="fu">DataFrame</span>(ode_nuts);</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>beta_hat <span class="op">=</span> <span class="fu">mean</span>(posterior[!,<span class="op">:</span>β])</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>immunity_hat <span class="op">=</span> <span class="fu">mean</span>(posterior[!, <span class="op">:</span>immunity])</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"Estimate for  β: "</span>, beta_hat)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"Estimate for immunity duration: "</span>, immunity_hat)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"Estimate for initial proportion infected: "</span>, <span class="fu">mean</span>(posterior[!, <span class="op">:</span>i₀]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Estimate for  β: 0.24988522895897208
+Estimate for immunity duration: 134.67049997981798
+Estimate for initial proportion infected: 0.29982559028903444</code></pre>
+</div>
+</div>
+<p>Not too bad! Now we can simulate the dynamics going forward:</p>
 <div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ode_nuts)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>posterior <span class="op">=</span> <span class="fu">DataFrame</span>(ode_nuts);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">histogram2d</span>(posterior[!,<span class="op">:</span>β],posterior[!,<span class="op">:</span>i₀],</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                bins<span class="op">=</span><span class="fl">80</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                xlabel<span class="op">=</span><span class="st">"β"</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                ylab<span class="op">=</span><span class="st">"i₀"</span>,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                ylim<span class="op">=</span>[<span class="fl">0.006</span>,<span class="fl">0.016</span>],</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                xlim<span class="op">=</span>[<span class="fl">0.045</span>,<span class="fl">0.055</span>],</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                legend<span class="op">=</span><span class="cn">false</span>)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot!</span>([<span class="fl">0.05</span>,<span class="fl">0.05</span>],[<span class="fl">0.0</span>,<span class="fl">0.01</span>])</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot!</span>([<span class="fl">0.0</span>,<span class="fl">0.05</span>],[<span class="fl">0.01</span>,<span class="fl">0.01</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<p><img src="index_files/figure-html/cell-9-output-1.svg" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">predict</span>(y,chain)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Length of data</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    l <span class="op">=</span> <span class="fu">length</span>(y)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Length of chain</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> <span class="fu">length</span>(chain)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Choose random</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> <span class="fu">sample</span>(<span class="fl">1</span><span class="op">:</span>m)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    i₀ <span class="op">=</span> chain[<span class="op">:</span>i₀][idx]</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    β <span class="op">=</span> chain[<span class="op">:</span>β][idx]</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    I <span class="op">=</span> i₀<span class="op">*</span><span class="fl">1000.0</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    u0<span class="op">=</span>[<span class="fl">1000.0</span><span class="op">-</span>I,I,<span class="fl">0.0</span>,<span class="fl">0.0</span>]</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    p<span class="op">=</span>[β,<span class="fl">10.0</span>,<span class="fl">0.25</span>]</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    tspan <span class="op">=</span> (<span class="fl">0.0</span>,<span class="fu">float</span>(l))</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    prob <span class="op">=</span> <span class="fu">ODEProblem</span>(sir_ode!,</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>            u0,</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>            tspan,</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>            p)</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    sol <span class="op">=</span> <span class="fu">solve</span>(prob,</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>                <span class="fu">Tsit5</span>(),</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>                saveat <span class="op">=</span> <span class="fl">1.0</span>)</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> <span class="fu">Array</span>(sol)</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    sol_X <span class="op">=</span> [<span class="fl">0.0</span>; out[<span class="fl">4</span>,<span class="fl">2</span><span class="op">:</span><span class="kw">end</span>] <span class="op">-</span> out[<span class="fl">4</span>,<span class="fl">1</span><span class="op">:</span>(<span class="kw">end</span><span class="op">-</span><span class="fl">1</span>)]]</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">hcat</span>(sol_ode.t,out<span class="op">'</span>,sol_X)</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>Xp <span class="op">=</span> []</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> <span class="fu">predict</span>(Y,ode_nuts)</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(Xp,pred[<span class="fl">2</span><span class="op">:</span><span class="kw">end</span>,<span class="fl">6</span>])</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="fu">scatter</span>(obstimes,Y,legend<span class="op">=</span><span class="cn">false</span>)</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="fu">plot!</span>(obstimes,Xp,legend<span class="op">=</span><span class="cn">false</span>, color <span class="op">=</span> <span class="st">"grey50"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<p><img src="index_files/figure-html/cell-10-output-1.svg" class="img-fluid"></p>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">predict</span>(y,chain)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Length of data</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    l <span class="op">=</span> <span class="fu">length</span>(y)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Length of chain</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> <span class="fu">length</span>(chain)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Choose random</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> <span class="fu">sample</span>(<span class="fl">1</span><span class="op">:</span>m)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    i₀ <span class="op">=</span> chain[<span class="op">:</span>i₀][idx]</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    β <span class="op">=</span> chain[<span class="op">:</span>β][idx]</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    immunity <span class="op">=</span> chain[<span class="op">:</span>immunity][idx]</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    I <span class="op">=</span> i₀<span class="op">*</span><span class="fl">6000.0</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    u0<span class="op">=</span>[<span class="fl">6000.0</span><span class="op">-</span>I,I,<span class="fl">0.0</span>,<span class="fl">0.0</span>]</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    p<span class="op">=</span>[β,<span class="fl">10.0</span>,<span class="fl">0.2</span>, <span class="fl">1.0</span><span class="op">/</span>immunity]</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    tspan <span class="op">=</span> (<span class="fl">0.0</span>,<span class="fu">float</span>(l))</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    prob <span class="op">=</span> <span class="fu">ODEProblem</span>(sir_ode!,</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>            u0,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>            tspan,</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>            p)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    sol <span class="op">=</span> <span class="fu">solve</span>(prob,</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>                <span class="fu">Tsit5</span>(),</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>                saveat <span class="op">=</span> <span class="fl">1.0</span>)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> <span class="fu">Array</span>(sol)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    sol_X <span class="op">=</span> [<span class="fl">0.0</span>; out[<span class="fl">4</span>,<span class="fl">2</span><span class="op">:</span><span class="kw">end</span>] <span class="op">-</span> out[<span class="fl">4</span>,<span class="fl">1</span><span class="op">:</span>(<span class="kw">end</span><span class="op">-</span><span class="fl">1</span>)]]</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">hcat</span>(sol_ode.t,out<span class="op">'</span>,sol_X)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>Xp <span class="op">=</span> []</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">365</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> <span class="fu">predict</span>(Y,ode_nuts)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(Xp,pred[<span class="fl">2</span><span class="op">:</span><span class="kw">end</span>,<span class="fl">6</span>])</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="fu">scatter</span>(obstimes,Y,legend<span class="op">=</span><span class="cn">false</span>, ylims <span class="op">=</span> [<span class="fl">0</span>,<span class="fl">600</span>])</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="fu">plot!</span>(obstimes,Xp,legend<span class="op">=</span><span class="cn">false</span>, color <span class="op">=</span> <span class="st">"grey50"</span>, alpha <span class="op">=</span> <span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<p><img src="index_files/figure-html/cell-8-output-1.svg" class="img-fluid"></p>
 </div>
 </div>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<p>This shows a very intuitive approach towards compartmental modeling in a Bayesian framework using Julia.</p>
 
 
 </section>
