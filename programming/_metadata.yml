@@ -17,6 +17,7 @@ execute:
   echo: true
   message: true
   warning: false
+  freeze: auto
 
 
 # Default author

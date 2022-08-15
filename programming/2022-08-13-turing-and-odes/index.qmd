@@ -4,7 +4,7 @@ description: |
   whatcha writing about? 
 date: 2022-08-13
 jupyter: julia-1.7
-categories:  [Bayes, Turing, Julia]
+categories:  [Bayes, Turing, Julia, Epidemiology]
 ---
 
 ## Exploring Julia and ODEs
@@ -46,6 +46,47 @@ Additionally:
 * The contact rate is 0.05 (probability of passing infection to any given contact)
 * Those who are infected recover on average every 5 days 
 * Immunity lasts for a 180 days on average before people become susceptible again
+* Population size of 6,000 individuals
+* Standard mass-action approach
+
+Something that looks like the following:
+
+```julia
+using Luxor
+using MathTeXEngine
+```
+
+```julia
+Drawing(200, 200, "sirs.png")
+origin()
+setline(10)
+Luxor.arrow(Point(-40,0),Point(0,0))
+Luxor.arrow(Point(-0,0),Point(40,0))
+fontsize(15)
+Luxor.text(L"S",Point(-40,20), halign = :center)
+
+Luxor.text(L"I",Point(0,20), halign = :center)
+Luxor.text(L"R",Point(40,20), halign = :center)
+fontsize(12)
+Luxor.text(L"β*c",Point(-20,10), halign = :center)
+Luxor.text(L"γ",Point(20,10), halign = :center)
+Luxor.text(L"δ",Point(0,-15), halign = :center)
+
+loopx = 30
+loopy = 40
+adjx = 6
+adjy = -2
+Luxor.arrow(
+    Point(40,0) + Point(-adjx,adjy),
+    Point(40,0) + Point(-loopx,-loopy),
+    Point(-40,0)+ Point(loopx,-loopy),
+    Point(-40,0)+Point(adjx,adjy)
+)
+finish()
+
+```
+
+![SIRS Compartmental Model](sirs.png)
 
 ```{julia}
 function sir_ode!(du,u,p,t)
@@ -153,6 +194,7 @@ println("Estimate for initial proportion infected: ", mean(posterior[!, :i₀]))
 
 Not too bad!
 Now we can simulate the dynamics going forward:
+
 ```{julia}
 
 function predict(y,chain)
@@ -193,3 +235,7 @@ scatter(obstimes,Y,legend=false, ylims = [0,600])
 plot!(obstimes,Xp,legend=false, color = "grey50", alpha = .2)
 ```
 
+
+## Conclusions
+
+This shows a very intuitive approach towards compartmental modeling in a Bayesian framework using Julia.
