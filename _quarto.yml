@@ -1,9 +1,22 @@
 project:
   type: website
+  render:
+    - "*.qmd"
+    - "*.Rmd"
+    - "!*.md"
+    - "!README.md"
+    - "!LICENSE.md"
+  resources:
+    - "thoughts/*.html"
+    - "thoughts/*.xml"
+    - "thoughts/*.css"
+
+description-meta: "A blog exploring infectious diseases, statistics, epidemiology, and data science."
 
 website:
   title: "Insufficient Statistics"
-  descriptio : "A blog exploring infectious diseases, statistics, epidemiology, and data science."
+  description : "A blog exploring infectious diseases, statistics, epidemiology, and data science."
+  favicon: sirs.png
   site-url: https://michaeldewittjr.com
   repo-url: https://github.com/medewitt/quarto-blog
   open-graph: true
@@ -64,3 +77,5 @@ format:
     theme: [cosmo, michael.scss]
     css: styles.css
     toc: true
+
+freeze: true

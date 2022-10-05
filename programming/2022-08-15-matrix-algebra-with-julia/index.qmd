@@ -1,0 +1,29 @@
+---
+title: "Matrix Algebra with Julia"
+description: |
+  whatcha writing about? 
+date: 2022-08-15
+jupyter: julia-1.7
+categories:  [Bayes, Covid-19, Clinical Trials, Stan, Causal Inference]
+draft: true
+---
+
+
+```{julia}
+using LinearAlgebra
+```
+
+
+```{julia}
+A = [0  .0043 .1132 0;
+.9775 0.9111  0 0;
+0 0.0736  0.9534 0;
+ 0 0 .0452  0.9804]
+```
+
+
+```{julia}
+eA = eigen(A)
+λ = maximum(eigvals(A))
+w = eigvecs(A)[:,end]/sum(eigvecs(A)[:,end])
+```
