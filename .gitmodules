@@ -1,0 +1,3 @@
+[submodule "thoughts"]
+	path = thoughts
+	url = git@github.com:medewitt/thoughts.git
