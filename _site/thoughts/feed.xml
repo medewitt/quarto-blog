@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>This is the website title</title>
+    <description>This is the website description</description>
+    <language>en-us</language>
+    <link>http://example.com</link>
+    <atom:link href="http://example.com/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+    <title> Hello, World, Again!
+</title>
+    <pubDate>Wed, 05 Oct 2022 00:00:00 +0000</pubDate>
+    <link>http://example.com/#2022-10-05-hello-world-again</link>
+    <guid>http://example.com/#2022-10-05-hello-world-again</guid>
+    <description></description>
+    </item>    
+  </channel>
+</rss>
