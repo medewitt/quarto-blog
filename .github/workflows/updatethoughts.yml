@@ -1,0 +1,25 @@
+name: Update submodule
+
+on:
+#  push:
+#      paths:
+#        - DESCRIPTION
+  schedule:
+    - cron:  '10 13 * * *'
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+    env:
+      RSPM: https://packagemanager.rstudio.com/cran/__linux__/focal/latest
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      
+    steps:
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@v1
+      - uses: extractions/setup-just@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: update
+        run: just --list 
+        
