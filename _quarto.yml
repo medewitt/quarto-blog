@@ -10,6 +10,7 @@ project:
     - "thoughts/*.html"
     - "thoughts/*.xml"
     - "thoughts/*.css"
+    - "thoughts/img/*"
 
 description-meta: "A blog exploring infectious diseases, statistics, epidemiology, and data science."
 
