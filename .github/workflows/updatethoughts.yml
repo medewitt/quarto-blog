@@ -25,10 +25,11 @@ jobs:
         run: just thoughts 
       - name: Commit results
         run: |
-          git config --local user.email "me.dewitt.jr@gmail.com"
-          git config --local user.name "Michael DeWitt"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add .
           git commit -m "Update the latest data" -a || echo "No changes to commit"
+          git ls
           git push https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git HEAD:${{ github.ref }} || echo "No changes to commit"
 
         
