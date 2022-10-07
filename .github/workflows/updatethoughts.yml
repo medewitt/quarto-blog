@@ -20,6 +20,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: update
+        run: just updatethoughts 
+      - name: updatethoughts
         run: just thoughts 
       - name: Commit results
         run: |
