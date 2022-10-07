@@ -35,3 +35,4 @@ programming/2019-04-08-re-districting-in-winston-salem/data/ncvhis34.txt
 ncvhis34.txt
 updateredirects
 _redirects
+!justfile

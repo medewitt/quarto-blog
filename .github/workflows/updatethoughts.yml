@@ -1,9 +1,8 @@
 name: Update submodule
 
 on:
-#  push:
-#      paths:
-#        - DESCRIPTION
+  push:
+    branches: [main,dev, ceg]
   schedule:
     - cron:  '10 13 * * *'
 jobs:
@@ -16,10 +15,18 @@ jobs:
       
     steps:
       - uses: actions/checkout@v2
-      - uses: r-lib/actions/setup-r@v1
+#      - uses: r-lib/actions/setup-r@v1
       - uses: extractions/setup-just@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: update
-        run: just --list 
+        run: just thoughts 
+      - name: Commit results
+        run: |
+          git config --local user.email "me.dewitt.jr@gmail.com"
+          git config --local user.name "Michael DeWitt"
+          git add .
+          git commit -m "Update the latest data" -a || echo "No changes to commit"
+          git push https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git HEAD:${{ github.ref }} || echo "No changes to commit"
+
         
