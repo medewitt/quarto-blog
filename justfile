@@ -12,8 +12,7 @@ redirects:
 
 # Copy thoughts over
 thoughts:
-  cd thoughts; git pull origin main;
-  cd ..;
+  cd thoughts && git pull origin main;
   cp thoughts/index.html _site/thoughts/index.html
   cp thoughts/feed.xml _site/thoughts/feed.xml
   cp thoughts/style.css _site/thoughts/style.css
@@ -21,4 +20,5 @@ thoughts:
 
 # Update submodule
 updatethoughts:
-  git submodule update
+  git submodule update --init --recursive
+  git submodule update --recursive --remote
