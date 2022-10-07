@@ -13,6 +13,7 @@ redirects:
 # Copy thoughts over
 thoughts:
   cd thoughts; git pull origin main;
+  cd ..;
   cp thoughts/index.html _site/thoughts/index.html
   cp thoughts/feed.xml _site/thoughts/feed.xml
   cp thoughts/style.css _site/thoughts/style.css
