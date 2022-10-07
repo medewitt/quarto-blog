@@ -17,7 +17,7 @@ thoughts:
   cp thoughts/index.html _site/thoughts/index.html
   cp thoughts/feed.xml _site/thoughts/feed.xml
   cp thoughts/style.css _site/thoughts/style.css
-  cp thoughts/img/ _site/thoughts/img/
+  cp -rf thoughts/img/ _site/thoughts/img
 
 # Update submodule
 updatethoughts:
