@@ -29,7 +29,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add .
           git commit -m "Update the latest data" -a || echo "No changes to commit"
-          git ls
+          git show --pretty=%gd --stat
           git push https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git HEAD:${{ github.ref }} || echo "No changes to commit"
 
         
