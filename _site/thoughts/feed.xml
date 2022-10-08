@@ -7,6 +7,13 @@
     <link>http://example.com</link>
     <atom:link href="http://example.com/feed.xml" rel="self" type="application/rss+xml" />
     <item>
+    <title> Justfiles are cool
+</title>
+    <pubDate>Thu, 01 Jan 1970 00:00:00 +0000</pubDate>
+    <link>http://example.com/#2022-10-06-justfiles-justfiles-are-cool</link>
+    <guid>http://example.com/#2022-10-06-justfiles-justfiles-are-cool</guid>
+    <description></description>
+    </item><item>
     <title> Helper functions needed for Julia
 </title>
     <pubDate>Thu, 01 Jan 1970 00:00:00 +0000</pubDate>
