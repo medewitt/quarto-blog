@@ -6,6 +6,8 @@ Working in private organizations limits what I can show publicly, but here are s
 
 ## publications
 
+* Sampson MM, Polk CM, Fairman RT, DeWitt ME, Leonard MK, Davidson L, et al. Monkeypox testing delays: The need for drastic expansion of education and testing for monkeypox virus. Infect Control Hosp Epidemiol 2022:1–2. https://doi.org/10.1017/ice.2022.237.
+
 * C. T. Semelka, M. E. DeWitt, K. E. Callahan, D. M. Herrington, M. A. Alexander-Miller, J. O. Yukich, I. Munawar, L. H. McCurdy, M. A. Gibbs, W. S. Weintraub and J. W. Sanders. "Frailty and COVID-19 mRNA Vaccine Antibody Response in The COVID-19 Community Research Partnership.” J Gerontol A Biol Sci Med Sci; DOI: <https://doi.org/10.1093/gerona/glac095>
 
 * Michael E. DeWitt, Christopher Scheib, Morgan Jones and Pamela Cowin
@@ -22,17 +24,15 @@ Sam Abbott, Joel Hellewell, Katharine Sherratt, Katelyn Gostic, Joe Hickson, Ham
 DeWitt, Robin Thompson, EpiForecasts, and Sebastian Funk (2020). EpiNow2: Estimate Real-Time
 Case Counts and Time-Varying Epidemiological Parameters, DOI: 10.5281/zenodo.3957489
 
-Sam Abbott, Nikos Bosse, Joel Hellewell, Katharine Sherratt, James Munday, Robin Thompson, Aurelien Chateigner, Sylvain Mareschal, Andrea Rau, Nathalie Vialaneix, Michael DeWitt and Sebastian
-Funk (2020). EpiSoon: Forecast Cases Using Reproduction Numbers. R package version 0.3.0.
+Sam Abbott, Nikos Bosse, Joel Hellewell, Katharine Sherratt, James Munday, Robin Thompson, Aurelien Chateigner, Sylvain Mareschal, Andrea Rau, Nathalie Vialaneix, Michael DeWitt and Sebastian Funk (2020). EpiSoon: Forecast Cases Using Reproduction Numbers. R package version 0.3.0.
 
-DeWitt et al., (2019). tidyqwi: A Tidy Approach to Accessing The US Census Bureau's Quarterly Workforce Indicators. Journal
-  of Open Source Software, 4(38), 1462, <https://doi.org/10.21105/joss.01462>
+DeWitt et al., (2019). tidyqwi: A Tidy Approach to Accessing The US Census Bureau's Quarterly Workforce Indicators. Journal of Open Source Software, 4(38), 1462, <https://doi.org/10.21105/joss.01462>
   
-Bruno Castanho Silva and Michael DeWitt (2019). SCtools: Extensions for
-  Synthetic Controls Analysis. R package version 0.3.0.
-  <https://CRAN.R-project.org/package=SCtools>
+Bruno Castanho Silva and Michael DeWitt (2019). SCtools: Extensions for Synthetic Controls Analysis. R package version 0.3.0. <https://CRAN.R-project.org/package=SCtools>
   
 ## Working Papers
+
+DeWitt ME, Sampson MM, Fairman RT, McNeil CJ, Polk CM, Passaretti CL, et al. Estimated Monkeypox Susceptible MSM Population in North Carolina 2022:2022.07.21.22277860. https://doi.org/10.1101/2022.07.21.22277860.
 
 DeWitt, Michael E. “Rapid Impact Analysis of B 1.1.7 Variant on the Spread of SARS-CoV-2 in North Carolina.” MedRxiv, February 9, 2021, 2021.02.07.21251291. <https://doi.org/10.1101/2021.02.07.21251291>.
 
