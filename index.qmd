@@ -11,6 +11,7 @@ In addition to my professional work, I apply the tools of the trade on local com
 This includes analysis of local economic policy, transportation availability, policing, and politics. 
 I'm passionate about data informed policy and decision-making and scientific communication in general.
 
+<a rel="me" href="https://mastodon.social/@Medewitt">Mastodon</a>
 
 ```{r}
 #| echo: false
