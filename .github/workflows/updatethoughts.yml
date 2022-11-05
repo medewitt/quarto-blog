@@ -5,6 +5,8 @@ on:
     branches: [main,dev, ceg]
   schedule:
     - cron:  '10 13 * * *'
+  repository_dispatch:
+    types: [sample_push]
 jobs:
   build:
     runs-on: ubuntu-20.04
