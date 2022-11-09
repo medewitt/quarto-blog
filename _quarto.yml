@@ -31,9 +31,9 @@ website:
         text: home
       - text: "contact me"
         menu:
-        - icon: twitter
-          href: https://twitter.com/medewittjr
-          text: "@medewittjr"
+        - icon: mastodon
+          href: https://mastodon.social/@Medewitt
+          text: "@Medewitt"
         - icon: github
           href: https://github.com/medewitt
           text: "medewitt"
@@ -59,8 +59,6 @@ website:
           href: https://medewitt.github.io/introduction_to_r/index.html
         - text: "Advanced Analysis in R"
           href: https://medewitt.github.io/advanced_analysis_in_r/index.html
-        - text: "Methods and Resources"
-          href: https://medewitt.github.io/resources/index.html
         - text: "Reading Notes"
           href: https://www.dewittlab.com
         - text: "Virus Dynamics in R"

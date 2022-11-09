@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.0.36">
+<meta name="generator" content="quarto-1.1.251">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -14,10 +14,15 @@
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
 </style>
 
 
@@ -77,9 +82,11 @@ ul.task-list{list-style: none;}
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
-      <a class="navbar-brand" href="../../index.html">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Insufficient Statistics</span>
-  </a>
+    </a>
+  </div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
@@ -92,9 +99,9 @@ ul.task-list{list-style: none;}
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-contact-me" role="button" data-bs-toggle="dropdown" aria-expanded="false">contact me</a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-contact-me">    
         <li>
-    <a class="dropdown-item" href="https://twitter.com/medewittjr"><i class="bi bi-twitter" role="img">
+    <a class="dropdown-item" href="https://mastodon.social/@Medewitt"><i class="bi bi-mastodon" role="img">
 </i> 
- <span class="dropdown-text"><span class="citation" data-cites="medewittjr">@medewittjr</span></span></a>
+ <span class="dropdown-text"><span class="citation" data-cites="Medewitt">@Medewitt</span></span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="https://github.com/medewitt"><i class="bi bi-github" role="img">
@@ -148,10 +155,6 @@ ul.task-list{list-style: none;}
         <li>
     <a class="dropdown-item" href="https://medewitt.github.io/advanced_analysis_in_r/index.html">
  <span class="dropdown-text">Advanced Analysis in R</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="https://medewitt.github.io/resources/index.html">
- <span class="dropdown-text">Methods and Resources</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="https://www.dewittlab.com">
@@ -229,7 +232,7 @@ ul.task-list{list-style: none;}
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-    <nav id="TOC" role="doc-toc">
+    <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
@@ -284,17 +287,18 @@ ul.task-list{list-style: none;}
 </section>
 
 
-<div id="quarto-appendix" class="default"><section class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1" role="doc-endnote"><p>I suppose nostalgia in the way of remembering history that I never personally experience. In a very <em>Midnight in Paris</em> <a href="https://www.livescience.com/18478-midnight-paris-oscars-nostalgia.html">way.</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>See the monolithic program that has been made available for the guidance computers at <a href="https://github.com/chrislgarry/Apollo-11" class="uri">https://github.com/chrislgarry/Apollo-11</a>. It is just amazing to read. And imagine you had to submit this bad boy on punch cards. I get a giggle each time SAS throws a <code>LOST CARD</code> output, but running 100s of pages of code responsible for guiding three men. Just something else. Now we have neural networks deciding what advertisements to show people. Not totally fair as these same algorithms also power maps and translate, but just imagine….<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3" role="doc-endnote"><p>In fairness, they were all white males. This also does not discount the enormous efforts of all of the men and women involved in the program. I think that <a href="https://en.wikipedia.org/wiki/Hidden_Figures"><em>Hidden Figures</em></a> has helped to shed light on the critical contributions of African Americans in a very unequal world. Additionally, the spotlight on <a href="https://en.wikipedia.org/wiki/Margaret_Hamilton_(software_engineer)">Margaret Hamilton</a> in recent weeks has shown how a woman was <em>the</em> software engineer for the Apollo program.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4" role="doc-endnote"><p>See <a href="https://en.wikipedia.org/wiki/Gene_Kranz" class="uri">https://en.wikipedia.org/wiki/Gene_Kranz</a><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5" role="doc-endnote"><p>Ok, so people will certainly argue this point with me for sure. The languages are often terse and have high learning curves. Additionally, as cloud archi and parallelism has become place people argue that some of the tools have lost relevance. However, there is still a place for them. The right tool for the right task. I remember working with machines that were 40 years old and the toolset that you could use was limited (e.g.&nbsp;you were not going to install a Python program on these things). See Nick Strayer’s <a href="https://livefreeordichotomize.com/2019/06/04/using_awk_and_r_to_parse_25tb/">post</a> on using R and AWK to parse 25TB of data.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>I suppose nostalgia in the way of remembering history that I never personally experience. In a very <em>Midnight in Paris</em> <a href="https://www.livescience.com/18478-midnight-paris-oscars-nostalgia.html">way.</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>See the monolithic program that has been made available for the guidance computers at <a href="https://github.com/chrislgarry/Apollo-11" class="uri">https://github.com/chrislgarry/Apollo-11</a>. It is just amazing to read. And imagine you had to submit this bad boy on punch cards. I get a giggle each time SAS throws a <code>LOST CARD</code> output, but running 100s of pages of code responsible for guiding three men. Just something else. Now we have neural networks deciding what advertisements to show people. Not totally fair as these same algorithms also power maps and translate, but just imagine….<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>In fairness, they were all white males. This also does not discount the enormous efforts of all of the men and women involved in the program. I think that <a href="https://en.wikipedia.org/wiki/Hidden_Figures"><em>Hidden Figures</em></a> has helped to shed light on the critical contributions of African Americans in a very unequal world. Additionally, the spotlight on <a href="https://en.wikipedia.org/wiki/Margaret_Hamilton_(software_engineer)">Margaret Hamilton</a> in recent weeks has shown how a woman was <em>the</em> software engineer for the Apollo program.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>See <a href="https://en.wikipedia.org/wiki/Gene_Kranz" class="uri">https://en.wikipedia.org/wiki/Gene_Kranz</a><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Ok, so people will certainly argue this point with me for sure. The languages are often terse and have high learning curves. Additionally, as cloud archi and parallelism has become place people argue that some of the tools have lost relevance. However, there is still a place for them. The right tool for the right task. I remember working with machines that were 40 years old and the toolset that you could use was limited (e.g.&nbsp;you were not going to install a Python program on these things). See Nick Strayer’s <a href="https://livefreeordichotomize.com/2019/06/04/using_awk_and_r_to_parse_25tb/">post</a> on using R and AWK to parse 25TB of data.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dewitt2019,
   author = {Michael DeWitt},
+  editor = {},
   title = {Remembering {Apollo}},
   date = {2019-07-19},
   url = {https://michaeldewittjr.com/programming/2019-07-19-remembering-apollo},
@@ -373,7 +377,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   for (var i=0; i<noterefs.length; i++) {
     const ref = noterefs[i];
     tippyHover(ref, function() {
-      let href = ref.getAttribute('href');
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
