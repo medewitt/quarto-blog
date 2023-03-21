@@ -6,17 +6,26 @@ Working in private organizations limits what I can show publicly, but here are s
 
 ## publications
 
-* Sampson MM, Polk CM, Fairman RT, DeWitt ME, Leonard MK, Davidson L, et al. Monkeypox testing delays: The need for drastic expansion of education and testing for monkeypox virus. Infect Control Hosp Epidemiol 2022:1–2. https://doi.org/10.1017/ice.2022.237.
+* **DeWitt M** , Wierzba TF. Automatic Case Cluster Detection Using Hospital Electronic Health Record Data. Biology Methods and Protocols. Published online March 15, 2023:bpad004. <doi:10.1093/biomethods/bpad004>
 
-* C. T. Semelka, M. E. DeWitt, K. E. Callahan, D. M. Herrington, M. A. Alexander-Miller, J. O. Yukich, I. Munawar, L. H. McCurdy, M. A. Gibbs, W. S. Weintraub and J. W. Sanders. "Frailty and COVID-19 mRNA Vaccine Antibody Response in The COVID-19 Community Research Partnership.” J Gerontol A Biol Sci Med Sci; DOI: <https://doi.org/10.1093/gerona/glac095>
+* Stone, T. J., **DeWitt, M.**, Johnson, J. W., Beardsley, J. R., Munawar, I., Palavecino, E., Luther, V. P., Ohl, C. A., \& Williamson, J. C. (2023). Analysis of infections among patients with historical culture positive for extended-spectrum beta-lactamase (ESBL)–producing Escherichia coli or Klebsiella pneumoniae: Is ESBL-targeted therapy always needed? Antimicrobial Stewardship \& Healthcare Epidemiology, 3(1), e47. <https://doi.org/10.1017/ash.2022.363>
 
-* Michael E. DeWitt, Christopher Scheib, Morgan Jones and Pamela Cowin
-North Carolina Medical Journal July 2021, 82 (4) 284-286; DOI: <https://doi.org/10.18043/ncm.82.4.284>
+* Polk, C., Sampson, M., Fairman, R. T., **DeWitt, M. E.**, Leonard, M., Neelakanta, A., Davidson, L., Roshdy, D., Branner, C., McCurdy, L., Ludden, T., Tapp, H., \& Passaretti, C. (2023). Evaluation of a health system’s implementation of a monkeypox care model under the RE-AIM framework. Therapeutic Advances in Infectious Disease, 10, 20499361231158464. <https://doi.org/10.1177/20499361231158463>
 
-* DeWitt, Michael, and Phil Handwerk. “Wake Forest’s Ten Years of Test-Optional Admissions: A Review of Students Who Did Not Submit Versus Those Who Did.” In The Scandal of Standardized Tests: Why We Need to Drop the SAT and ACT, by Joseph A. Soares. Teacher’s College Press, February 2020.
+* **DeWitt, M. E.**, Herrington, D. M., \& Sanders, J. W. (2023). Venous or Arterial Thrombosis in COVID-19 Cases in the North Carolina COVID-19 Community Research Partnership (NC-CCRP). Research and Practice in Thrombosis and Haemostasis, 100080. <https://doi.org/10.1016/j.rpth.2023.100080>
 
-* [**Analysis of the Winston-Salem Public Transit System**](http://www.virginiapolicyreview.org/blog/analysis-of-the-winston-salem-public-transit-system) _Virginia Policy Review_, October 2018
+* Semelka, C. T., **DeWitt, M. E.**, Blevins, M. W., Holbrook, B. C., Sanders, J. W., \& Alexander-Miller, M. A. (2023). Frailty impacts immune responses to Moderna COVID-19 mRNA vaccine in older adults. Immunity \& Ageing, 20(1), 4. <https://doi.org/10.1186/s12979-023-00327-x>
 
+* **DeWitt ME**, Polk C, Williamson J, Shetty AK, Passaretti CL, McNeil CJ, et al. Global monkeypox case hospitalisation rates: A rapid systematic review and meta-analysis. EClinicalMedicine 2022;54:101710. <https://doi.org/10.1016/j.eclinm.2022.101710>.
+      
+* Sampson MM, Polk CM, Fairman RT, **DeWitt ME**, Leonard MK, Davidson L, et al. Monkeypox testing delays: The need for drastic expansion of education and testing for monkeypox virus. Infect Control Hosp Epidemiol 2022:1–2. <https://doi.org/10.1017/ice.2022.237>.
+
+* C. T. Semelka, **M. E. DeWitt**, K. E. Callahan, D. M. Herrington, M. A. Alexander-Miller, J. O. Yukich, I. Munawar, L. H. McCurdy, M. A. Gibbs, W. S. Weintraub and J. W. Sanders. “Frailty and COVID-19 mRNA Vaccine Antibody Response in The COVID-19 Community Research Partnership.” J Gerontol A Biol Sci Med Sci; DOI: <https://doi.org/10.1093/gerona/glac095>
+
+* **Michael E. DeWitt**, Christopher Scheib, Morgan Jones and Pamela Cowin North Carolina Medical Journal July 2021, 82 (4) 284-286; DOI: <https://doi.org/10.18043/ncm.82.4.284>
+
+* Summers, Phillip, and **Michael DeWitt**. “Analysis of the Winston-Salem Public Transit System.” Virginia Policy Review, October 31, 2018. <http://www.virginiapolicyreview.org/1/post/2018/10/analysis-of-the-winston-salem-public-transit-system.html>.
+    
 
 ## software
 
@@ -80,6 +89,6 @@ This is a non-exhaustive list of presentations that I have given.
 
 ## patents
 
-[Procede d’identifier, gerer et réincorporer les produits complexes comme les produits valorises ](https://register.epo.org/application?number=EP19702385)(WO2019154657 - 2019-08-15)
+[Procede d’identifier, gerer et réincorporer les produits complexes comme les produits valorises ](https://register.epo.org/application?number=EP19702385)(WO2019154657 - 2019-08-15, applied)
 
-[Systeme d’identifier, gerer et reincorporer les produits complexes comme les produits valorises](https://patentscope.wipo.int/search/en/detail.jsf?docId=WO2019154656)(WO2019154656 - 2019-08-15)
+[Systeme d’identifier, gerer et reincorporer les produits complexes comme les produits valorises](https://patentscope.wipo.int/search/en/detail.jsf?docId=WO2019154656)(WO2019154656 - 2019-08-15, applied)

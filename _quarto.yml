@@ -59,8 +59,8 @@ website:
           href: https://medewitt.github.io/introduction_to_r/index.html
         - text: "Advanced Analysis in R"
           href: https://medewitt.github.io/advanced_analysis_in_r/index.html
-        - text: "Reading Notes"
-          href: https://www.dewittlab.com
+        - text: "PROMED Scanner"
+          href: https://medewitt.github.io/promed-scanner/
         - text: "Virus Dynamics in R"
           href: https://medewitt.github.io/virusdynamics/
         - text: "SARS2 Fitness Tracker"

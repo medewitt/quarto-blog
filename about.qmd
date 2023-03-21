@@ -1,8 +1,8 @@
 ---
 title: "about"
-image: profile.jpg
+image: profile.jpeg
 about:
-  template: jolla
+  template: trestles
   links:
     - icon: twitter
       text: Twitter
@@ -17,22 +17,22 @@ about:
 
 ## Currently
 
-I'm an applied statistician and data scientist working in infectious diseases at [Atrium Wake Forest Baptist Health](https://school.wakehealth.edu/departments/internal-medicine/infectious-diseases) in Winston-Salem, NC. 
+I'm an applied statistician and data scientist working in infectious diseases at [Wake Forest University School of Medicine](https://school.wakehealth.edu/departments/internal-medicine/infectious-diseases) in Winston-Salem, NC. 
 
 <left>
 My interests are in: 
 
-* Bayesian Inference
+* Infectious disease modelling and epidemiology, particularly the detection, surveillance, and dynamics of new and emerging pathogens and how to better inform public health with actionable insights in a timely manor
 
-* Infectious Disease Modelling and Epidemiology
+* Bayesian inference and analytic techniques
 
-* Causal Inference
+* Application of survey analytic techniques (including small area estimation) applied to novel data sets
 
-* Survey Analysis
+* Applied machine learning and prediction
 
-* Applied Machine Learning and Prediction
+* Simulation and optimization
 
-* Simulation and Optimization
+* Causal inference
 
 </left>
 
@@ -55,8 +55,8 @@ It you want to learn more, check out my resume [here](https://michaeldewittjr.co
 
 <details>
 <summary><h2>Short Bio</h2> </summary>
-Michael DeWitt is an applied statistician and data scientist working in infectious disease research at Atrium Wake Forest Baptist Health, one of the largest health care networks in North Carolina. 
+Michael DeWitt is an applied statistician and data scientist working in infectious disease research at Wake Forest University School of Medicine, the academic core of the non-profit Advocate Health system, the fifth largest healthcare network in the United States. 
 Prior to infectious disease research, Michael has over ten years of experience in manufacturing, higher education analytics, and health care analytics. 
-His specialties are Bayesian inference, hierarchical modeling, survey design and analysis, simulation and optimization, network analysis, and applied predictive modeling. 
+ His research interests involve the detection, surveillance, and dynamics of new and emerging infectious diseases using mathematical and statistical models to improve public health. 
 He holds a bachelor's degree in Chemical Engineering from Clemson University and a Master's Degree in Statistics from North Carolina State University.
 </details>

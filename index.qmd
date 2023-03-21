@@ -5,7 +5,7 @@ title: "Michael DeWitt"
 I'm Michael DeWitt.
 I'm a data scientist and applied statistician working in infectious disease research.
 Additionally, I have experience in manufacturing, higher education, and health care.
-My interests are in Bayesian inference, infectious disease epidemiology, survey analysis, forecasting, and causal inference. 
+My research interests involve the detection, surveillance, and dynamics of new and emerging infectious diseases using mathematical and statistical models to improve public health. More specifically, I am particularly interested in the geospatial components of infectious diseases including the role of climate change, mobility patterns, evolution of contact patterns, and pathogen evolution; better understanding of delay distributions and infection ascertainment; and the role of modelling to rapidly inform public health measures.
 
 In addition to my professional work, I apply the tools of the trade on local community projects and subjects of interest.
 This includes analysis of local economic policy, transportation availability, policing, and politics. 
