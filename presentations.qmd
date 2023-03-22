@@ -8,6 +8,8 @@ Working in private organizations limits what I can show publicly, but here are s
 
 * **DeWitt M** , Wierzba TF. Automatic Case Cluster Detection Using Hospital Electronic Health Record Data. Biology Methods and Protocols. Published online March 15, 2023:bpad004. <doi:10.1093/biomethods/bpad004>
 
+* **DeWitt ME**, Tjaden AH, Herrington D, et al. COVID-19 Symptoms by Variant Period in the North Carolina COVID-19 Community Research Partnership, North Carolina, USA - Volume 29, Number 1—January 2023 - Emerging Infectious Diseases journal - CDC. doi:10.3201/eid2901.221111
+
 * Stone, T. J., **DeWitt, M.**, Johnson, J. W., Beardsley, J. R., Munawar, I., Palavecino, E., Luther, V. P., Ohl, C. A., \& Williamson, J. C. (2023). Analysis of infections among patients with historical culture positive for extended-spectrum beta-lactamase (ESBL)–producing Escherichia coli or Klebsiella pneumoniae: Is ESBL-targeted therapy always needed? Antimicrobial Stewardship \& Healthcare Epidemiology, 3(1), e47. <https://doi.org/10.1017/ash.2022.363>
 
 * Polk, C., Sampson, M., Fairman, R. T., **DeWitt, M. E.**, Leonard, M., Neelakanta, A., Davidson, L., Roshdy, D., Branner, C., McCurdy, L., Ludden, T., Tapp, H., \& Passaretti, C. (2023). Evaluation of a health system’s implementation of a monkeypox care model under the RE-AIM framework. Therapeutic Advances in Infectious Disease, 10, 20499361231158464. <https://doi.org/10.1177/20499361231158463>
